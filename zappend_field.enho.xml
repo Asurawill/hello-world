@@ -1,0 +1,535 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>追加含税价</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>MEREP</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>MEREP</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLMEREP</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLMEREP</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_PURCHDOC\ME:BUILD_BASE_LIST\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*  &quot;BEGIN ZAPPEND_FIELD IT02 ADD  150608</item>
+      <item>*  DATA:GT_KONV TYPE TABLE OF KONV .</item>
+      <item>*  DATA:GS_KONV TYPE  KONV .</item>
+      <item/>
+      <item>*&amp;--代码添加 BY HANDYBY 09.05.2017 10:05:40  BEGIN</item>
+      <item>*  DATA:LT_EKPO TYPE TABLE OF EKPO.</item>
+      <item>*  DATA:LS_EKPO TYPE EKPO .</item>
+      <item>*  DATA:LS_EKKO TYPE EKKO .</item>
+      <item>*  DATA:LS_EKKN TYPE EKKN.</item>
+      <item>*  DATA:LS_PRPS TYPE PRPS.</item>
+      <item>*  DATA:LS_MARA TYPE MARA .</item>
+      <item>*  DATA:ls_proj TYPE proj .</item>
+      <item>*  DATA L_OUT TYPE SY-daTUM .</item>
+      <item>*  TYPES: BEGIN OF TY_OUT,</item>
+      <item>*    SIGN(1) TYPE C,</item>
+      <item>*    OPTION(2) TYPE C,</item>
+      <item>*    LOW TYPE SY-DATUM,</item>
+      <item>*    HIGH TYPE SY-DATUM ,</item>
+      <item>*    END OF TY_OUT .</item>
+      <item>*  DATA:LT_OUT TYPE TABLE OF TY_OUT .</item>
+      <item>*  DATA:LS_OUT TYPE TY_OUT .</item>
+      <item>*  CALL FUNCTION &apos;RP_CALC_DATE_IN_INTERVAL&apos;</item>
+      <item>*    EXPORTING</item>
+      <item>*      DATE            = SY-DATUM</item>
+      <item>*      DAYS            = 00</item>
+      <item>*      MONTHS          = 00</item>
+      <item>*      SIGNUM          = &apos;-&apos;</item>
+      <item>*      YEARS           = 01</item>
+      <item>*   IMPORTING</item>
+      <item>*     CALC_DATE       = L_OUT</item>
+      <item>*            .</item>
+      <item>*  L_OUT+4(2) = 01.</item>
+      <item>*  L_OUT+6(2) = 01.</item>
+      <item>*</item>
+      <item>*  LS_OUT-SIGN = &apos;I&apos;.</item>
+      <item>*  LS_OUT-OPTION = &apos;BT&apos;.</item>
+      <item>*  LS_OUT-LOW = L_OUT .</item>
+      <item>*</item>
+      <item>*  L_OUT+4(2) = 12.</item>
+      <item>*  L_OUT+6(2) = 31.</item>
+      <item>*</item>
+      <item>*  LS_OUT-HIGH = L_OUT .</item>
+      <item>*  APPEND LS_OUT TO LT_OUT.</item>
+      <item>*  CLEAR LS_OUT .</item>
+      <item>*&amp;--代码添加 BY HANDYBY 09.05.2017 10:05:40  END</item>
+      <item/>
+      <item>*  IF IM_EKKO IS NOT INITIAL .</item>
+      <item>*     AUTHORITY-CHECK OBJECT &apos;M_BEST_BSA&apos;</item>
+      <item>*        ID &apos;ACTVT&apos; FIELD &apos;09&apos;</item>
+      <item>*        ID &apos;BSART&apos; FIELD &apos;09&apos; .</item>
+      <item>*      IF SY-SUBRC = 0.</item>
+      <item>*       SELECT * INTO CORRESPONDING FIELDS OF TABLE GT_KONV</item>
+      <item>*       FROM KONV</item>
+      <item>*      WHERE KNUMV = IM_EKKO-KNUMV AND  ( KSCHL = &apos;PBXX&apos; OR   KSCHL = &apos;PB00&apos;) AND KINAK = &apos;&apos;.</item>
+      <item>*</item>
+      <item>*        READ TABLE GT_KONV INTO GS_KONV WITH KEY KNUMV = IM_EKKO-KNUMV  KPOSN+1(5) = IM_EKPO-EBELP .</item>
+      <item>*      IF SY-SUBRC = 0.</item>
+      <item>*        RE_OUTTAB_PURCHDOC-ZKBETR = GS_KONV-KBETR. &quot;列表追加含税价字段取值来自 KONV的PBXX 和 PB00类型的值</item>
+      <item>*       ENDIF.</item>
+      <item>*       ENDIF.</item>
+      <item>*   ENDIF.</item>
+      <item/>
+      <item>*&amp;--代码添加 BY HANDYBY 09.05.2017 16:51:15  BEGIN</item>
+      <item/>
+      <item/>
+      <item>*   REFRESH GT_KONV .</item>
+      <item>*   CLEAR GS_KONV .</item>
+      <item>*   CLEAR LS_EKKO .</item>
+      <item>*</item>
+      <item>*   IF im_ekpo IS NOT INITIAL .</item>
+      <item>** 历史价</item>
+      <item>*     SELECT * INTO CORRESPONDING FIELDS OF TABLE LT_EKPO</item>
+      <item>*       FROM EKPO</item>
+      <item>*      WHERE matnr = im_ekpo-matnr</item>
+      <item>*        AND AEDAT IN LT_OUT .</item>
+      <item>*     SORT LT_EKPO BY AEDAT DESCENDING .</item>
+      <item>*     READ TABLE LT_EKPO INTO LS_EKPO INDEX 1 .</item>
+      <item>*     IF SY-subrc = 0 .</item>
+      <item>*       SELECT SINGLE * INTO CORRESPONDING FIELDS OF LS_EKKO</item>
+      <item>*         FROM EKKO</item>
+      <item>*        WHERE ebeln = LS_EKPO-ebeln .</item>
+      <item>*       IF LS_EKKO IS NOT INITIAL  .</item>
+      <item>*         SELECT * INTO CORRESPONDING FIELDS OF TABLE GT_KONV</item>
+      <item>*            FROM KONV</item>
+      <item>*           WHERE KNUMV = LS_EKKO-KNUMV AND  ( KSCHL = &apos;PBXX&apos; OR   KSCHL = &apos;PB00&apos;) AND KINAK = &apos;&apos;.</item>
+      <item>*</item>
+      <item>*          READ TABLE GT_KONV INTO GS_KONV WITH KEY KNUMV = LS_EKKO-KNUMV  KPOSN+1(5) = LS_EKPO-EBELP .</item>
+      <item>*            IF SY-SUBRC = 0.</item>
+      <item>*              RE_OUTTAB_PURCHDOC-Zls = GS_KONV-KBETR. &quot;历史价字段</item>
+      <item>*</item>
+      <item>*             ENDIF.</item>
+      <item>*       ENDIF.</item>
+      <item>*</item>
+      <item>*     ENDIF.</item>
+      <item>*</item>
+      <item>** WBS元素和项目名称</item>
+      <item>*      SELECT SINGLE * INTO CORRESPONDING FIELDS OF LS_EKKN</item>
+      <item>*        FROM EKKN</item>
+      <item>*       WHERE ebeln = im_ekpo-ebeln</item>
+      <item>*         AND EBELP = im_ekpo-EBELP .</item>
+      <item>*      IF LS_EKKN IS NOT INITIAL .</item>
+      <item>*        &quot;输出转换</item>
+      <item>*        CALL FUNCTION &apos;CONVERSION_EXIT_ABPSP_OUTPUT&apos;</item>
+      <item>*          EXPORTING</item>
+      <item>*            INPUT         = LS_EKKN-ps_psp_pnr</item>
+      <item>*         IMPORTING</item>
+      <item>*           OUTPUT        = RE_OUTTAB_PURCHDOC-Zps_psp_pnr</item>
+      <item>*                  .</item>
+      <item>**        RE_OUTTAB_PURCHDOC-Zps_psp_pnr = LS_EKKN-ps_psp_pnr. &quot;WBS元素</item>
+      <item>*        RE_OUTTAB_PURCHDOC-Zps_psp_pnr = RE_OUTTAB_PURCHDOC-Zps_psp_pnr+0(12). &quot;WBS元素</item>
+      <item>**        CALL FUNCTION &apos;CONVERSION_EXIT_ABPSP_INPUT&apos;</item>
+      <item>**          EXPORTING</item>
+      <item>**            INPUT         = RE_OUTTAB_PURCHDOC-Zps_psp_pnr</item>
+      <item>**         IMPORTING</item>
+      <item>**           OUTPUT        = RE_OUTTAB_PURCHDOC-Zps_psp_pnr</item>
+      <item>**                  .</item>
+      <item>*</item>
+      <item>*        SELECT SINGLE * INTO CORRESPONDING FIELDS OF LS_PRPS</item>
+      <item>*          FROM PRPS</item>
+      <item>*         WHERE pspnr = LS_EKKN-ps_psp_pnr.</item>
+      <item>*        IF LS_PRPS IS NOT INITIAL .</item>
+      <item>*          select SINGLE * INTO CORRESPONDING FIELDS OF ls_proj</item>
+      <item>*            FROM proj</item>
+      <item>*           WHERE pspnr = ls_prps-psphi .</item>
+      <item>*          IF ls_proj IS NOT INITIAL .</item>
+      <item>*            RE_OUTTAB_PURCHDOC-ZPOST1 = ls_proj-POST1. &quot;项目名称</item>
+      <item>*          ENDIF.</item>
+      <item>*        ENDIF.</item>
+      <item>*      ENDIF.</item>
+      <item>*</item>
+      <item>** 品牌</item>
+      <item>*      SELECT SINGLE * INTO CORRESPONDING FIELDS OF LS_MARA</item>
+      <item>*        FROM MARA</item>
+      <item>*       WHERE matnr = im_ekpo-matnr .</item>
+      <item>*      IF LS_MARA IS NOT INITIAL .</item>
+      <item>*        RE_OUTTAB_PURCHDOC-ZEXTWG = LS_MARA-EXTWG. &quot;品牌</item>
+      <item>*      ENDIF.</item>
+      <item>*</item>
+      <item>*   ENDIF.</item>
+      <item>*&amp;--代码添加 BY HANDYBY 09.05.2017 16:51:15  END</item>
+      <item/>
+      <item>&quot;END</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLMEREP</PROGRAMNAME>
+     <EXTID>3</EXTID>
+     <ID>3</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_REQ\ME:BUILD_BASE_LIST\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item/>
+      <item>*&amp;--代码添加 BY HANDYBY 09.05.2017 21:04:00  BEGIN</item>
+      <item/>
+      <item>*  DATA:LS_EBKN TYPE EBKN.</item>
+      <item>*  DATA:LS_PRPS TYPE PRPS .</item>
+      <item>*  DATA:LS_MARA TYPE MARA.</item>
+      <item>*  DATA:ls_proj TYPE proj .</item>
+      <item>*</item>
+      <item>*  IF im_eban IS NOT INITIAL .</item>
+      <item>*    select SINGLE * INTO CORRESPONDING FIELDS OF LS_EBKN</item>
+      <item>*      FROM EBKN</item>
+      <item>*     WHERE banfn = im_eban-banfn</item>
+      <item>*       AND BNFPO = im_eban-bnfpo .</item>
+      <item>*    IF LS_EBKN IS NOT INITIAL .</item>
+      <item>*      &quot;输出转换</item>
+      <item>*      CALL FUNCTION &apos;CONVERSION_EXIT_ABPSP_OUTPUT&apos;</item>
+      <item>*          EXPORTING</item>
+      <item>*            INPUT         = LS_EBKN-PS_PSP_PNR</item>
+      <item>*         IMPORTING</item>
+      <item>*           OUTPUT        = re_outtab-ZPS_PSP_PNR</item>
+      <item>*                  .</item>
+      <item>*        re_outtab-ZPS_PSP_PNR = re_outtab-ZPS_PSP_PNR+0(12). &quot;WBS元素</item>
+      <item>**      re_outtab-ZPS_PSP_PNR = LS_EBKN-PS_PSP_PNR . &quot;WBS元素</item>
+      <item>*      SELECT SINGLE * INTO CORRESPONDING FIELDS OF LS_PRPS</item>
+      <item>*        FROM PRPS</item>
+      <item>*       WHERE PSPNR = LS_EBKN-PS_PSP_PNR .</item>
+      <item>*      IF LS_PRPS IS NOT INITIAL .</item>
+      <item>*        select SINGLE * INTO CORRESPONDING FIELDS OF ls_proj</item>
+      <item>*          FROM proj</item>
+      <item>*         WHERE pspnr = ls_prps-psphi .</item>
+      <item>*        IF ls_proj IS NOT INITIAL .</item>
+      <item>*          re_outtab-ZPOST1 = ls_proj-POST1 . &quot;项目名称</item>
+      <item>*        ENDIF.</item>
+      <item>*      ENDIF.</item>
+      <item>*    ENDIF.</item>
+      <item>*</item>
+      <item>** 品牌</item>
+      <item>*    SELECT SINGLE * INTO CORRESPONDING FIELDS OF LS_MARA</item>
+      <item>*      FROM MARA</item>
+      <item>*     WHERE MATNR = im_eban-maTNR.</item>
+      <item>*    IF LS_MARA IS NOT INITIAL .</item>
+      <item>*      re_outtab-ZEXTWG = LS_MARA-EXTWG . &quot;品牌</item>
+      <item>*    ENDIF.</item>
+      <item>*  ENDIF.</item>
+      <item>*&amp;--代码添加 BY HANDYBY 09.05.2017 21:04:00  END</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLMEREP</PROGRAMNAME>
+     <EXTID>5</EXTID>
+     <ID>5</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_PURCHDOC\ME:BUILD_SCHEDLINES_LIST\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*&amp;--代码添加 BY HANDYBY 17.05.2017 10:33:50  BEGIN</item>
+      <item>*  DATA:BEGIN OF LS_EKBE,</item>
+      <item>*    EBELN TYPE EKBE-EBELN,</item>
+      <item>*    EBELP TYPE EKBE-EBELP,</item>
+      <item>*    ZEKKN TYPE EKBE-ZEKKN,</item>
+      <item>*    VGABE TYPE EKBE-VGABE,</item>
+      <item>*    GJAHR TYPE EKBE-GJAHR,</item>
+      <item>*    BELNR TYPE EKBE-BELNR,</item>
+      <item>*    BUZEI TYPE EKBE-BUZEI,</item>
+      <item>*    budat TYPE EKBE-budat,</item>
+      <item>*    END OF LS_EKBE.</item>
+      <item>*  DATA LT_EKBE LIKE TABLE OF LS_EKBE .</item>
+      <item>*</item>
+      <item>*  IF IM_EKPO IS NOT INITIAL .</item>
+      <item>*    REFRESH LT_EKBE .</item>
+      <item>*    SELECT EBELN</item>
+      <item>*           EBELP</item>
+      <item>*           ZEKKN</item>
+      <item>*           VGABE</item>
+      <item>*           GJAHR</item>
+      <item>*           BELNR</item>
+      <item>*           BUZEI</item>
+      <item>*           budat</item>
+      <item>*      INTO CORRESPONDING FIELDS OF TABLE LT_EKBE</item>
+      <item>*      FROM EKBE</item>
+      <item>*     WHERE EBELN = im_ekpo-ebeln</item>
+      <item>*       AND EBELP = im_ekpo-EBELP</item>
+      <item>*       AND BWART IN (&apos;101&apos;,&apos;105&apos;).</item>
+      <item>*   SORT LT_EKBE BY ebeln EBELP budat DESCENDING .</item>
+      <item>*  ENDIF.</item>
+      <item>*&amp;--代码添加 BY HANDYBY 17.05.2017 10:33:50  END</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLMEREP</PROGRAMNAME>
+     <EXTID>6</EXTID>
+     <ID>6</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_PURCHDOC\ME:BUILD_SCHEDLINES_LIST\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*&amp;--代码添加 BY HANDYBY 17.05.2017 10:34:11  BEGIN</item>
+      <item>*  FIELD-SYMBOLS &lt;FS_OUTTAB_SCHEDLINES&gt; LIKE ls_outtab_schedlines .</item>
+      <item>*  LOOP AT ex_outtab_shedl ASSIGNING &lt;FS_OUTTAB_SCHEDLINES&gt; .</item>
+      <item>*    READ TABLE LT_EKBE INTO ls_ekbe INDEX 1 .</item>
+      <item>*    IF SY-subrc = 0 .</item>
+      <item>*      &lt;FS_OUTTAB_SCHEDLINES&gt;-ZBUDAT = ls_ekbe-budat .</item>
+      <item>*      CLEAR LS_EKBE .</item>
+      <item>*    ENDIF.</item>
+      <item>*  ENDLOOP.</item>
+      <item>*&amp;--代码添加 BY HANDYBY 17.05.2017 10:34:11  END</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_PURCHDOC\ME:BUILD_BASE_LIST\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>1</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_REQ\ME:BUILD_BASE_LIST\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_PURCHDOC\ME:BUILD_SCHEDLINES_LIST\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:SAPLMEREP\TY:LCL_DATABLADE_PURCHDOC\ME:BUILD_SCHEDLINES_LIST\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

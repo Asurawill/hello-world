@@ -1,0 +1,1597 @@
+REPORT ZCO007_5JOB.
+*&---------------------------------------------------------------------*
+"拷贝ZCO007_5的查询处理报表数据逻辑 ，作为JOB作业执行后存储ZCO007_5表
+" CREATED DATE:20160105  IT02
+*&---------------------------------------------------------------------*
+
+************************************************************************
+* Tables
+************************************************************************
+TABLES:BKPF,BSEG.
+
+************************************************************************
+* Type Declaration
+************************************************************************
+TYPES:BEGIN OF TY_DATA,
+        WERKS TYPE BSEG-WERKS,
+        GJAHR TYPE BKPF-GJAHR,
+        MONAT TYPE BKPF-MONAT,
+        MATNR TYPE BSEG-MATNR,
+        CBCY  TYPE MLCD-ESTPRD, "期间成本差异
+        EBELN TYPE BSEG-EBELN,
+        EBELP TYPE BSEG-EBELP,
+        VBUND TYPE BSEG-VBUND,
+        MAKTX TYPE MAKT-MAKTX,
+        VBEL2 TYPE BSEG-VBEL2,
+        POSN2 TYPE BSEG-POSN2,
+        XMMC  TYPE CHAR100,    "项目名称
+        KUNNR TYPE KNA1-KUNNR, "客户
+        NAME1 TYPE KNA1-NAME1, "客户名称
+        MENGE TYPE BSEG-MENGE,
+        DMBTR TYPE BSEG-DMBTR,
+        SJCB  TYPE MLCD-ESTPRD, "期间实际成本
+        QJSR  TYPE BSEG-DMBTR,  "期间交货收入
+        QJKP  TYPE BSEG-MENGE,  "期间开票数量
+        QJYZ  TYPE BSEG-DMBTR , "期间应转工程成本
+        KALNR TYPE MLCD-KALNR,  "成本核算号
+        REPOS TYPE EKPO-REPOS,  "发票收据
+        WYSR  TYPE BSEG-DMBTR,  "尾月收入
+        WYKP  TYPE BSEG-MENGE,  "尾月开票数量
+        WYFH  TYPE BSEG-MENGE,  "尾月发货数量
+        WYCB  TYPE BSEG-DMBTR,  "尾月确认成本
+      END OF TY_DATA.
+
+*按物料号+工厂
+TYPES:BEGIN OF TY_DATA_1,
+        WERKS TYPE BSEG-WERKS,
+        MATNR TYPE BSEG-MATNR,
+        EBELN TYPE BSEG-EBELN,
+        EBELP TYPE BSEG-EBELP,
+        VBUND TYPE BSEG-VBUND,
+        MAKTX TYPE MAKT-MAKTX,
+        VBEL2 TYPE BSEG-VBEL2,
+        POSN2 TYPE BSEG-POSN2,
+        XMMC  TYPE CHAR100,
+        KUNNR TYPE KNA1-KUNNR,
+        NAME1 TYPE KNA1-NAME1,
+        MENGE TYPE BSEG-MENGE,
+        DMBTR TYPE BSEG-DMBTR,
+        CBCY1 TYPE MLCD-ESTPRD, "期间成本差异
+        SJCB  TYPE MLCD-ESTPRD, "期间实际成本
+        QJSR  TYPE BSEG-DMBTR,  "期间交货收入
+        QJKP  TYPE BSEG-MENGE,  "期间开票数量
+        QJYZ  TYPE BSEG-DMBTR , "期间应转工程成本
+        REPOS TYPE EKPO-REPOS,  "发票收据
+        WYSR  TYPE BSEG-DMBTR,  "尾月收入
+        WYKP  TYPE BSEG-MENGE,  "尾月开票数量
+        WYFH  TYPE BSEG-MENGE,  "尾月发货数量
+        WYCB  TYPE BSEG-DMBTR,  "尾月确认成本
+      END OF TY_DATA_1.
+
+TYPES:BEGIN OF TY_WL,
+        EBELN TYPE BSEG-EBELN,
+        EBELP TYPE BSEG-EBELP,
+        MATNR TYPE BSEG-MATNR,
+        WERKS TYPE BSEG-WERKS,
+        GJAHR TYPE BKPF-GJAHR,
+        MONAT TYPE BKPF-MONAT,
+        MENGE TYPE BSEG-MENGE,
+        DMBTR TYPE BSEG-DMBTR,
+      END OF TY_WL.
+
+TYPES:BEGIN OF TY_WL1,
+        MATNR TYPE BSEG-MATNR,
+        WERKS TYPE BSEG-WERKS,
+        MONAT TYPE BKPF-MONAT,
+        GJAHR TYPE BKPF-GJAHR,
+        MENGE TYPE BSEG-MENGE,
+        DMBTR TYPE BSEG-DMBTR,
+      END OF TY_WL1.
+
+TYPES:BEGIN OF TY_WL2,
+        MATNR TYPE BSEG-MATNR,
+        WERKS TYPE BSEG-WERKS,
+        MONAT TYPE BKPF-MONAT,
+        GJAHR TYPE BKPF-GJAHR,
+        VBEL2 TYPE BSEG-VBEL2,
+        POSN2 TYPE BSEG-POSN2,
+        MENGE TYPE BSEG-MENGE,
+        DMBTR TYPE BSEG-DMBTR,
+      END OF TY_WL2.
+
+TYPES:BEGIN OF TY_ML,
+        WERKS TYPE BSEG-WERKS,
+        GJAHR TYPE BKPF-GJAHR,
+        MONAT TYPE BKPF-MONAT,
+        MATNR TYPE BSEG-MATNR,
+        DMBTR TYPE MLCD-ESTPRD,
+      END OF TY_ML.
+
+TYPES:BEGIN OF TY_RV,
+        EBELN TYPE BSEG-EBELN,
+        EBELP TYPE BSEG-EBELP,
+        MATNR TYPE BSEG-MATNR,
+        WERKS TYPE BSEG-WERKS,
+        GJAHR TYPE BKPF-GJAHR,
+        MONAT TYPE BKPF-MONAT,
+        MENGE TYPE BSEG-MENGE,
+        DMBTR TYPE BSEG-DMBTR,
+      END OF TY_RV.
+
+************************************************************************
+* Internal Table * WorkArea
+************************************************************************
+DATA GT_DATA     TYPE TABLE OF TY_DATA.
+DATA GS_DATA     TYPE TY_DATA.
+DATA GS_DATA_2   TYPE TY_DATA.
+
+DATA GT_DATA_1   TYPE TABLE OF TY_DATA_1.
+DATA GS_DATA_1   TYPE TY_DATA_1.
+
+DATA GT_BKPF     TYPE TABLE OF BKPF.
+DATA GS_BKPF     TYPE BKPF.
+
+DATA GT_BSEG     TYPE TABLE OF BSEG.
+DATA GS_BSEG     TYPE BSEG.
+
+DATA GT_BKPF_1   TYPE TABLE OF BKPF.
+DATA GS_BKPF_1   TYPE BKPF.
+
+DATA GT_BSEG_1   TYPE TABLE OF BSEG.
+DATA GS_BSEG_1   TYPE BSEG.
+
+DATA GT_BKPF_2   TYPE TABLE OF BKPF.
+DATA GS_BKPF_2   TYPE BKPF.
+
+DATA GT_BSEG_2   TYPE TABLE OF BSEG.
+DATA GS_BSEG_2   TYPE BSEG.
+
+DATA GT_BKPF_3 TYPE TABLE OF BKPF.
+DATA GS_BKPF_3 TYPE BKPF.
+
+DATA GT_BSEG_3 TYPE TABLE OF BSEG.
+DATA GS_BSEG_3 TYPE BSEG.
+
+DATA GT_BKPF_4 TYPE TABLE OF BKPF.
+DATA GS_BKPF_4 TYPE BKPF.
+
+DATA GT_BSEG_4 TYPE TABLE OF BSEG.
+DATA GS_BSEG_4 TYPE BSEG.
+
+DATA GT_WL       TYPE TABLE OF TY_WL.
+DATA GS_WL       TYPE TY_WL.
+
+DATA GT_WL1      TYPE TABLE OF TY_WL1.
+DATA GS_WL1      TYPE TY_WL1.
+
+DATA GT_WL2      TYPE TABLE OF TY_WL2.
+DATA GS_WL2      TYPE TY_WL2.
+
+DATA GT_WL3       TYPE TABLE OF TY_WL.
+DATA GS_WL3       TYPE TY_WL.
+
+DATA GT_ML       TYPE TABLE OF TY_ML.
+DATA GS_ML       TYPE TY_ML.
+
+DATA GT_ML1      TYPE TABLE OF TY_ML.
+DATA GS_ML1      TYPE TY_ML.
+
+DATA GT_ML2      TYPE TABLE OF TY_ML.
+DATA GS_ML2      TYPE TY_ML.
+
+DATA GT_RV       TYPE TABLE OF TY_RV.
+DATA GS_RV       TYPE TY_RV.
+
+DATA GT_RV1      TYPE TABLE OF TY_RV.
+DATA GS_RV1      TYPE TY_RV.
+
+DATA GT_MAKT     TYPE TABLE OF MAKT.
+DATA GS_MAKT     TYPE MAKT.
+
+DATA GT_MAKT1    TYPE TABLE OF MAKT.
+DATA GS_MAKT1    TYPE MAKT.
+
+DATA GT_CKMLHD   TYPE TABLE OF CKMLHD.
+DATA GS_CKMLHD   TYPE CKMLHD.
+
+DATA GT_MLCD     TYPE TABLE OF MLCD.
+DATA GS_MLCD     TYPE MLCD.
+
+DATA GT_EKPO     TYPE TABLE OF EKPO.
+DATA GS_EKPO     TYPE EKPO.
+
+*获取销售长文本
+DATA LT_LINE TYPE TABLE OF TLINE.
+DATA LS_LINE TYPE TLINE.
+DATA L_NAME TYPE THEAD-TDNAME.
+
+DATA:GT_ZCO007_5 TYPE TABLE OF ZCO007_5,
+     GS_ZCO007_5 TYPE ZCO007_5.
+
+DATA:P_END TYPE DATE .
+
+DATA GT_BSEG_GJAHR     TYPE TABLE OF BSEG.
+DATA GS_BSEG_GJAHR     TYPE BSEG.
+
+RANGES:R_GJAHR FOR BSEG-GJAHR.
+************************************************************************
+*      DEFINITION
+************************************************************************
+DEFINE INIT_FIELDCAT.      "  ALV Fieldcat Setting
+  gw_lvc-fieldname = &1.
+  gw_lvc-coltext   = &2.
+  gw_lvc-scrtext_l = &2.
+  gw_lvc-scrtext_m = &2.
+  gw_lvc-scrtext_s = &2.
+  gw_lvc-reptext   = &2.
+  gw_lvc-outputlen = &3.
+  IF &4 = 'X'.
+    gw_lvc-key = 'X'.
+  ENDIF.
+  gw_lvc-checkbox = &5.
+  gw_lvc-edit = &6.
+*  GW_LVC-FIX_COLUMN =  &7.
+  gw_lvc-hotspot   = &7.
+  gw_lvc-ref_field = &9.
+  gw_lvc-ref_table = &8.
+  APPEND gw_lvc TO gt_lvc.
+  CLEAR gw_lvc.
+END-OF-DEFINITION.
+
+*&---------------------------------------------------------------------*
+*&      ALV Declaration
+*&---------------------------------------------------------------------*
+TYPE-POOLS: SLIS.
+
+DATA: GT_LVC           TYPE LVC_T_FCAT,
+      GT_SORT          TYPE LVC_T_SORT,
+      GW_LAYOUT        TYPE LVC_S_LAYO,                    "alv的格式
+      GW_VARIANT       TYPE DISVARIANT,
+      GW_GRID_SETTINGS TYPE LVC_S_GLAY,
+      GW_LVC           TYPE LVC_S_FCAT,
+      GW_SORT          TYPE LVC_S_SORT,
+      GW_GRID_SETTING  TYPE LVC_S_GLAY,
+      G_REPID          LIKE SY-REPID,                      "SY-REPID 指 当前的主程序
+      GT_EVENTS        TYPE SLIS_T_EVENT WITH HEADER LINE, "保存AVL事件
+      GW_EVENTS        LIKE LINE OF GT_EVENTS.
+DATA: GT_EXCLUDE TYPE SLIS_T_EXTAB,
+      GS_EXCLUDE TYPE SLIS_EXTAB.
+
+DATA: GR_ALVGRID TYPE REF TO CL_GUI_ALV_GRID.
+
+DATA: GT_ROWS TYPE LVC_T_ROW,
+      GT_ROID TYPE LVC_T_ROID,
+      WA_ROWS TYPE LVC_S_ROW,
+      WA_ROID TYPE LVC_S_ROID.
+DATA: GS_VARIANT TYPE DISVARIANT.
+DATA: GW_ISTABLE TYPE LVC_S_STBL.
+************************************************************************
+* Global Variant
+************************************************************************
+
+
+************************************************************************
+* Constant
+************************************************************************
+
+************************************************************************
+* Selection Screen
+************************************************************************
+SELECTION-SCREEN BEGIN OF BLOCK BLK1 WITH FRAME TITLE TEXT-001.
+SELECT-OPTIONS: S_BUKRS   FOR BKPF-BUKRS NO INTERVALS NO-EXTENSION OBLIGATORY,                      "公司代码
+                S_BUDAT   FOR BKPF-BUDAT OBLIGATORY.
+
+*S_EBELN   FOR BSEG-EBELN,                                                       "采购订单号
+*S_EBELP   FOR BSEG-EBELP.
+SELECTION-SCREEN END OF BLOCK BLK1.
+
+*SELECTION-SCREEN BEGIN OF BLOCK  BLK2 WITH FRAME TITLE  TEXT-002.
+*PARAMETERS:G_HTZX TYPE CHAR1 RADIOBUTTON GROUP G1 DEFAULT 'X',      "后台执行
+*           G_BBCX TYPE CHAR1 RADIOBUTTON GROUP G1.                  "报表查询
+*
+*SELECTION-SCREEN END OF BLOCK BLK2.
+
+
+*&---------------------------------------------------------------------*
+*& 初始化处理
+*&---------------------------------------------------------------------*
+INITIALIZATION.
+*&---------------------------------------------------------------------*
+*& 选择屏幕控制
+*&---------------------------------------------------------------------*
+AT SELECTION-SCREEN OUTPUT.
+*  PERFORM xxxxxxx.
+
+*&---------------------------------------------------------------------*
+*& 参数输入检查
+*&---------------------------------------------------------------------*
+AT SELECTION-SCREEN.
+*  PERFORM xxxxxxx.
+
+*&---------------------------------------------------------------------*
+*& 程序开始处理
+*&---------------------------------------------------------------------*
+START-OF-SELECTION.
+
+
+*权限检查检查公司代码
+  PERFORM FRM_AUTH_CHECK USING '03'.
+  IF SY-SUBRC NE 0.
+    MESSAGE I011(ZFICO01) WITH S_BUKRS-LOW DISPLAY LIKE 'E'.
+    STOP.
+  ENDIF.
+  DATA L_YEAR   TYPE CHAR4.
+  DATA L_MONTH  TYPE CHAR2.
+  DATA L_YEAR1  TYPE CHAR4.
+  DATA L_MONTH1 TYPE CHAR2.
+
+  PERFORM FRM_GET_DATA. "取数逻辑
+  PERFORM FRM_DEAL_DATA."处理数逻辑
+
+
+*&---------------------------------------------------------------------*
+*& 程序结束处理
+*&---------------------------------------------------------------------*
+END-OF-SELECTION.
+*&---------------------------------------------------------------------*
+*&      Form  FRM_AUTH_CHECK
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_0558   text
+*----------------------------------------------------------------------*
+FORM FRM_AUTH_CHECK USING VALUE(P_ACTVT).
+  AUTHORITY-CHECK OBJECT 'F_BKPF_BUK' ID 'ACTVT' FIELD P_ACTVT
+                                      ID 'BUKRS' FIELD S_BUKRS-LOW.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_GET_DATA .
+*增加有收入 没有交货 BY HANDWY 2015-11-2
+  SELECT * FROM BKPF
+   INTO CORRESPONDING FIELDS OF TABLE GT_BKPF_4
+   WHERE BUKRS IN S_BUKRS
+*  AND   GJAHR IN S_GJAHR
+*  AND   MONAT IN S_MONAT
+   AND   BUDAT IN S_BUDAT
+   AND   BLART = 'RV'.
+
+  CHECK GT_BKPF_4 IS NOT INITIAL.
+
+  SELECT * FROM BSEG
+  INTO CORRESPONDING FIELDS OF TABLE GT_BSEG_4
+  FOR ALL ENTRIES IN GT_BKPF_4
+  WHERE GJAHR = GT_BKPF_4-GJAHR
+  AND   BUKRS = GT_BKPF_4-BUKRS
+  AND   BELNR = GT_BKPF_4-BELNR
+  AND   HKONT BETWEEN '6001020000' AND '6001029999'
+  AND   EBELN <>  ''.
+
+  SELECT * FROM MAKT
+  INTO CORRESPONDING FIELDS OF TABLE GT_MAKT1
+  FOR ALL ENTRIES IN GT_BSEG_4
+  WHERE MATNR = GT_BSEG_4-MATNR
+  AND SPRAS = SY-LANGU.
+
+  SORT GT_MAKT1 BY MATNR.
+
+  SELECT * FROM BKPF
+    INTO CORRESPONDING FIELDS OF TABLE GT_BKPF_3
+    WHERE BUKRS = S_BUKRS-LOW
+*  AND   GJAHR = P_GJAHR
+*  AND   MONAT = P_MONAT
+    AND   BUDAT IN S_BUDAT
+    AND   BLART = 'WL'
+    AND   STBLG = ''.
+
+  CHECK GT_BKPF_3 IS NOT INITIAL.
+
+  SELECT * FROM BSEG
+   INTO CORRESPONDING FIELDS OF TABLE GT_BSEG_3
+   FOR ALL ENTRIES IN GT_BKPF_3
+   WHERE GJAHR = GT_BKPF_3-GJAHR
+   AND   BUKRS = GT_BKPF_3-BUKRS
+   AND   BELNR = GT_BKPF_3-BELNR
+   AND   HKONT BETWEEN '6401020000' AND '6401029999'.
+*   AND  ( BSCHL <> '86'
+*   AND   BSCHL <> '96' ).
+*ENDADD
+
+  SELECT * FROM BKPF
+  INTO CORRESPONDING FIELDS OF TABLE GT_BKPF
+  WHERE BUKRS IN S_BUKRS
+  AND   BUDAT IN S_BUDAT
+  AND   BLART = 'WL'.
+
+  CHECK GT_BKPF IS NOT INITIAL.
+
+  SELECT * FROM BSEG
+  INTO CORRESPONDING FIELDS OF TABLE GT_BSEG
+  FOR ALL ENTRIES IN GT_BKPF
+  WHERE GJAHR = GT_BKPF-GJAHR
+  AND   BUKRS = GT_BKPF-BUKRS
+  AND   BELNR = GT_BKPF-BELNR
+  AND   HKONT BETWEEN '6401020000' AND '6401029999'.
+*  AND  ( BSCHL <> '86'
+*  AND   BSCHL <> '96' ).
+*  AND   EBELN IN S_EBELN
+*  AND   EBELP IN S_EBELP.
+
+  CHECK GT_BSEG IS NOT INITIAL .
+
+  SELECT * FROM BKPF
+  INTO CORRESPONDING FIELDS OF TABLE GT_BKPF_1
+  WHERE BUKRS IN S_BUKRS
+  AND   BUDAT IN S_BUDAT
+  AND   BLART = 'ML'
+  AND   AWTYP = 'MLHD'.
+
+  CHECK GT_BKPF_1 IS NOT INITIAL.
+
+  SELECT * FROM BSEG
+  INTO CORRESPONDING FIELDS OF TABLE GT_BSEG_1
+  FOR ALL ENTRIES IN GT_BKPF_1
+  WHERE GJAHR = GT_BKPF_1-GJAHR
+  AND   BUKRS = GT_BKPF_1-BUKRS
+  AND   BELNR = GT_BKPF_1-BELNR
+  AND   HKONT BETWEEN '6401020000' AND '6401029999'.
+*  AND   MATNR = '0070CAT5EA6F00'.
+*  AND   MATNR = '002T1918038S00'.
+
+  SELECT * FROM BKPF
+  INTO CORRESPONDING FIELDS OF TABLE GT_BKPF_2
+  WHERE BUKRS IN S_BUKRS
+  AND   BUDAT IN S_BUDAT
+  AND   BLART = 'RV'.
+
+  CHECK GT_BKPF_2 IS NOT INITIAL.
+
+  SELECT * FROM BSEG
+  INTO CORRESPONDING FIELDS OF TABLE GT_BSEG_2
+  FOR ALL ENTRIES IN GT_BKPF_2
+  WHERE GJAHR = GT_BKPF_2-GJAHR
+  AND   BUKRS = GT_BKPF_2-BUKRS
+  AND   BELNR = GT_BKPF_2-BELNR
+  AND   HKONT BETWEEN '6001020000' AND '6001029999'
+  AND   EBELN <>  ''.
+
+  CHECK GT_BSEG IS NOT INITIAL.
+
+  SELECT * FROM MAKT
+  INTO CORRESPONDING FIELDS OF TABLE GT_MAKT
+  FOR ALL ENTRIES IN GT_BSEG
+  WHERE MATNR = GT_BSEG-MATNR
+  AND SPRAS = SY-LANGU.
+
+  SORT GT_MAKT BY MATNR.
+
+*查询成本估算号
+  SELECT * FROM CKMLHD
+  INTO CORRESPONDING FIELDS OF TABLE GT_CKMLHD
+  FOR ALL ENTRIES IN GT_BSEG
+  WHERE BWKEY = GT_BSEG-WERKS
+  AND   MATNR = GT_BSEG-MATNR
+  AND   VBELN = GT_BSEG-VBEL2
+  AND   POSNR = GT_BSEG-POSN2.
+
+  SORT GT_CKMLHD BY BWKEY MATNR VBELN POSNR.
+
+*查询差异
+  MOVE-CORRESPONDING GT_BSEG TO GT_BSEG_GJAHR.
+  SORT GT_BSEG_GJAHR BY GJAHR .
+  DELETE ADJACENT DUPLICATES FROM GT_BSEG_GJAHR COMPARING GJAHR.
+
+  LOOP AT GT_BSEG_GJAHR INTO GS_BSEG_GJAHR.
+    CLEAR:R_GJAHR.
+    R_GJAHR-SIGN = 'I'.
+    R_GJAHR-OPTION = 'EQ'.
+    R_GJAHR-LOW = GS_BSEG_GJAHR-GJAHR.
+    APPEND R_GJAHR.
+  ENDLOOP.
+
+  IF GT_CKMLHD IS NOT INITIAL .
+    SELECT * FROM MLCD
+    INTO CORRESPONDING FIELDS OF TABLE GT_MLCD
+    FOR ALL ENTRIES IN GT_CKMLHD
+    WHERE KALNR = GT_CKMLHD-KALNR
+    AND  BDATJ IN R_GJAHR
+    AND  CATEG = 'VN'
+    AND  PTYP  = 'V+'
+    AND  CURTP = '10'.
+
+
+    SORT GT_MLCD BY KALNR
+                    BDATJ
+                    POPER
+                    CATEG
+                    PTYP
+                    CURTP
+                    LBKUM.
+  ENDIF.
+
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DEAL_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_DEAL_DATA.
+
+*汇总按单数据
+  DATA L_MENGE    TYPE BSEG-MENGE.
+  DATA L_ADCY     TYPE MLCD-ESTPRD.
+
+  SORT GT_BSEG BY EBELN EBELP GJAHR BELNR.
+  SORT GT_BKPF BY GJAHR BUKRS BELNR.
+
+*汇总交货数量，金额
+  LOOP AT GT_BSEG INTO GS_BSEG.
+    GS_WL-EBELN =  GS_BSEG-EBELN.
+    GS_WL-EBELP =  GS_BSEG-EBELP.
+    GS_WL-WERKS =  GS_BSEG-WERKS.
+    GS_WL-MATNR =  GS_BSEG-MATNR.
+
+*会计年度，期间
+    READ TABLE GT_BKPF INTO GS_BKPF
+    WITH KEY GJAHR = GS_BSEG-GJAHR
+             BUKRS = GS_BSEG-BUKRS
+             BELNR = GS_BSEG-BELNR
+             BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_WL-GJAHR =  GS_BKPF-GJAHR.
+      GS_WL-MONAT =  GS_BKPF-MONAT.
+    ENDIF.
+
+*排除记账码为86，96 ，交货数量重复
+    IF GS_BSEG-BSCHL = '86'
+     OR GS_BSEG-BSCHL = '96'.
+      GS_BSEG-MENGE = 0.
+    ENDIF.
+
+    IF GS_BSEG-SHKZG = 'H'.
+      GS_WL-MENGE = GS_BSEG-MENGE  * -1.
+      GS_WL-DMBTR =  GS_BSEG-DMBTR * -1.
+    ELSE.
+      GS_WL-MENGE =  GS_BSEG-MENGE.
+      GS_WL-DMBTR =  GS_BSEG-DMBTR.
+    ENDIF.
+
+    COLLECT GS_WL INTO GT_WL.
+    CLEAR GS_WL.
+  ENDLOOP.
+
+*汇总月末交货数量
+  REFRESH GT_WL3.
+  GT_WL3 = GT_WL.
+  DELETE GT_WL3 WHERE ( GJAHR <> S_BUDAT-HIGH+0(4)
+                OR      MONAT <> S_BUDAT-HIGH+4(2) ) .
+
+*计算按库数量
+  LOOP AT GT_BSEG INTO GS_BSEG
+  WHERE VBEL2 IS INITIAL.
+
+    GS_WL1-WERKS =  GS_BSEG-WERKS.
+    GS_WL1-MATNR =  GS_BSEG-MATNR.
+
+    READ TABLE GT_BKPF INTO GS_BKPF
+    WITH KEY GJAHR = GS_BSEG-GJAHR
+             BUKRS = GS_BSEG-BUKRS
+             BELNR = GS_BSEG-BELNR
+             BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_WL1-GJAHR =  GS_BKPF-GJAHR.
+      GS_WL1-MONAT =  GS_BKPF-MONAT.
+    ENDIF.
+
+*排除记账码为86，96 ，交货数量重复
+    IF GS_BSEG-BSCHL = '86'
+     OR GS_BSEG-BSCHL = '96'.
+      GS_BSEG-MENGE = 0.
+    ENDIF.
+
+    IF GS_BSEG-SHKZG = 'H'.
+      GS_WL1-MENGE =  GS_BSEG-MENGE * -1.
+      GS_WL1-DMBTR =  GS_BSEG-DMBTR * -1.
+    ELSE.
+      GS_WL1-MENGE =  GS_BSEG-MENGE.
+      GS_WL1-DMBTR =  GS_BSEG-DMBTR.
+    ENDIF.
+
+    COLLECT GS_WL1 INTO GT_WL1.
+    CLEAR GS_WL1.
+  ENDLOOP.
+
+  SORT GT_WL1 BY  GJAHR
+                  MONAT
+                  MATNR.
+
+*计算按单数量
+  LOOP AT GT_BSEG INTO GS_BSEG
+  WHERE VBEL2 IS NOT INITIAL.
+    GS_WL2-WERKS =  GS_BSEG-WERKS.
+    GS_WL2-MATNR =  GS_BSEG-MATNR.
+    GS_WL2-VBEL2 =  GS_BSEG-VBEL2.
+    GS_WL2-POSN2 =  GS_BSEG-POSN2.
+
+    READ TABLE GT_BKPF INTO GS_BKPF
+    WITH KEY GJAHR = GS_BSEG-GJAHR
+             BUKRS = GS_BSEG-BUKRS
+             BELNR = GS_BSEG-BELNR
+             BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_WL2-GJAHR =  GS_BKPF-GJAHR.
+      GS_WL2-MONAT = GS_BKPF-MONAT.
+    ENDIF.
+
+*排除记账码为86，96 ，交货数量重复
+    IF GS_BSEG-BSCHL = '86'
+     OR GS_BSEG-BSCHL = '96'.
+      GS_BSEG-MENGE = 0.
+    ENDIF.
+
+    IF GS_BSEG-SHKZG = 'H'.
+      GS_WL2-MENGE =  GS_BSEG-MENGE * -1.
+      GS_WL2-DMBTR =  GS_BSEG-DMBTR * -1.
+    ELSE.
+      GS_WL2-MENGE =  GS_BSEG-MENGE.
+      GS_WL2-DMBTR =  GS_BSEG-DMBTR.
+    ENDIF.
+    COLLECT GS_WL2 INTO GT_WL2.
+    CLEAR GS_WL2.
+  ENDLOOP.
+
+  SORT GT_WL2 BY MATNR
+                 WERKS
+                 VBEL2
+                 POSN2.
+
+*计算物料总差异
+  SORT GT_BSEG_1 BY GJAHR MATNR WERKS.
+  SORT GT_BKPF_1 BY GJAHR BUKRS BELNR.
+
+  LOOP AT GT_BSEG_1 INTO GS_BSEG_1.
+    READ TABLE GT_BKPF_1 INTO GS_BKPF_1
+    WITH KEY GJAHR = GS_BSEG_1-GJAHR
+             BUKRS = GS_BSEG_1-BUKRS
+             BELNR = GS_BSEG_1-BELNR
+             BINARY SEARCH.
+    IF  SY-SUBRC = 0.
+      GS_ML-GJAHR = GS_BKPF_1-GJAHR.
+      GS_ML-MONAT = GS_BKPF_1-MONAT.
+      GS_ML-MATNR = GS_BSEG_1-MATNR.
+      GS_ML-WERKS = GS_BSEG_1-WERKS.
+
+      IF GS_BSEG_1-SHKZG = 'H'.
+        GS_ML-DMBTR =  GS_BSEG_1-DMBTR * -1.
+      ELSE.
+        GS_ML-DMBTR = GS_BSEG_1-DMBTR.
+      ENDIF.
+
+      COLLECT GS_ML INTO GT_ML.
+      CLEAR GS_ML.
+    ENDIF.
+  ENDLOOP.
+
+  SORT GT_ML BY GJAHR MONAT MATNR.
+
+*计算物料按库总差异
+  LOOP AT GT_BSEG_1 INTO GS_BSEG_1
+  WHERE VBEL2 IS INITIAL.
+    READ TABLE GT_BKPF_1 INTO GS_BKPF_1
+    WITH KEY GJAHR = GS_BSEG_1-GJAHR
+             BUKRS = GS_BSEG_1-BUKRS
+             BELNR = GS_BSEG_1-BELNR
+             BINARY SEARCH.
+    IF  SY-SUBRC = 0.
+      GS_ML1-GJAHR = GS_BKPF_1-GJAHR.
+      GS_ML1-MONAT = GS_BKPF_1-MONAT.
+      GS_ML1-MATNR = GS_BSEG_1-MATNR.
+      GS_ML1-WERKS = GS_BSEG_1-WERKS.
+
+      IF GS_BSEG_1-SHKZG = 'H'.
+        GS_ML1-DMBTR =  GS_BSEG_1-DMBTR * -1.
+      ELSE.
+        GS_ML1-DMBTR = GS_BSEG_1-DMBTR.
+      ENDIF.
+
+      COLLECT GS_ML1 INTO GT_ML1.
+      CLEAR GS_ML1.
+    ENDIF.
+  ENDLOOP.
+
+  SORT GT_ML1 BY GJAHR MONAT MATNR.
+
+*计算物料的期间收入和开票
+
+  SORT GT_BKPF_2 BY GJAHR BUKRS BELNR.
+
+  LOOP AT GT_BSEG_2 INTO GS_BSEG_2.
+    READ TABLE GT_BKPF_2 INTO GS_BKPF_2
+    WITH KEY GJAHR = GS_BSEG_2-GJAHR
+             BUKRS = GS_BSEG_2-BUKRS
+             BELNR = GS_BSEG_2-BELNR
+             BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_RV-GJAHR =  GS_BKPF_2-GJAHR.
+      GS_RV-MONAT =  GS_BKPF_2-MONAT.
+    ENDIF.
+
+    GS_RV-EBELN = GS_BSEG_2-EBELN.
+    GS_RV-EBELP = GS_BSEG_2-EBELP.
+    GS_RV-MATNR = GS_BSEG_2-MATNR.
+    GS_RV-WERKS = GS_BSEG_2-WERKS.
+
+    IF GS_BSEG_2-SHKZG = 'S'.
+      GS_RV-MENGE = GS_BSEG_2-MENGE * -1.
+      GS_RV-DMBTR = GS_BSEG_2-DMBTR * -1.
+    ELSE.
+      GS_RV-MENGE = GS_BSEG_2-MENGE.
+      GS_RV-DMBTR = GS_BSEG_2-DMBTR.
+    ENDIF.
+
+    COLLECT GS_RV INTO GT_RV.
+    CLEAR GS_RV.
+  ENDLOOP.
+
+*汇总月尾开票数量
+  REFRESH GT_RV1.
+  GT_RV1 = GT_RV.
+  DELETE GT_RV1 WHERE ( GJAHR <> S_BUDAT-HIGH+0(4)
+                OR      MONAT <> S_BUDAT-HIGH+4(2) ).
+
+*统计按单差异汇总
+  DATA L_MENGE1 TYPE BSEG-MENGE.
+  DATA L_DMBTR1  TYPE BSEG-DMBTR.
+
+*****当销售订单不为空 处理按单差异***************
+*期间交货数量，成本
+
+  SORT GT_WL BY EBELN
+                EBELP
+                MATNR
+                GJAHR
+                MONAT.
+
+
+  LOOP AT GT_BSEG INTO GS_BSEG
+  WHERE VBEL2 IS NOT INITIAL.
+    CLEAR L_MENGE.
+    GS_DATA-EBELN = GS_BSEG-EBELN.
+    GS_DATA-EBELP = GS_BSEG-EBELP.
+    GS_DATA-MATNR = GS_BSEG-MATNR.
+    GS_DATA-WERKS = GS_BSEG-WERKS.
+    GS_DATA-VBUND = GS_BSEG-VBUND.
+    GS_DATA-VBEL2 = GS_BSEG-VBEL2.
+    GS_DATA-POSN2 = GS_BSEG-POSN2.
+
+*排除记账码为86，96 ，交货数量重复
+    IF GS_BSEG-BSCHL = '86'
+     OR GS_BSEG-BSCHL = '96'.
+      GS_BSEG-MENGE = 0.
+    ENDIF.
+
+*期间交货数量
+    IF GS_BSEG-SHKZG = 'H'.
+      GS_DATA-MENGE =  GS_BSEG-MENGE * -1.
+      GS_DATA-DMBTR =  GS_BSEG-DMBTR * -1.
+    ELSE.
+      GS_DATA-MENGE =  GS_BSEG-MENGE.
+      GS_DATA-DMBTR =  GS_BSEG-DMBTR.
+    ENDIF.
+
+    READ TABLE GT_BKPF INTO GS_BKPF
+    WITH KEY GJAHR = GS_BSEG-GJAHR
+             BUKRS = GS_BSEG-BUKRS
+             BELNR = GS_BSEG-BELNR
+             BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_DATA-MONAT = GS_BKPF-MONAT.
+      GS_DATA-GJAHR = GS_BKPF-GJAHR.
+    ENDIF.
+
+*期间交货数量
+    READ TABLE GT_WL INTO GS_WL
+    WITH KEY EBELN = GS_DATA-EBELN
+             EBELP = GS_DATA-EBELP
+             MATNR = GS_DATA-MATNR
+             GJAHR = GS_DATA-GJAHR
+             MONAT = GS_DATA-MONAT
+             BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      L_MENGE1 = GS_WL-MENGE.
+*      GS_DATA-DMBTR = GS_WL-DMBTR.
+    ENDIF.
+
+*查询物料描述
+    READ TABLE GT_MAKT INTO GS_MAKT
+    WITH KEY MATNR = GS_DATA-MATNR
+    BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_DATA-MAKTX = GS_MAKT-MAKTX.
+    ENDIF.
+
+*期间成本差异
+    DATA L_MATNR TYPE BSEG-MATNR.
+    CLEAR L_MATNR.
+
+*销售订单不为空
+*    IF GS_DATA-VBEL2 IS NOT INITIAL .
+*按库交货数量不为0.
+
+    READ TABLE GT_CKMLHD INTO GS_CKMLHD
+    WITH KEY BWKEY = GS_DATA-WERKS
+             MATNR = GS_DATA-MATNR
+             VBELN = GS_DATA-VBEL2
+             POSNR = GS_DATA-POSN2.
+    IF SY-SUBRC = 0.
+      READ TABLE GT_MLCD INTO GS_MLCD
+      WITH KEY KALNR = GS_CKMLHD-KALNR
+               BDATJ = GS_DATA-GJAHR
+               POPER = GS_DATA-MONAT
+               CATEG = 'VN'
+               PTYP  = 'V+'
+               CURTP = '10'
+               LBKUM = L_MENGE1
+               BINARY SEARCH.
+      IF SY-SUBRC = 0.
+        GS_DATA-CBCY = GS_MLCD-ESTPRD + GS_MLCD-MSTPRD + GS_MLCD-ESTKDM + GS_MLCD-MSTKDM.
+      ENDIF.
+
+      READ TABLE GT_WL2 INTO GS_WL2
+      WITH KEY MATNR = GS_DATA-MATNR
+               WERKS = GS_DATA-WERKS
+               VBEL2 = GS_DATA-VBEL2
+               POSN2 = GS_DATA-POSN2
+               BINARY SEARCH.
+      IF SY-SUBRC = 0.
+        IF GS_WL2-MENGE NE 0 .
+          GS_DATA-CBCY = GS_DATA-CBCY * GS_DATA-MENGE / GS_WL2-MENGE.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+
+    COLLECT  GS_DATA INTO GT_DATA.
+    CLEAR GS_DATA.
+    CLEAR GS_BSEG.
+  ENDLOOP.
+*****当销售订单不为空 处理按单差异***************
+
+*****当销售订单为空 处理按库差异***************
+  LOOP AT GT_BSEG INTO GS_BSEG
+  WHERE VBEL2 IS INITIAL.
+    CLEAR L_MENGE.
+    GS_DATA-EBELN = GS_BSEG-EBELN.
+    GS_DATA-EBELP = GS_BSEG-EBELP.
+    GS_DATA-MATNR = GS_BSEG-MATNR.
+    GS_DATA-WERKS = GS_BSEG-WERKS.
+    GS_DATA-VBUND = GS_BSEG-VBUND.
+    GS_DATA-VBEL2 = GS_BSEG-VBEL2.
+    GS_DATA-POSN2 = GS_BSEG-POSN2.
+
+
+*排除记账码为86，96 ，交货数量重复
+    IF GS_BSEG-BSCHL = '86'
+     OR GS_BSEG-BSCHL = '96'.
+      GS_BSEG-MENGE = 0.
+    ENDIF.
+
+*期间交货数量
+    IF GS_BSEG-SHKZG = 'H'.
+      GS_DATA-MENGE =  GS_BSEG-MENGE * -1.
+      GS_DATA-DMBTR =  GS_BSEG-DMBTR * -1.
+    ELSE.
+      GS_DATA-MENGE =  GS_BSEG-MENGE.
+      GS_DATA-DMBTR =  GS_BSEG-DMBTR.
+    ENDIF.
+
+    READ TABLE GT_BKPF INTO GS_BKPF
+    WITH KEY GJAHR = GS_BSEG-GJAHR
+             BUKRS = GS_BSEG-BUKRS
+             BELNR = GS_BSEG-BELNR.
+    IF SY-SUBRC = 0.
+      GS_DATA-MONAT = GS_BKPF-MONAT.
+      GS_DATA-GJAHR = GS_BKPF-GJAHR.
+    ENDIF.
+
+*期间交货数量
+    READ TABLE GT_WL INTO GS_WL
+    WITH KEY EBELN = GS_DATA-EBELN
+             EBELP = GS_DATA-EBELP
+             MATNR = GS_DATA-MATNR
+             GJAHR = GS_DATA-GJAHR
+             MONAT = GS_DATA-MONAT.
+    IF SY-SUBRC = 0.
+      L_MENGE1 = GS_WL-MENGE.
+*      GS_DATA-DMBTR = GS_WL-DMBTR.
+    ENDIF.
+
+*查询物料描述
+    READ TABLE GT_MAKT INTO GS_MAKT
+    WITH KEY MATNR = GS_DATA-MATNR
+    BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_DATA-MAKTX = GS_MAKT-MAKTX.
+    ENDIF.
+
+*期间成本差异
+*    DATA L_MATNR TYPE BSEG-MATNR.
+    CLEAR L_MATNR.
+
+    READ TABLE GT_ML1 INTO GS_ML1
+    WITH KEY GJAHR  = GS_DATA-GJAHR
+             MONAT  = GS_DATA-MONAT
+             MATNR  = GS_DATA-MATNR
+             BINARY SEARCH.
+    IF SY-SUBRC = 0.
+
+      READ TABLE GT_WL1 INTO GS_WL1
+      WITH KEY GJAHR = GS_DATA-GJAHR
+               MONAT = GS_DATA-MONAT
+               MATNR = GS_DATA-MATNR
+               BINARY SEARCH.
+      IF SY-SUBRC = 0.
+
+        CLEAR L_DMBTR1.
+        LOOP AT GT_DATA INTO GS_DATA_2
+         WHERE VBEL2 IS NOT INITIAL
+         AND   GJAHR  = GS_DATA-GJAHR
+         AND   MONAT  = GS_DATA-MONAT
+         AND   MATNR  = GS_DATA-MATNR.
+          L_DMBTR1 = L_DMBTR1 + GS_DATA_2-CBCY.
+          CLEAR GS_DATA_2.
+        ENDLOOP.
+
+        IF GS_WL1-MENGE NE 0 .
+          GS_DATA-CBCY = ( GS_ML1-DMBTR - L_DMBTR1 ) * GS_DATA-MENGE / GS_WL1-MENGE.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+*    ENDIF.
+
+    COLLECT  GS_DATA INTO GT_DATA.
+    CLEAR GS_DATA.
+    CLEAR GS_BSEG.
+  ENDLOOP.
+*****当销售订单为空 处理按库差异***************
+
+
+**删除相同行
+*  SORT GT_DATA BY EBELN  EBELP GJAHR MONAT MATNR .
+*  DELETE ADJACENT DUPLICATES FROM GT_DATA COMPARING  EBELN  EBELP GJAHR MONAT MATNR .
+
+*汇总按单差异
+  LOOP AT GT_DATA INTO GS_DATA
+  WHERE VBEL2 IS NOT INITIAL .
+    GS_ML2-WERKS = GS_DATA-WERKS.
+    GS_ML2-GJAHR = GS_DATA-GJAHR.
+    GS_ML2-MONAT = GS_DATA-MONAT.
+    GS_ML2-MATNR = GS_DATA-MATNR.
+    GS_ML2-DMBTR = GS_DATA-CBCY.
+
+    COLLECT GS_ML2 INTO GT_ML2.
+    CLEAR GS_ML2.
+  ENDLOOP.
+
+  SORT GT_ML2 BY GJAHR MONAT MATNR.
+  SORT GT_DATA BY WERKS GJAHR MONAT MATNR CBCY DESCENDING.
+
+  FIELD-SYMBOLS <LW_DATA> TYPE TY_DATA.
+*处理按库为0,差异
+  SORT GT_DATA BY  WERKS GJAHR MONAT MATNR .
+
+  LOOP AT GT_DATA ASSIGNING <LW_DATA>.
+    IF GS_DATA-VBEL2 IS NOT INITIAL .
+      READ TABLE GT_WL1 INTO GS_WL1
+      WITH KEY MATNR = <LW_DATA>-MATNR
+               GJAHR = <LW_DATA>-GJAHR
+               MONAT = <LW_DATA>-MONAT
+               BINARY SEARCH.
+      IF GS_WL1-MENGE = 0.
+        CLEAR GS_ML.
+        READ TABLE GT_ML INTO GS_ML
+        WITH KEY GJAHR = <LW_DATA>-GJAHR
+                 MONAT = <LW_DATA>-MONAT
+                 MATNR = <LW_DATA>-MATNR
+                 BINARY SEARCH.
+
+        CLEAR GS_ML1.
+        READ TABLE  GT_ML2 INTO GS_ML2
+        WITH KEY GJAHR = <LW_DATA>-GJAHR
+                 MONAT = <LW_DATA>-MONAT
+                 MATNR = <LW_DATA>-MATNR
+                 BINARY SEARCH.
+
+        AT NEW MATNR.
+          IF GS_ML-DMBTR - GS_ML2-DMBTR <> 0.
+            <LW_DATA>-CBCY = <LW_DATA>-CBCY + ( GS_ML-DMBTR - GS_ML2-DMBTR ).
+          ENDIF.
+        ENDAT.
+      ENDIF.
+    ENDIF.
+  ENDLOOP.
+
+  DATA L_CYFT_ALL2  TYPE P DECIMALS 2.
+*差异分摊到金额最大的一行
+  SORT GT_DATA BY WERKS  GJAHR MONAT MATNR CBCY MENGE EBELN EBELP ASCENDING .
+  LOOP AT GT_DATA ASSIGNING <LW_DATA>.
+    AT NEW MATNR.
+      L_CYFT_ALL2 = 0.
+    ENDAT.
+    L_CYFT_ALL2 = L_CYFT_ALL2 + <LW_DATA>-CBCY .
+    AT END OF MATNR.
+      CLEAR GS_ML.
+      READ TABLE GT_ML INTO GS_ML
+      WITH KEY GJAHR = <LW_DATA>-GJAHR
+               MONAT = <LW_DATA>-MONAT
+               MATNR = <LW_DATA>-MATNR
+               BINARY SEARCH.
+      IF SY-SUBRC = 0.
+        <LW_DATA>-CBCY = <LW_DATA>-CBCY + GS_ML-DMBTR - L_CYFT_ALL2.
+      ENDIF.
+    ENDAT.
+  ENDLOOP.
+
+*按照工厂，物料，采购订单汇总，交货以及，以及差异
+  LOOP AT GT_DATA INTO GS_DATA.
+    MOVE-CORRESPONDING GS_DATA TO GS_DATA_1.
+    COLLECT GS_DATA_1 INTO GT_DATA_1.
+    CLEAR GS_DATA_1.
+  ENDLOOP.
+
+
+  SORT GT_DATA BY WERKS
+                  EBELN
+                  EBELP
+                  MATNR.
+
+  SORT GT_RV  BY WERKS
+                 MATNR
+                 EBELN
+                 EBELP.
+
+  TYPES:BEGIN OF TY_EKKN,
+          EBELN TYPE EKKN-EBELN,
+          EBELP TYPE EKKN-EBELP,
+          VBELN TYPE EKKN-VBELN,
+          VBELP TYPE EKKN-VBELP,
+        END OF TY_EKKN.
+
+  DATA GT_EKKN TYPE TABLE OF TY_EKKN.
+  DATA GS_EKKN TYPE TY_EKKN.
+
+*根据采购订单查询销售订单
+  IF GT_DATA_1 IS NOT INITIAL .
+    SELECT EBELN
+           EBELP
+           VBELN
+           VBELP
+      FROM EKKN
+      INTO CORRESPONDING FIELDS OF TABLE GT_EKKN
+      FOR ALL ENTRIES IN GT_DATA_1
+      WHERE EBELN = GT_DATA_1-EBELN
+      AND   EBELP = GT_DATA_1-EBELP.
+
+    SORT GT_EKKN BY  EBELN EBELP.
+  ENDIF.
+
+  TYPES:BEGIN OF TY_VBAK,
+          VBELN TYPE VBAK-VBELN,
+          KUNNR TYPE VBAK-KUNNR,
+        END OF TY_VBAK.
+
+  DATA GT_VBAK TYPE TABLE OF TY_VBAK.
+  DATA GS_VBAK TYPE TY_VBAK.
+
+  IF GT_EKKN IS NOT INITIAL .
+    SELECT  VBELN KUNNR
+    INTO CORRESPONDING FIELDS OF TABLE GT_VBAK
+    FROM VBAK
+    FOR ALL ENTRIES IN GT_EKKN
+    WHERE VBELN = GT_EKKN-VBELN.
+
+    SORT GT_VBAK BY VBELN.
+  ENDIF.
+
+  TYPES:BEGIN OF TY_KNA1,
+          KUNNR TYPE KNA1-KUNNR,
+          NAME1 TYPE KNA1-NAME1,
+        END OF TY_KNA1.
+
+  DATA GT_KNA1 TYPE TABLE OF TY_KNA1.
+  DATA GS_KNA1 TYPE TY_KNA1.
+
+  IF GT_VBAK IS NOT INITIAL.
+    SELECT KUNNR NAME1
+      INTO CORRESPONDING FIELDS OF TABLE GT_KNA1
+      FROM KNA1
+      FOR ALL ENTRIES IN GT_VBAK
+      WHERE KUNNR = GT_VBAK-KUNNR.
+
+    SORT GT_KNA1 BY KUNNR .
+  ENDIF.
+
+*输出报表
+
+  DATA L_TABIX TYPE SY-TABIX.
+
+  LOOP AT GT_DATA_1 INTO GS_DATA_1.
+
+    CLEAR L_TABIX.
+    READ TABLE  GT_DATA
+    WITH KEY WERKS =   GS_DATA_1-WERKS
+             EBELN =   GS_DATA_1-EBELN
+             EBELP =   GS_DATA_1-EBELP
+             MATNR =   GS_DATA_1-MATNR
+             BINARY SEARCH
+             TRANSPORTING NO FIELDS.
+    IF SY-SUBRC = 0.
+      L_TABIX = SY-TABIX.
+    ELSE.
+      DESCRIBE TABLE GT_DATA LINES L_TABIX.
+    ENDIF.
+
+*计算差异
+    LOOP AT GT_DATA INTO GS_DATA FROM L_TABIX.
+      IF  GS_DATA-WERKS  <> GS_DATA_1-WERKS
+       OR  GS_DATA-EBELN <> GS_DATA_1-EBELN
+       OR  GS_DATA-EBELP <> GS_DATA_1-EBELP
+       OR  GS_DATA-MATNR <> GS_DATA_1-MATNR  .
+        EXIT.
+      ENDIF.
+
+      GS_DATA_1-CBCY1 = GS_DATA_1-CBCY1 + GS_DATA-CBCY.
+    ENDLOOP.
+
+*计算期间收入和开票
+    CLEAR L_TABIX.
+    READ TABLE GT_RV
+    WITH KEY WERKS = GS_DATA_1-WERKS
+             MATNR = GS_DATA_1-MATNR
+             EBELN = GS_DATA_1-EBELN
+             EBELP = GS_DATA_1-EBELP
+             BINARY SEARCH
+             TRANSPORTING NO FIELDS.
+    IF SY-SUBRC = 0.
+      L_TABIX = SY-TABIX.
+    ELSE.
+      DESCRIBE TABLE GT_RV LINES L_TABIX.
+    ENDIF.
+
+    LOOP AT GT_RV INTO GS_RV FROM L_TABIX.
+
+      IF   GS_RV-WERKS  <> GS_DATA_1-WERKS
+      OR   GS_RV-MATNR  <> GS_DATA_1-MATNR
+      OR   GS_RV-EBELN  <> GS_DATA_1-EBELN
+      OR   GS_RV-EBELP  <> GS_DATA_1-EBELP.
+        EXIT.
+      ENDIF.
+
+      GS_DATA_1-QJSR = GS_DATA_1-QJSR + GS_RV-DMBTR.
+      GS_DATA_1-QJKP = GS_DATA_1-QJKP + GS_RV-MENGE.
+    ENDLOOP.
+
+    GS_DATA_1-SJCB  = GS_DATA_1-DMBTR + GS_DATA_1-CBCY1.
+
+    IF GS_DATA_1-MENGE > GS_DATA-QJKP.
+      IF  GS_DATA_1-MENGE NE 0 .
+        GS_DATA_1-QJYZ = GS_DATA_1-SJCB * ( GS_DATA_1-MENGE - GS_DATA_1-QJKP ) / GS_DATA_1-MENGE.
+      ENDIF.
+    ELSE.
+      GS_DATA_1-QJYZ = 0.
+    ENDIF.
+
+    IF GS_DATA_1-QJYZ < 0.
+      GS_DATA_1-QJYZ = 0.
+    ENDIF.
+
+*查询销售订单号
+*    SELECT SINGLE EKKN~VBELN
+*                  EKKN~VBELP
+*    FROM EKKN
+*    INTO (GS_DATA_1-VBEL2,GS_DATA_1-POSN2)
+*    WHERE EBELN = GS_DATA_1-EBELN
+*    AND   EBELP = GS_DATA_1-EBELP.
+
+    READ TABLE GT_EKKN  INTO GS_EKKN
+    WITH KEY EBELN = GS_DATA_1-EBELN
+             EBELP = GS_DATA_1-EBELP
+             BINARY SEARCH.
+    IF  SY-SUBRC = 0.
+      GS_DATA_1-VBEL2 = GS_EKKN-VBELN.
+      GS_DATA_1-POSN2 = GS_EKKN-VBELP.
+    ELSE.
+      READ TABLE GT_EKKN INTO GS_EKKN
+      WITH KEY EBELN = GS_DATA_1-EBELN
+      BINARY SEARCH .
+      IF SY-SUBRC = 0.
+        GS_DATA_1-VBEL2 = GS_EKKN-VBELN.
+      ENDIF.
+    ENDIF.
+
+*项目名称
+    IF GS_DATA_1-VBEL2 IS NOT INITIAL.
+      L_NAME = GS_DATA_1-VBEL2.
+      CALL FUNCTION 'READ_TEXT'
+        EXPORTING
+          CLIENT                  = SY-MANDT
+          ID                      = 'Z001'
+          LANGUAGE                = SY-LANGU
+          NAME                    = L_NAME
+          OBJECT                  = 'VBBK'
+        TABLES
+          LINES                   = LT_LINE
+        EXCEPTIONS
+          ID                      = 1
+          LANGUAGE                = 2
+          NAME                    = 3
+          NOT_FOUND               = 4
+          OBJECT                  = 5
+          REFERENCE_CHECK         = 6
+          WRONG_ACCESS_TO_ARCHIVE = 7
+          OTHERS                  = 8.
+      LOOP AT LT_LINE INTO LS_LINE  .
+        CONCATENATE GS_DATA_1-XMMC LS_LINE-TDLINE INTO GS_DATA_1-XMMC.
+      ENDLOOP.
+    ENDIF.
+
+*客户
+*    SELECT SINGLE VBAK~KUNNR
+*    FROM VBAK
+*    INTO  GS_DATA_1-KUNNR
+*    WHERE VBELN = GS_DATA_1-VBEL2.
+    IF GS_DATA_1-VBEL2 IS NOT INITIAL.
+      READ TABLE GT_VBAK INTO GS_VBAK
+      WITH KEY VBELN = GS_DATA_1-VBEL2
+               BINARY SEARCH.
+      IF SY-SUBRC = 0.
+        GS_DATA_1-KUNNR = GS_VBAK-KUNNR.
+      ENDIF.
+    ENDIF.
+
+*查询客户名称
+    IF GS_DATA_1-KUNNR IS NOT INITIAL
+      .
+*      SELECT SINGLE KNA1~NAME1
+*        FROM KNA1
+*        INTO GS_DATA_1-NAME1
+*        WHERE KUNNR = GS_DATA_1-KUNNR.
+
+      READ TABLE GT_KNA1 INTO GS_KNA1
+      WITH KEY KUNNR = GS_DATA_1-KUNNR
+              BINARY SEARCH.
+      IF  SY-SUBRC = 0 .
+        GS_DATA_1-NAME1 = GS_KNA1-NAME1.
+      ENDIF.
+    ENDIF.
+
+    MODIFY GT_DATA_1 FROM GS_DATA_1.
+    CLEAR GS_DATA_1.
+  ENDLOOP.
+
+*START增加有收入，没有交货行   ADD BY HANDWY 2015-11-02
+
+  SORT GT_BSEG_3 BY EBELN EBELP.
+  DATA L_TABIX1 TYPE SY-TABIX.
+  CLEAR L_TABIX1.
+  LOOP AT GT_BSEG_4 INTO GS_BSEG_4.
+    L_TABIX1 = SY-TABIX.
+
+    READ TABLE GT_BSEG_3 INTO GS_BSEG_3
+     WITH KEY EBELN = GS_BSEG_4-EBELN
+              EBELP = GS_BSEG_4-EBELP
+              BINARY SEARCH.
+    IF  SY-SUBRC = 0.
+      DELETE GT_BSEG_4 INDEX L_TABIX1.
+    ENDIF.
+  ENDLOOP.
+
+  REFRESH GT_EKKN.
+  CLEAR   GS_EKKN.
+
+  IF GT_BSEG_4 IS NOT INITIAL.
+    SELECT    EBELN
+              EBELP
+              VBELN
+              VBELP
+         FROM EKKN
+         INTO CORRESPONDING FIELDS OF TABLE GT_EKKN
+         FOR ALL ENTRIES IN GT_BSEG_4
+         WHERE EBELN = GT_BSEG_4-EBELN
+         AND   EBELP = GT_BSEG_4-EBELP.
+
+    SORT GT_EKKN BY  EBELN EBELP.
+  ENDIF.
+
+  REFRESH GT_VBAK.
+  CLEAR   GS_VBAK.
+
+
+  IF GT_EKKN IS NOT INITIAL .
+
+    SELECT  VBELN KUNNR
+    INTO CORRESPONDING FIELDS OF TABLE GT_VBAK
+    FROM VBAK
+    FOR ALL ENTRIES IN GT_EKKN
+    WHERE VBELN = GT_EKKN-VBELN.
+
+    SORT GT_VBAK BY VBELN.
+  ENDIF.
+
+  REFRESH GT_KNA1.
+  CLEAR   GS_KNA1.
+  IF GT_VBAK IS NOT INITIAL.
+    SELECT KUNNR NAME1
+      INTO CORRESPONDING FIELDS OF TABLE GT_KNA1
+      FROM KNA1
+      FOR ALL ENTRIES IN GT_VBAK
+      WHERE KUNNR = GT_VBAK-KUNNR.
+
+    SORT GT_KNA1 BY KUNNR .
+  ENDIF.
+
+  LOOP AT GT_BSEG_4 INTO GS_BSEG_4.
+
+*期间是否已交货
+*    READ TABLE GT_BSEG_3 INTO GS_BSEG_3
+*    WITH KEY EBELN = GS_BSEG_4-EBELN
+*             EBELP = GS_BSEG_4-EBELP.
+*    IF  SY-SUBRC = 0.
+*      CONTINUE.
+*    ENDIF.
+
+    GS_DATA_1-MATNR = GS_BSEG_4-MATNR.
+    GS_DATA_1-WERKS = GS_BSEG_4-WERKS.
+    GS_DATA_1-EBELN = GS_BSEG_4-EBELN.
+    GS_DATA_1-EBELP = GS_BSEG_4-EBELP.
+    GS_DATA_1-VBUND = GS_BSEG_4-VBUND.
+
+*查询物料描述
+    READ TABLE GT_MAKT1 INTO GS_MAKT1
+    WITH KEY MATNR = GS_DATA_1-MATNR
+    BINARY SEARCH.
+    IF SY-SUBRC = 0.
+      GS_DATA_1-MAKTX = GS_MAKT1-MAKTX.
+    ENDIF.
+
+*根据借贷区分正负
+    IF GS_BSEG_4-SHKZG = 'S'.
+      GS_DATA_1-QJKP = GS_BSEG_4-MENGE * -1.
+      GS_DATA_1-QJSR = GS_BSEG_4-DMBTR * -1.
+    ELSE.
+      GS_DATA_1-QJKP = GS_BSEG_4-MENGE.
+      GS_DATA_1-QJSR = GS_BSEG_4-DMBTR.
+    ENDIF.
+
+*查询销售订单号
+*    SELECT SINGLE EKKN~VBELN
+*                  EKKN~VBELP
+*    FROM EKKN
+*    INTO (GS_DATA_1-VBEL2,GS_DATA_1-POSN2)
+*    WHERE EBELN = GS_DATA_1-EBELN
+*    AND   EBELP = GS_DATA_1-EBELP.
+    READ TABLE GT_EKKN  INTO GS_EKKN
+    WITH KEY EBELN = GS_DATA_1-EBELN
+             EBELP = GS_DATA_1-EBELP
+             BINARY SEARCH.
+    IF  SY-SUBRC = 0.
+      GS_DATA_1-VBEL2 = GS_EKKN-VBELN.
+      GS_DATA_1-POSN2 = GS_EKKN-VBELP.
+    ELSE.
+      READ TABLE GT_EKKN INTO GS_EKKN
+      WITH KEY EBELN = GS_DATA_1-EBELN
+      BINARY SEARCH .
+      IF SY-SUBRC = 0.
+        GS_DATA_1-VBEL2 = GS_EKKN-VBELN.
+      ENDIF.
+    ENDIF.
+
+*    IF GS_DATA_1-VBEL2 IS INITIAL.
+**查询销售订单号
+*      SELECT SINGLE EKKN~VBELN
+*      FROM EKKN
+*      INTO (GS_DATA_1-VBEL2)
+*      WHERE EBELN = GS_DATA_1-EBELN.
+*      IF GS_DATA_1-VBEL2 IS NOT INITIAL.
+*        GS_DATA_1-POSN2  = 'X'.
+*      ENDIF.
+*    ENDIF.
+
+*项目名称
+    IF GS_DATA_1-VBEL2 IS NOT INITIAL.
+      L_NAME = GS_DATA_1-VBEL2.
+      CALL FUNCTION 'READ_TEXT'
+        EXPORTING
+          CLIENT                  = SY-MANDT
+          ID                      = 'Z001'
+          LANGUAGE                = SY-LANGU
+          NAME                    = L_NAME
+          OBJECT                  = 'VBBK'
+        TABLES
+          LINES                   = LT_LINE
+        EXCEPTIONS
+          ID                      = 1
+          LANGUAGE                = 2
+          NAME                    = 3
+          NOT_FOUND               = 4
+          OBJECT                  = 5
+          REFERENCE_CHECK         = 6
+          WRONG_ACCESS_TO_ARCHIVE = 7
+          OTHERS                  = 8.
+      LOOP AT LT_LINE INTO LS_LINE  .
+        CONCATENATE GS_DATA_1-XMMC LS_LINE-TDLINE INTO GS_DATA_1-XMMC.
+      ENDLOOP.
+    ENDIF.
+
+**客户
+*    SELECT SINGLE VBAK~KUNNR
+*    FROM VBAK
+*    INTO  GS_DATA_1-KUNNR
+*    WHERE VBELN = GS_DATA_1-VBEL2.
+*
+**查询客户名称
+*    IF GS_DATA_1-KUNNR IS NOT INITIAL .
+*      SELECT SINGLE KNA1~NAME1
+*        FROM KNA1
+*        INTO GS_DATA_1-NAME1
+*        WHERE KUNNR = GS_DATA_1-KUNNR.
+*    ENDIF.
+
+    IF GS_DATA_1-VBEL2 IS NOT INITIAL.
+      READ TABLE GT_VBAK INTO GS_VBAK
+      WITH KEY VBELN = GS_DATA_1-VBEL2
+               BINARY SEARCH.
+      IF SY-SUBRC = 0.
+        GS_DATA_1-KUNNR = GS_VBAK-KUNNR.
+      ENDIF.
+    ENDIF.
+
+*查询客户名称
+    IF GS_DATA_1-KUNNR IS NOT INITIAL
+      .
+*      SELECT SINGLE KNA1~NAME1
+*        FROM KNA1
+*        INTO GS_DATA_1-NAME1
+*        WHERE KUNNR = GS_DATA_1-KUNNR.
+
+      READ TABLE GT_KNA1 INTO GS_KNA1
+      WITH KEY KUNNR = GS_DATA_1-KUNNR
+              BINARY SEARCH.
+      IF  SY-SUBRC = 0 .
+        GS_DATA_1-NAME1 = GS_KNA1-NAME1.
+      ENDIF.
+    ENDIF.
+
+    APPEND GS_DATA_1 TO GT_DATA_1.
+    CLEAR GS_DATA_1.
+  ENDLOOP.
+*ENDADD
+
+*START增加采购订单免费行字段  ADD BY HANDWY 2015-11-12
+  CHECK GT_DATA_1 IS NOT INITIAL .
+
+  SELECT * FROM EKPO
+  INTO CORRESPONDING FIELDS OF TABLE GT_EKPO
+  FOR ALL ENTRIES IN GT_DATA_1
+  WHERE EBELN = GT_DATA_1-EBELN
+  AND   EBELP = GT_DATA_1-EBELP.
+
+  DATA L_FLAG TYPE C.
+  CLEAR L_FLAG.
+
+  SORT GT_DATA_1 BY WERKS MATNR EBELN EBELP.
+
+  LOOP AT GT_DATA_1 INTO GS_DATA_1.
+
+    CLEAR:GS_ZCO007_5.
+    GS_ZCO007_5-BUKRS = S_BUKRS-LOW.
+    GS_ZCO007_5-GZSTART = S_BUDAT-LOW.
+    IF S_BUDAT-HIGH IS INITIAL.
+      GS_ZCO007_5-GZEND = S_BUDAT-LOW.
+    ELSE.
+      GS_ZCO007_5-GZEND = S_BUDAT-HIGH.
+    ENDIF.
+
+    AT NEW EBELP.
+      L_FLAG = 'X'.
+    ENDAT.
+
+    IF L_FLAG = 'X'.
+      READ TABLE GT_EKPO INTO GS_EKPO
+      WITH KEY EBELN = GS_DATA_1-EBELN
+               EBELP = GS_DATA_1-EBELP.
+      IF SY-SUBRC = 0.
+        IF GS_EKPO-REPOS = ''.
+*期间应转工程成本
+          GS_DATA_1-QJYZ  = 0.
+          GS_DATA_1-REPOS = 'X'.
+        ENDIF.
+      ENDIF.
+
+*增加输出字段  ADD BY HANDWY 2015-11-12
+
+*尾月收入,*尾月开票数*
+      LOOP AT GT_RV1 INTO GS_RV1
+      WHERE   WERKS = GS_DATA_1-WERKS
+      AND     MATNR = GS_DATA_1-MATNR
+      AND     EBELN = GS_DATA_1-EBELN
+      AND     EBELP = GS_DATA_1-EBELP.
+
+        GS_DATA_1-WYSR = GS_DATA_1-WYSR + GS_RV1-DMBTR.
+        GS_DATA_1-WYKP = GS_DATA_1-WYKP + GS_RV1-MENGE.
+
+      ENDLOOP.
+
+*尾月发货数量
+      READ TABLE GT_WL3 INTO GS_WL3
+      WITH KEY EBELN = GS_DATA_1-EBELN
+               EBELP = GS_DATA_1-EBELP.
+      IF SY-SUBRC = 0.
+        GS_DATA_1-WYFH = GS_WL3-MENGE.
+      ENDIF.
+
+*尾月确认成本
+      IF GS_DATA_1-REPOS = 'X'.
+        IF GS_DATA_1-MENGE <> 0.
+          GS_DATA_1-WYCB =  GS_DATA_1-SJCB * GS_DATA_1-WYFH / GS_DATA_1-MENGE.
+        ELSE.
+          GS_DATA_1-WYCB = 0.
+        ENDIF.
+      ELSEIF ABS( GS_DATA_1-WYKP  ) > ABS( GS_DATA_1-MENGE ).
+        GS_DATA_1-WYCB = GS_DATA_1-SJCB.
+      ELSE.
+        IF GS_DATA_1-MENGE <> 0.
+          GS_DATA_1-WYCB = GS_DATA_1-SJCB * GS_DATA_1-WYKP / GS_DATA_1-MENGE.
+        ELSE.
+          GS_DATA_1-WYCB = 0.
+        ENDIF.
+      ENDIF.
+
+      MODIFY  GT_DATA_1 FROM GS_DATA_1.
+      MOVE-CORRESPONDING GS_DATA_1 TO GS_ZCO007_5.
+      APPEND GS_ZCO007_5 TO GT_ZCO007_5.
+      CLEAR GS_DATA_1.
+      CLEAR GS_EKPO.
+
+    ENDIF.
+
+    IF L_FLAG NE 'X'.
+      MOVE-CORRESPONDING GS_DATA_1 TO GS_ZCO007_5.
+      APPEND GS_ZCO007_5 TO GT_ZCO007_5.
+    ENDIF.
+
+    CLEAR L_FLAG.
+
+
+  ENDLOOP.
+*ENDADD
+  "保存查询期间数据到ZCO007_5表 20160105 IT02
+
+*  CLEAR:P_END.
+*  IF S_BUDAT-HIGH IS INITIAL.
+*    P_END  = S_BUDAT-LOW.
+*  ELSE.
+*    P_END  = S_BUDAT-HIGH.
+*  ENDIF.
+  SORT GT_ZCO007_5 BY BUKRS GZSTART GZEND EBELN EBELP.
+
+  "先根据条件删掉ZCO007_5表数据
+  DELETE  FROM  ZCO007_5 WHERE BUKRS = S_BUKRS-LOW." AND GZSTART = S_BUDAT-LOW AND GZEND = P_END.
+
+  "保存ZC007_5表数据
+  CHECK GT_ZCO007_5 IS NOT INITIAL.
+  MODIFY ZCO007_5 FROM TABLE GT_ZCO007_5.
+
+
+
+ENDFORM.

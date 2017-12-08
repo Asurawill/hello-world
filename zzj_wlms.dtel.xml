@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZZJ_WLMS</ROLLNAME>
+    <HEADLEN>20</HEADLEN>
+    <SCRLEN1>10</SCRLEN1>
+    <SCRLEN2>15</SCRLEN2>
+    <SCRLEN3>20</SCRLEN3>
+    <DTELMASTER>1</DTELMASTER>
+    <DATATYPE>CHAR</DATATYPE>
+    <LENG>000255</LENG>
+    <OUTPUTLEN>000255</OUTPUTLEN>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>1</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>1</DDLANGUAGE>
+     <DDTEXT>子件物料长描述</DDTEXT>
+     <REPTEXT>子件物料长描述</REPTEXT>
+     <SCRTEXT_S>子件物料长描述</SCRTEXT_S>
+     <SCRTEXT_M>子件物料长描述</SCRTEXT_M>
+     <SCRTEXT_L>子件物料长描述</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

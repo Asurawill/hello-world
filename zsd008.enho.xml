@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>VA02订单修改记录</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SAPFV45K</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SAPFV45K</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPFV45K</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <SPOTNAME>ES_SAPFV45K</SPOTNAME>
+     <PROGRAMNAME>SAPFV45K</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:SAPFV45K\EX:VBAK_FUELLEN_10\EI</FULL_NAME>
+     <SOURCE>
+      <item>**订单修改记录 HAND - 唐博</item>
+      <item>*  IF SY-TCODE EQ &apos;VA01&apos; OR SY-TCODE EQ &apos;VA02&apos;.</item>
+      <item>*    DATA LT_XVBAP LIKE TABLE OF XVBAP WITH HEADER LINE.</item>
+      <item>*    DATA LW_YVBAP LIKE LINE OF YVBAP.</item>
+      <item>*    DATA LT_ZSD008 LIKE TABLE OF ZSD008 WITH HEADER LINE.</item>
+      <item>*    CLEAR: LT_XVBAP[],LT_ZSD008[].</item>
+      <item>*    LT_XVBAP[] = XVBAP[].</item>
+      <item>*    BREAK HANDTB.</item>
+      <item>*    IF SY-UCOMM EQ &apos;SICH&apos;.</item>
+      <item>*      LOOP AT LT_XVBAP WHERE UPDKZ EQ &apos;I&apos; OR UPDKZ EQ &apos;D&apos; OR UPDKZ EQ &apos;U&apos;.&quot;遍历添加的行或删除的行或更新的行</item>
+      <item>*        LT_ZSD008-CHANGENR(8) = SY-DATUM.</item>
+      <item>*        LT_ZSD008-CHANGENR+8(6) = SY-UZEIT.</item>
+      <item>*        CASE LT_XVBAP-UPDKZ.</item>
+      <item>*          WHEN &apos;I&apos; OR &apos;D&apos;.</item>
+      <item>*            LT_ZSD008-VBELN = LT_XVBAP-VBELN.</item>
+      <item>*            LT_ZSD008-POSNR = LT_XVBAP-POSNR.</item>
+      <item>*            LT_ZSD008-MATNR = LT_XVBAP-MATNR.</item>
+      <item>*            LT_ZSD008-ARKTX = LT_XVBAP-ARKTX.</item>
+      <item>*            LT_ZSD008-FNAME = &apos;KEY&apos;.</item>
+      <item>*            LT_ZSD008-CHNGIND = LT_XVBAP-UPDKZ.</item>
+      <item>*            IF LT_XVBAP-UPDKZ EQ &apos;I&apos;.</item>
+      <item>*              LT_ZSD008-VALUE_NEW = LT_XVBAP-MATNR.</item>
+      <item>*            ELSE.</item>
+      <item>*              LT_ZSD008-VALUE_OLD = LT_XVBAP-MATNR.</item>
+      <item>*            ENDIF.</item>
+      <item>*            CONDENSE: LT_ZSD008-VALUE_NEW,LT_ZSD008-VALUE_OLD.</item>
+      <item>*            APPEND LT_ZSD008.</item>
+      <item>*            CLEAR LT_ZSD008.</item>
+      <item>*          WHEN &apos;U&apos;.</item>
+      <item>*            READ TABLE YVBAP INTO LW_YVBAP WITH KEY VBELN = LT_XVBAP-VBELN POSNR = LT_XVBAP-POSNR.</item>
+      <item>*            IF SY-SUBRC EQ 0.</item>
+      <item>*              IF LW_YVBAP-NETWR NE LT_XVBAP-NETWR.</item>
+      <item>*                LT_ZSD008-VBELN = LW_YVBAP-VBELN.</item>
+      <item>*                LT_ZSD008-POSNR = LW_YVBAP-POSNR.</item>
+      <item>*                LT_ZSD008-MATNR = LW_YVBAP-MATNR.</item>
+      <item>*                LT_ZSD008-ARKTX = LW_YVBAP-ARKTX.</item>
+      <item>*                LT_ZSD008-FNAME = &apos;NETWR&apos;.</item>
+      <item>*                LT_ZSD008-CHNGIND = LT_XVBAP-UPDKZ.</item>
+      <item>*                LT_ZSD008-VALUE_NEW = LT_XVBAP-NETWR.</item>
+      <item>*                LT_ZSD008-VALUE_OLD = LW_YVBAP-NETWR.</item>
+      <item>*                CONDENSE: LT_ZSD008-VALUE_NEW,LT_ZSD008-VALUE_OLD.</item>
+      <item>*                APPEND LT_ZSD008.</item>
+      <item>*                CLEAR LT_ZSD008.</item>
+      <item>*              ENDIF.</item>
+      <item>*            ENDIF.</item>
+      <item>*        ENDCASE.</item>
+      <item>*      ENDLOOP.</item>
+      <item>*      IF LT_ZSD008[] IS NOT INITIAL.</item>
+      <item>*        MODIFY ZSD008 FROM TABLE LT_ZSD008.</item>
+      <item>*        COMMIT WORK.</item>
+      <item>*      ENDIF.</item>
+      <item>*    ENDIF.</item>
+      <item>*  ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPFV45K\EX:VBAK_FUELLEN_10\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

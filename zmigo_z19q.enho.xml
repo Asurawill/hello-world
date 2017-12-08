@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>MIGO 项目自动收发货</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>MIGO</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>MIGO</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLMIGO</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLMIGO</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:SAPLMIGO\TY:LCL_MIGO_KERNEL\ME:GOODS_MOVEMENT_POST\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*    BREAK  HANDYBY .</item>
+      <item>*&amp;--代码添加 BY HANDYBY 22.06.2017 16:50:52  BEGIN</item>
+      <item/>
+      <item>DATA LT_MKPF TYPE TY_T_MKPF .</item>
+      <item>DATA LT_MSEG TYPE TY_T_MSEG .</item>
+      <item/>
+      <item>IMPORT XMKPF = LT_MKPF</item>
+      <item>XMSEG = LT_MSEG FROM MEMORY ID &apos;XMIGO&apos;.</item>
+      <item/>
+      <item>DATA LS_MKPF LIKE LINE OF LT_MKPF .</item>
+      <item>DATA LS_MSEG LIKE LINE OF LT_MSEG .</item>
+      <item>DATA: LT_ZPSKC TYPE TABLE OF ZPSKC,</item>
+      <item>LS_ZPSKC TYPE ZPSKC.</item>
+      <item>DATA L_INDEX TYPE C .</item>
+      <item>DATA L_FLAG TYPE C .</item>
+      <item>DATA L_DIAGNOSETEXT1 TYPE STRING .</item>
+      <item/>
+      <item>DATA LS_HEADER TYPE BAPI2017_GM_HEAD_01 .</item>
+      <item>DATA LS_CODE TYPE BAPI2017_GM_CODE .</item>
+      <item>DATA LS_HEADRET TYPE BAPI2017_GM_HEAD_RET .</item>
+      <item>DATA LS_DOCUMENT TYPE BAPI2017_GM_HEAD_RET-MAT_DOC .</item>
+      <item>DATA LS_YEAR TYPE BAPI2017_GM_HEAD_RET-DOC_YEAR .</item>
+      <item>DATA: LT_ITEM TYPE TABLE OF BAPI2017_GM_ITEM_CREATE,</item>
+      <item>LS_ITEM TYPE BAPI2017_GM_ITEM_CREATE.</item>
+      <item>DATA: LT_RETURN TYPE TABLE OF BAPIRET2,</item>
+      <item>LS_RETURN TYPE BAPIRET2.</item>
+      <item>DATA L_MSG TYPE STRING .</item>
+      <item/>
+      <item>SELECT *</item>
+      <item>INTO TABLE LT_ZPSKC</item>
+      <item>FROM ZPSKC</item>
+      <item>FOR ALL ENTRIES IN LT_MSEG</item>
+      <item>WHERE WERKS = LT_MSEG-WERKS .</item>
+      <item/>
+      <item>READ TABLE LT_MKPF INTO LS_MKPF INDEX 1 .</item>
+      <item>IF ES_EMKPF_OLD-MBLNR IS NOT INITIAL .</item>
+      <item/>
+      <item>*      COMMIT WORK .</item>
+      <item/>
+      <item>LOOP AT LT_MSEG INTO LS_MSEG .</item>
+      <item>IF LS_MSEG-BWART = &apos;101&apos; AND LS_MSEG-SOBKZ = &apos;Q&apos;.</item>
+      <item>READ TABLE LT_ZPSKC INTO LS_ZPSKC WITH KEY WERKS = LS_MSEG-WERKS .</item>
+      <item>IF SY-SUBRC = 0 .</item>
+      <item>L_INDEX = &apos;X&apos;.</item>
+      <item/>
+      <item>LS_ITEM-MATERIAL = LS_MSEG-MATNR .</item>
+      <item>LS_ITEM-PLANT = LS_MSEG-WERKS .</item>
+      <item>LS_ITEM-STGE_LOC = LS_MSEG-LGORT .</item>
+      <item>LS_ITEM-MOVE_TYPE = &apos;Z19&apos;.</item>
+      <item>LS_ITEM-SPEC_STOCK = &apos;Q&apos;.</item>
+      <item>LS_ITEM-ENTRY_QNT = LS_MSEG-MENGE .</item>
+      <item>LS_ITEM-ENTRY_UOM = LS_MSEG-MEINS .</item>
+      <item>CALL FUNCTION &apos;CONVERSION_EXIT_ABPSP_OUTPUT&apos;</item>
+      <item>EXPORTING</item>
+      <item>INPUT  = LS_MSEG-PS_PSP_PNR</item>
+      <item>IMPORTING</item>
+      <item>OUTPUT = LS_ITEM-VAL_WBS_ELEM.</item>
+      <item>*            LS_ITEM-VAL_WBS_ELEM = LS_MSEG-PS_PSP_PNR .</item>
+      <item>APPEND LS_ITEM TO LT_ITEM  .</item>
+      <item>CLEAR LS_ITEM .</item>
+      <item>CLEAR LS_ZPSKC .</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>CLEAR LS_MSEG .</item>
+      <item>ENDLOOP.</item>
+      <item/>
+      <item>IF  L_INDEX = &apos;X&apos;.</item>
+      <item/>
+      <item>CALL FUNCTION &apos;POPUP_TO_CONFIRM_WITH_MESSAGE&apos;</item>
+      <item>EXPORTING</item>
+      <item>*           DEFAULTOPTION = &apos;Y&apos;</item>
+      <item>DIAGNOSETEXT1 = &apos;是否发货至项目？&apos;</item>
+      <item>*           DIAGNOSETEXT2 = &apos; &apos;</item>
+      <item>*           DIAGNOSETEXT3 = &apos; &apos;</item>
+      <item>TEXTLINE1     = &apos;&apos;</item>
+      <item>*           TEXTLINE2     = &apos; &apos;</item>
+      <item>TITEL         = &apos;发货判断&apos;</item>
+      <item>*           START_COLUMN  = 25</item>
+      <item>*           START_ROW     = 6</item>
+      <item>*           CANCEL_DISPLAY       = &apos;X&apos;</item>
+      <item>IMPORTING</item>
+      <item>ANSWER        = L_FLAG.</item>
+      <item/>
+      <item>IF L_FLAG = &apos;J&apos;.</item>
+      <item/>
+      <item>LS_HEADER-PSTNG_DATE = LS_MKPF-BUDAT .</item>
+      <item>LS_HEADER-DOC_DATE = LS_MKPF-BLDAT .</item>
+      <item/>
+      <item>LS_CODE-GM_CODE = &apos;03&apos;.</item>
+      <item/>
+      <item>CALL FUNCTION &apos;BAPI_GOODSMVT_CREATE&apos;</item>
+      <item>EXPORTING</item>
+      <item>GOODSMVT_HEADER  = LS_HEADER</item>
+      <item>GOODSMVT_CODE    = LS_CODE</item>
+      <item>*             TESTRUN          = &apos; &apos;</item>
+      <item>*             GOODSMVT_REF_EWM =</item>
+      <item>IMPORTING</item>
+      <item>GOODSMVT_HEADRET = LS_HEADRET</item>
+      <item>MATERIALDOCUMENT = LS_DOCUMENT</item>
+      <item>MATDOCUMENTYEAR  = LS_YEAR</item>
+      <item>TABLES</item>
+      <item>GOODSMVT_ITEM    = LT_ITEM</item>
+      <item>*             GOODSMVT_SERIALNUMBER         =</item>
+      <item>RETURN           = LT_RETURN</item>
+      <item>*             GOODSMVT_SERV_PART_DATA       =</item>
+      <item>*             EXTENSIONIN      =</item>
+      <item>.</item>
+      <item/>
+      <item>READ TABLE LT_RETURN INTO LS_RETURN WITH KEY TYPE = &apos;E&apos;.</item>
+      <item>IF SY-SUBRC = 0 .</item>
+      <item>CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos; .</item>
+      <item>MESSAGE LS_RETURN-MESSAGE TYPE &apos;I&apos; DISPLAY LIKE &apos;E&apos; .</item>
+      <item>ELSE.</item>
+      <item>CLEAR LS_RETURN .</item>
+      <item>READ TABLE LT_RETURN INTO LS_RETURN WITH KEY TYPE = &apos;A&apos;.</item>
+      <item>IF SY-SUBRC = 0 .</item>
+      <item>CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos; .</item>
+      <item>MESSAGE LS_RETURN-MESSAGE TYPE &apos;I&apos; DISPLAY LIKE &apos;E&apos; .</item>
+      <item>ELSE.</item>
+      <item>CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;</item>
+      <item>EXPORTING</item>
+      <item>WAIT = &apos;X&apos;.</item>
+      <item>CONCATENATE &apos;项目收发货成功！&apos; &apos;收货凭证为：&apos; ES_EMKPF_OLD-MBLNR &apos;；发货凭证为：&apos; LS_DOCUMENT INTO L_MSG .</item>
+      <item>MESSAGE L_MSG TYPE &apos;I&apos; DISPLAY LIKE &apos;S&apos; .</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item/>
+      <item>CLEAR L_INDEX .</item>
+      <item>CLEAR L_FLAG .</item>
+      <item>CLEAR:LS_HEADER,LS_CODE,LS_HEADRET,LS_DOCUMENT,LS_YEAR.</item>
+      <item>CLEAR:LT_ITEM,LT_RETURN.</item>
+      <item>REFRESH:LT_ITEM[],LT_RETURN[].</item>
+      <item>CLEAR LS_MKPF .</item>
+      <item>*</item>
+      <item>*&amp;--代码添加 BY HANDYBY 22.06.2017 16:50:52  END</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLMIGO\TY:LCL_MIGO_KERNEL\ME:GOODS_MOVEMENT_POST\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>11</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>10</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>10</item>
+      <item>4</item>
+      <item>10</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>11</item>
+      <item>11</item>
+      <item>7</item>
+      <item>10</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>6</item>
+      <item>8</item>
+      <item>10</item>
+      <item>10</item>
+      <item>12</item>
+      <item>0</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>14</item>
+      <item>16</item>
+      <item>14</item>
+      <item>16</item>
+      <item>0</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>10</item>
+      <item>8</item>
+      <item>8</item>
+      <item>6</item>
+      <item>0</item>
+      <item>6</item>
+      <item>0</item>
+      <item>8</item>
+      <item>10</item>
+      <item>0</item>
+      <item>12</item>
+      <item>0</item>
+      <item>0</item>
+      <item>12</item>
+      <item>0</item>
+      <item>12</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>10</item>
+      <item>12</item>
+      <item>0</item>
+      <item>8</item>
+      <item>0</item>
+      <item>10</item>
+      <item>10</item>
+      <item>0</item>
+      <item>10</item>
+      <item>0</item>
+      <item>10</item>
+      <item>12</item>
+      <item>14</item>
+      <item>14</item>
+      <item>0</item>
+      <item>0</item>
+      <item>12</item>
+      <item>14</item>
+      <item>14</item>
+      <item>14</item>
+      <item>12</item>
+      <item>14</item>
+      <item>0</item>
+      <item>14</item>
+      <item>0</item>
+      <item>0</item>
+      <item>12</item>
+      <item>0</item>
+      <item>10</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>14</item>
+      <item>14</item>
+      <item>12</item>
+      <item>14</item>
+      <item>16</item>
+      <item>18</item>
+      <item>14</item>
+      <item>14</item>
+      <item>12</item>
+      <item>10</item>
+      <item>0</item>
+      <item>8</item>
+      <item>0</item>
+      <item>6</item>
+      <item>0</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

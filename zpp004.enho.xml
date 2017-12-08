@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>生产订单批次号增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>COBH</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>COBH</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLCOBH</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLCOBH</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\FU:CO_BH_ORDER_POST\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*ADD BY HANDWY.  当创建生产订单的时候自动带入批次（订单号），但批次没有创建，需要在MIGO过账的时候，自动创建批次</item>
+      <item>DATA GS_MARC TYPE MARC.</item>
+      <item/>
+      <item>IF SY-TCODE  = &apos;CO01&apos;</item>
+      <item>OR  SY-TCODE = &apos;CO40&apos;</item>
+      <item>OR  SY-TCODE = &apos;CO41&apos;.</item>
+      <item/>
+      <item>LOOP AT AFPOTAB.</item>
+      <item>CLEAR GS_MARC.</item>
+      <item>*查询物料是否启用批次</item>
+      <item>SELECT SINGLE * FROM MARC</item>
+      <item>INTO CORRESPONDING FIELDS OF GS_MARC</item>
+      <item>WHERE MATNR  = AFPOTAB-MATNR</item>
+      <item>AND   WERKS  = AFPOTAB-DWERK.</item>
+      <item/>
+      <item>*如果启用批次，将订单号赋给批次号</item>
+      <item>IF AFPOTAB-CHARG IS INITIAL</item>
+      <item>AND GS_MARC-XCHAR = &apos;X&apos;.</item>
+      <item>AFPOTAB-charg = AFPOTAB-aufnr.</item>
+      <item>MODIFY AFPOTAB.</item>
+      <item>ENDIF.</item>
+      <item>ENDLOOP.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item>&quot;ENDADD.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\FU:CO_BH_ORDER_POST\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>3</item>
+      <item>0</item>
+      <item>5</item>
+      <item>3</item>
+      <item>3</item>
+      <item>3</item>
+      <item>0</item>
+      <item>0</item>
+      <item>3</item>
+      <item>4</item>
+      <item>3</item>
+      <item>3</item>
+      <item>3</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

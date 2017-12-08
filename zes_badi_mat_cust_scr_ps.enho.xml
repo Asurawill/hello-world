@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>BADI_IMPL</TOOL>
+   <SHORTTEXT>CJ20N matrial component</SHORTTEXT>
+   <SPOT_NAME>ES_BADI_MAT_CUST_SCR_PS</SPOT_NAME>
+   <IMPL>
+    <ENH_BADI_IMPL_DATA>
+     <SPOT_NAME>ES_BADI_MAT_CUST_SCR_PS</SPOT_NAME>
+     <BADI_NAME>BADI_MAT_CUST_SCR</BADI_NAME>
+     <IMPL_NAME>ZES_BADI_MAT_CUST_SCR_PS</IMPL_NAME>
+     <IMPL_CLASS>ZES_BADI_MAT_CUST_SCR_PS</IMPL_CLASS>
+     <ACTIVE>X</ACTIVE>
+     <IMPL_SHORTTEXT>实施： 客户物料 Badi</IMPL_SHORTTEXT>
+     <IMPL_SHORTTEXT_ID>0000001435221EE5A1896A1E1CF3B010</IMPL_SHORTTEXT_ID>
+    </ENH_BADI_IMPL_DATA>
+   </IMPL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

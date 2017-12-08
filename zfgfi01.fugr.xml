@@ -1,0 +1,1276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_FUGR" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <INCLUDES>
+    <SOBJ_NAME>LZFGFI01TOP</SOBJ_NAME>
+    <SOBJ_NAME>SAPLZFGFI01</SOBJ_NAME>
+   </INCLUDES>
+   <FUNCTIONS>
+    <item>
+     <FUNCNAME>ZFI_FB01</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>T_ZFIFB01</PARAMETER>
+       <DBSTRUCT>ZFIFB01</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_ZFIFB01OUT</PARAMETER>
+       <DBSTRUCT>ZFIFB01OUT</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>T_ZFIFB01</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_ZFIFB01OUT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_FS</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <DBSTRUCT>ZMANDT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <DBSTRUCT>ZBUKRS</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <DBSTRUCT>ZGJAHR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <DBSTRUCT>ZMONAT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_FS01</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <DBSTRUCT>ZMANDT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <DBSTRUCT>ZBUKRS</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <DBSTRUCT>ZGJAHR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <DBSTRUCT>ZMONAT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_KOSTL</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>P_BUKRS</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>BUKRS</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>R_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>T_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL_INFO</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>P_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>R_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_NBDD</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>R_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>T_BUKRS</PARAMETER>
+       <DBSTRUCT>ZBUKRS</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_AUART</PARAMETER>
+       <DBSTRUCT>ZAUART</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_ZNBDD</PARAMETER>
+       <DBSTRUCT>ZNBDD</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>R_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_AUART</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_ZNBDD</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_QC</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>MANDT</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>BUKRS</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>GJAHR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_DATE</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>ZDATE</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_DATE</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_QC01</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>MANDT</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>BUKRS</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>GJAHR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_DATE</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>ZDATE</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_DATE</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_QM</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>MANDT</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>BUKRS</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>GJAHR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_DATE</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>ZDATE</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_DATE</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_QM01</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>MANDT</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>BUKRS</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>GJAHR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_DATE</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>ZDATE</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_DATE</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_SAKAN</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>P_BUKRS</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>BUKRS</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>R_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>T_SAKNR</PARAMETER>
+       <DBSTRUCT>ZSAKAN_INFO</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>P_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>R_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_SAKNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_XJLL</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <DBSTRUCT>ZMANDT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <DBSTRUCT>ZBUKRS</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <DBSTRUCT>ZGJAHR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <DBSTRUCT>ZMONAT</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_RSTGR</PARAMETER>
+       <DBSTRUCT>ZRSTGR</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_RSTGR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 014</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_XJLL01</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>O_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <DBSTRUCT>ZMANDT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <DBSTRUCT>ZBUKRS</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <DBSTRUCT>ZGJAHR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <DBSTRUCT>ZMONAT</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <DBSTRUCT>ZKOSTL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <DBSTRUCT>ZKUNNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <DBSTRUCT>ZLIFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <DBSTRUCT>ZAUFNR</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <DBSTRUCT>ZVBEL</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <DBSTRUCT>ZHKONT</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>O_DATA</PARAMETER>
+       <DBSTRUCT>ZFS001</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>I_RSTGR</PARAMETER>
+       <DBSTRUCT>ZRSTGR</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>O_FLAG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MANDT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_BUKRS</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_GJAHR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 005</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_MONAT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 006</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KOSTL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 007</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_KUNNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 008</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_LIFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 009</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_AUFNR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 010</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_VBEL</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 011</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_HKONT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 012</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>O_DATA</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 013</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_RSTGR</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 014</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFI_XSXX</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>R_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>T_VKORG</PARAMETER>
+       <DBSTRUCT>ZVKORG</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_AUART</PARAMETER>
+       <DBSTRUCT>ZAUART</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_ZXSXX</PARAMETER>
+       <DBSTRUCT>ZSSXX</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>R_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_VKORG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_AUART</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_ZXSXX</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+   </FUNCTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

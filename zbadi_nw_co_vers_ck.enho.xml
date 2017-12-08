@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>BADI_IMPL</TOOL>
+   <SHORTTEXT>影响保存计划成本的 CO 版本</SHORTTEXT>
+   <SPOT_NAME>ES_SAPL_CK00_PS</SPOT_NAME>
+   <IMPL>
+    <ENH_BADI_IMPL_DATA>
+     <SPOT_NAME>ES_SAPL_CK00_PS</SPOT_NAME>
+     <BADI_NAME>BADI_NW_CO_VERS_CK</BADI_NAME>
+     <IMPL_NAME>ZBADI_NW_CO_VERS_CK</IMPL_NAME>
+     <IMPL_CLASS>ZBADI_NW_CO_VERS_CK</IMPL_CLASS>
+     <ACTIVE>X</ACTIVE>
+     <IMPL_SHORTTEXT>影响保存计划成本的 CO 版本</IMPL_SHORTTEXT>
+     <IMPL_SHORTTEXT_ID>0000001435221EE58AF496CCC1777010</IMPL_SHORTTEXT_ID>
+    </ENH_BADI_IMPL_DATA>
+   </IMPL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

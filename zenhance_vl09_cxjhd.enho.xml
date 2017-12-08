@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>交货单冲销检查</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SAPMV50A</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SAPMV50A</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPMV50A</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPMV50A</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPMV50A\FO:USEREXIT_SAVE_DOCUMENT_PREPARE\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*ADD IT02 20160127</item>
+      <item>&quot;VL09 冲销公司间交货单CHECK是否已生成105的过账凭证 ，若已生成且未被106取消的凭证则不允许冲销交货单已生成的643凭证</item>
+      <item>DATA:GT_MSEG TYPE TABLE OF MSEG,</item>
+      <item>GS_MSEG TYPE MSEG,</item>
+      <item>GT_MSEG_SMBLN TYPE TABLE OF MSEG,</item>
+      <item>GS_MSEG_SMBLN TYPE MSEG.</item>
+      <item>DATA:I_MSG  TYPE STRING .&quot;消息</item>
+      <item>CLEAR:GT_MSEG,GS_MSEG,I_MSG.</item>
+      <item>IF SY-TCODE EQ &apos;VL09&apos; AND SY-UCOMM = &apos;YES&apos;</item>
+      <item>AND ( LIKP-KUNNR EQ &apos;0000001000&apos; OR LIKP-KUNNR EQ &apos;0000001100&apos; OR LIKP-KUNNR EQ &apos;0000001200&apos; OR LIKP-KUNNR EQ &apos;0000001300&apos;</item>
+      <item>OR LIKP-KUNNR EQ &apos;0000001310&apos; OR LIKP-KUNNR EQ &apos;0000001500&apos; OR LIKP-KUNNR EQ &apos;0000001800&apos; OR LIKP-KUNNR EQ &apos;0000001900&apos; ) .</item>
+      <item>SELECT * INTO CORRESPONDING FIELDS OF TABLE GT_MSEG</item>
+      <item>FROM MSEG</item>
+      <item>WHERE BWART = &apos;103&apos;</item>
+      <item>AND VBELN_IM = LIKP-VBELN.</item>
+      <item>SORT GT_MSEG BY GJAHR MBLNR ZEILE.</item>
+      <item>CHECK GT_MSEG IS NOT INITIAL.</item>
+      <item>SELECT * INTO CORRESPONDING FIELDS OF TABLE GT_MSEG_SMBLN</item>
+      <item>FROM MSEG</item>
+      <item>FOR ALL ENTRIES IN GT_MSEG</item>
+      <item>WHERE BWART = &apos;104&apos;</item>
+      <item>AND SJAHR    = GT_MSEG-GJAHR</item>
+      <item>AND SMBLN    = GT_MSEG-MBLNR</item>
+      <item>AND SMBLP    = GT_MSEG-ZEILE</item>
+      <item>AND VBELN_IM = LIKP-VBELN.</item>
+      <item>.</item>
+      <item>SORT GT_MSEG_SMBLN BY SJAHR SMBLN SMBLP.</item>
+      <item/>
+      <item>LOOP AT GT_MSEG INTO GS_MSEG .</item>
+      <item>READ TABLE GT_MSEG_SMBLN INTO GS_MSEG_SMBLN WITH KEY SJAHR = GS_MSEG-GJAHR SMBLN = GS_MSEG-MBLNR SMBLP = GS_MSEG-ZEILE BINARY SEARCH.</item>
+      <item>IF SY-SUBRC NE 0.</item>
+      <item>CONCATENATE &apos;交货单&apos; LIPS-VBELN   &apos;已收货过账，不允许冲销！&apos; INTO I_MSG .</item>
+      <item>MESSAGE I_MSG   TYPE &apos;E&apos;.</item>
+      <item>&quot;   LEAVE TO TRANSACTION &apos;VL09&apos; AND SKIP FIRST SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>ENDLOOP.</item>
+      <item/>
+      <item/>
+      <item>ENDIF.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPMV50A\FO:USEREXIT_SAVE_DOCUMENT_PREPARE\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>1</item>
+      <item>2</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>1</item>
+      <item>1</item>
+      <item>5</item>
+      <item>7</item>
+      <item>13</item>
+      <item>5</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>6</item>
+      <item>8</item>
+      <item>10</item>
+      <item>14</item>
+      <item>14</item>
+      <item>11</item>
+      <item>9</item>
+      <item>5</item>
+      <item>0</item>
+      <item>0</item>
+      <item>5</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

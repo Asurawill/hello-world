@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>库存周转率报表</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>RMCB0300</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>RMCB0300</ORG_MAIN_NAME>
+    <PROGRAMNAME>RMCB0300</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RMCB0300</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RMCB0300\IC:RMCS00AL\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*ZMM013库存周转率报表 提取 BY HAND 唐博 20150213</item>
+      <item>IF SY-REPID EQ &apos;RMCB0300&apos;.</item>
+      <item>EXPORT INT_S000[] TO MEMORY ID &apos;ZMCB_NT_S000&apos;.</item>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RMCB0300</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RMCB0300\FO:VARIABLEN_INITIALISIEREN\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*ZMM013 库存周转率报表</item>
+      <item>IF SY-TCODE EQ &apos;SE38&apos; OR SY-TCODE EQ &apos;ZMM013&apos;.</item>
+      <item>DATA L_ZTCODE TYPE CHAR20.</item>
+      <item>IMPORT L_ZTCODE FROM MEMORY ID &apos;L_ZTCODE&apos;.</item>
+      <item>IF L_ZTCODE EQ &apos;ZMM013&apos;.</item>
+      <item>AKT_TMC7-MCANA = &apos;0033&apos;.&quot;调用MC.B报表</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:RMCB0300\IC:RMCS00AL\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RMCB0300\FO:VARIABLEN_INITIALISIEREN\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

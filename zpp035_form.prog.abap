@@ -1,0 +1,1855 @@
+*&---------------------------------------------------------------------*
+*&  包含                ZPP035_FORM
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Form  CHOOSE_FILE
+*&---------------------------------------------------------------------*
+*       选择上传的文件
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM CHOOSE_FILE .
+  CALL FUNCTION 'WS_FILENAME_GET'
+    EXPORTING
+      DEF_FILENAME     = '*'
+      DEF_PATH         = 'G:\'
+*     MASK             = ' '
+*     MODE             = ' '
+      TITLE            = '文件选择'
+    IMPORTING
+      FILENAME         = P_FILE
+*     RC               =
+    EXCEPTIONS
+      INV_WINSYS       = 1
+      NO_BATCH         = 2
+      SELECTION_CANCEL = 3
+      SELECTION_ERROR  = 4
+      OTHERS           = 5.
+  .
+  IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+  ENDIF.
+
+ENDFORM.                    " CHOOSE_FILE
+
+
+*&---------------------------------------------------------------------*
+*&      Form  ENSURE_CHOOSE
+*&---------------------------------------------------------------------*
+*       上传文件确认
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM ENSURE_CHOOSE .
+  CALL FUNCTION 'POPUP_TO_CONFIRM'
+    EXPORTING
+      TITLEBAR      = '请确认'
+*     DIAGNOSE_OBJECT             = ' '
+      TEXT_QUESTION = '是否导入该文件?'
+      TEXT_BUTTON_1 = '是'
+*     ICON_BUTTON_1 = ' '
+      TEXT_BUTTON_2 = '否'
+*     ICON_BUTTON_2 = ' '
+*     DEFAULT_BUTTON              = '1'
+*     DISPLAY_CANCEL_BUTTON       = 'X'
+*     USERDEFINED_F1_HELP         = ' '
+*     START_COLUMN  = 25
+*     START_ROW     = 6
+*     POPUP_TYPE    =
+*     IV_QUICKINFO_BUTTON_1       = ' '
+*     IV_QUICKINFO_BUTTON_2       = ' '
+    IMPORTING
+      ANSWER        = LV_ANSWER.
+* TABLES
+*   PARAMETER                   =
+* EXCEPTIONS
+*   TEXT_NOT_FOUND              = 1
+*   OTHERS                      = 2
+  .
+  IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+  ENDIF.
+
+  IF LV_ANSWER = '1'.
+    PERFORM UPLOAD_FILE.
+  ELSE.
+*    MESSAGE s003 WITH sy-uname.
+*    STOP.
+
+  ENDIF.
+
+ENDFORM.                    " ENSURE_CHOOSE
+
+
+*&---------------------------------------------------------------------*
+*&      Form  UPLOAD_FILE
+*&---------------------------------------------------------------------*
+*       上传文件至内表
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM UPLOAD_FILE .
+
+  GV_FILENAME = P_FILE.
+
+  CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+*     I_FIELD_SEPERATOR    = ''
+      I_LINE_HEADER        = ''
+      I_TAB_RAW_DATA       = TAB_RAW_DATA
+      I_FILENAME           = P_FILE
+    TABLES
+      I_TAB_CONVERTED_DATA = IT_ITEM
+*   EXCEPTIONS
+*     CONVERSION_FAILED    = 1
+*     OTHERS               = 2
+    .
+  IF SY-SUBRC = 0.
+    DELETE IT_ITEM INDEX 1."删除第一行内表
+    PERFORM FRM_CREATE_PO.
+  ENDIF.
+
+ENDFORM.                    " UPLOAD_FILE
+*&---------------------------------------------------------------------*
+*&      Form  FRM_CREATE_PO
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+
+FORM FRM_CREATE_PO .
+  DATA: L_RETURN   TYPE BAPIRET2,
+        L_OK       TYPE I VALUE 0,
+        L_ORDERNUM TYPE BAPI_ORDER_KEY-ORDER_NUMBER,
+        L_ORDERTYP TYPE BAPI_ORDER_COPY-ORDER_TYPE,
+        L_ERRORLOG TYPE C.
+  DATA: SELPOOL   TYPE CSTMAT,
+        DSTST_FLG TYPE CCXFELD,
+        STB       TYPE STPOX OCCURS 0.
+
+  SELECT
+    WERKS
+    AUART
+    CAPID
+  INTO CORRESPONDING FIELDS OF TABLE IT_T399X
+   FROM T399X.
+
+  LOOP AT IT_ITEM INTO IW_ITEM .
+    CLEAR IW_ORDERDATA.
+    "增加前导零
+    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+      EXPORTING
+        INPUT  = IW_ITEM-KDAUF
+      IMPORTING
+        OUTPUT = IW_ORDERDATA-KDAUF.
+
+    IW_ORDERDATA-AUFNR = IW_ITEM-AUFNR. "工单号
+    IW_ORDERDATA-KDPOS = IW_ITEM-KDPOS. "销售订单行项目
+    IW_ORDERDATA-MATNR = IW_ITEM-MATNR. "物料
+    IW_ORDERDATA-WERKS = IW_ITEM-WERKS. "生产工厂
+    IW_ORDERDATA-AUART = IW_ITEM-AUART. "订单类型
+    IW_ORDERDATA-GAMNG = IW_ITEM-GAMNG. "总数量
+    IW_ORDERDATA-MEINS = IW_ITEM-MEINS. "单位
+    IW_ORDERDATA-GSTRP = IW_ITEM-GSTRP. "开工时间
+    IW_ORDERDATA-GLTRP = IW_ITEM-GLTRP. "完工时间
+    IW_ORDERDATA-WEMPF = IW_ITEM-WEMPF. "原系统生产订单编号
+    IW_ORDERDATA-ABLAD = IW_ITEM-ABLAD. "原系统销售订单编号
+    APPEND IW_ORDERDATA TO IT_ORDERDATA.
+    CLEAR IW_ORDERLIST.
+
+    "增加前导零
+    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+      EXPORTING
+        INPUT  = IW_ITEM-KDAUF
+      IMPORTING
+        OUTPUT = IW_ORDERLIST-KDAUF.
+
+    IW_ORDERLIST-AUFNR  = IW_ITEM-AUFNR. "工单号
+    IW_ORDERLIST-DATE   = IW_ITEM-DATE.  "录入日期.
+    IW_ORDERLIST-KDPOS  = IW_ITEM-KDPOS. "销售订单行项目
+    IW_ORDERLIST-MATNR  = IW_ITEM-MATNR. "物料
+    IW_ORDERLIST-WERKS  = IW_ITEM-WERKS. "生产工厂
+    IW_ORDERLIST-AUART  = IW_ITEM-AUART. "订单类型
+    IW_ORDERLIST-GAMNG  = IW_ITEM-GAMNG. "总数量
+    IW_ORDERLIST-MEINS  = IW_ITEM-MEINS. "单位
+    IW_ORDERLIST-GSTRP  = IW_ITEM-GSTRP. "开工时间
+    IW_ORDERLIST-GLTRP  = IW_ITEM-GLTRP. "完工时间
+    IW_ORDERLIST-WEMPF  = IW_ITEM-WEMPF. "原系统生产订单编号
+    IW_ORDERLIST-ABLAD  = IW_ITEM-ABLAD. "原系统销售订单编号
+    IW_ORDERLIST-POSNR  = IW_ITEM-POSNR. "项目
+    IW_ORDERLIST-RMATNR = IW_ITEM-RMATNR."组件物料
+    IW_ORDERLIST-MENGE  = IW_ITEM-MENGE. "需求数量
+    IW_ORDERLIST-RMEINS = IW_ITEM-RMEINS."单位
+    IW_ORDERLIST-POSTP  = IW_ITEM-POSTP. "项目类型
+    IW_ORDERLIST-VORNR  = IW_ITEM-VORNR. "工序
+    IW_ORDERLIST-RWERKS = IW_ITEM-RWERKS."组件工厂
+    IW_ORDERLIST-LGORT  = IW_ITEM-LGORT. "仓储地点
+    IW_ORDERLIST-RGEKZ  = IW_ITEM-RGEKZ. "反冲
+    IW_ORDERLIST-SANKA  = IW_ITEM-SANKA. "核算相关标识
+    APPEND IW_ORDERLIST TO IT_ORDERLIST.
+    CLEAR IW_ORDERLIST.
+  ENDLOOP.
+
+  SORT IT_ORDERDATA BY AUFNR.
+  DELETE ADJACENT DUPLICATES FROM IT_ORDERDATA COMPARING AUFNR  .
+
+  SORT IT_ORDERLIST BY AUFNR.
+
+  CHECK IT_ORDERDATA IS NOT INITIAL.
+
+*查询物料单位
+  SELECT *
+  FROM MARA
+  INTO CORRESPONDING FIELDS OF TABLE GT_MARA
+  FOR ALL ENTRIES IN IT_ORDERLIST
+  WHERE MATNR = IT_ORDERLIST-MATNR.
+
+
+  LOOP AT IT_ORDERDATA INTO IW_ORDERDATA .
+
+*判断订单类型是否存在
+    READ TABLE IT_T399X INTO IW_T399X
+    WITH KEY WERKS = IW_ORDERDATA-WERKS
+             AUART = IW_ORDERDATA-AUART.
+
+    IF SY-SUBRC = 0.
+*无BOM
+      IF IW_T399X-CAPID = 'ZP01'.  "都用V2 BDC
+
+*判断有无销售订单
+        IF IW_ORDERDATA-KDAUF IS INITIAL.
+          PERFORM FRM_CALLFUN_CREATPO_V2 USING IW_ORDERDATA
+          CHANGING L_OK.
+          IF L_OK = 1.
+            EXIT.
+          ENDIF.
+        ELSE.
+
+*有销售订单
+          PERFORM FRM_CALLFUN_CREATPO_SOV2 USING IW_ORDERDATA
+          CHANGING L_OK.
+          IF L_OK = 1.
+            EXIT.
+          ENDIF.
+        ENDIF.
+
+*有BOM
+      ELSEIF IW_T399X-CAPID = 'PP01'.  "无BOM  用V2 BDC
+
+*判断有无销售订单
+        IF IW_ORDERDATA-KDAUF IS INITIAL.
+          CALL FUNCTION 'CS_BOM_EXPL_MAT_V2'
+            EXPORTING
+              CAPID                 = IW_T399X-CAPID   "应用程序 一般为 PP01
+              DATUV                 = SY-DATUM        "通常为系统的当前日期
+              MTNRV                 = IW_ORDERDATA-MATNR  "要展开BOM 的物料
+              MEHRS                 = ''    " X 表示多层展开﹐space 表示只展开第一层
+              STLAL                 = '01'  "Alternative BOM
+              STLAN                 = '1'   " BOM用途
+              WERKS                 = IW_ORDERDATA-WERKS   " 通常为 1000
+            IMPORTING
+              TOPMAT                = SELPOOL
+              DSTST                 = DSTST_FLG
+            TABLES
+              STB                   = STB         "展开的 BOM 存放在该内表
+*             matcat                = matcat.   "下面含有组件的物料存放在该内表
+            EXCEPTIONS
+              ALT_NOT_FOUND         = 1
+              CALL_INVALID          = 2
+              MATNR_NOT_FOUND       = 3
+              MISSING_AUTHORIZATION = 4
+              NO_BOM_FOUND          = 5
+              NO_WERKS_DATA         = 6
+              NO_SUITABLE_BOM_FOUND = 7
+              CONVERSION_ERROR      = 8
+              OTHERS                = 9.
+*判断有无BOM
+          IF STB IS INITIAL.
+            PERFORM FRM_CALLFUN_CREATPO_V2 USING IW_ORDERDATA
+            CHANGING L_OK.
+            IF L_OK = 1.
+              EXIT.
+            ENDIF.
+          ELSE.
+            PERFORM FRM_CALLFUN_CREATPO USING IW_ORDERDATA
+                                             CHANGING L_OK.
+            IF L_OK = 1.
+              EXIT.
+            ENDIF.
+          ENDIF.
+
+*有销售订单
+        ELSE.
+
+*判断有无销售订单BOM
+          CALL FUNCTION 'CS_BOM_EXPL_KND_V1'
+            EXPORTING
+              CAPID                 = IW_T399X-CAPID
+              STLAN                 = '1'
+              COSPR                 = 'X' " Internal: (CO) order-spec. MatPreRead
+*             cuobj                 = l_cuobj
+              CUOLS                 = 'X'  " Merkmalsbewertung zur Position einlesen
+              DATUV                 = SY-DATUM " 生效日期
+              EHNDL                 = '2'
+*             emeng                 = '1' " Required gamng
+              MEHRS                 = '' " 是否全部展开，X表示全部展开
+              MTNRV                 = IW_ORDERDATA-MATNR " 物料
+              MMORY                 = '0'
+              RNDKZ                 = '1'
+              WERKS                 = IW_ORDERDATA-WERKS " 工厂
+              VBELN                 = IW_ORDERDATA-KDAUF " 销售订单
+              VBPOS                 = IW_ORDERDATA-KDPOS " 销售行项目
+              STPST                 = 99
+            IMPORTING
+              TOPMAT                = SELPOOL
+*             topmat                = gs_topmat
+            TABLES
+              STB                   = STB
+*             MATCAT                = STR_MATCAT_OUT[]
+            EXCEPTIONS
+              ALT_NOT_FOUND         = 1
+              CALL_INVALID          = 2
+              MATNR_NOT_FOUND       = 3
+              MISSING_AUTHORIZATION = 4
+              NO_BOM_FOUND          = 5
+              NO_WERKS_DATA         = 6
+              NO_SUITABLE_BOM_FOUND = 7
+              CONVERSION_ERROR      = 8
+              OTHERS                = 9.
+
+*当无销售订单BOM
+          IF STB IS INITIAL.
+            CALL FUNCTION 'CS_BOM_EXPL_MAT_V2'
+              EXPORTING
+                CAPID                 = IW_T399X-CAPID   "应用程序 一般为 PP01
+                DATUV                 = SY-DATUM   "通常为系统的当前日期
+                MTNRV                 = IW_ORDERDATA-MATNR  "要展开BOM 的物料
+                MEHRS                 = ''        " X 表示多层展开﹐space 表示只展开第一层
+                STLAL                 = '01'  "Alternative BOM
+                STLAN                 = '1'  " BOM用途
+                WERKS                 = IW_ORDERDATA-WERKS   " 通常为 1000
+              IMPORTING
+                TOPMAT                = SELPOOL
+                DSTST                 = DSTST_FLG
+              TABLES
+                STB                   = STB         "展开的 BOM 存放在该内表
+*               matcat                = matcat.   "下面含有组件的物料存放在该内表
+              EXCEPTIONS
+                ALT_NOT_FOUND         = 1
+                CALL_INVALID          = 2
+                MATNR_NOT_FOUND       = 3
+                MISSING_AUTHORIZATION = 4
+                NO_BOM_FOUND          = 5
+                NO_WERKS_DATA         = 6
+                NO_SUITABLE_BOM_FOUND = 7
+                CONVERSION_ERROR      = 8
+                OTHERS                = 9.
+*判断BOM
+            IF STB IS INITIAL.
+              PERFORM FRM_CALLFUN_CREATPO_SOV2 USING IW_ORDERDATA
+              CHANGING L_OK.
+              IF L_OK = 1.
+                EXIT.
+              ENDIF.
+            ELSE.
+              PERFORM FRM_CALLFUN_CREATPO_SO USING IW_ORDERDATA
+              CHANGING L_OK.
+              IF L_OK = 1.
+                EXIT.
+              ENDIF.
+            ENDIF.
+
+          ELSE. "有BOM
+            PERFORM FRM_CALLFUN_CREATPO_SO USING IW_ORDERDATA
+            CHANGING L_OK.
+            IF L_OK = 1.
+              EXIT.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+      ENDIF.
+    ELSE.
+
+      LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+      WHERE AUFNR = IW_ORDERDATA-AUFNR.
+        IW_ORDERLIST-MESSAGE = '该工厂不存在此订单类型！'.
+        MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+      ENDLOOP.
+
+    ENDIF.
+  ENDLOOP.
+
+  PERFORM FRM_INIT_STRUCTURE .
+
+  PERFORM OUTPUT_TABLE_DATA.
+
+ENDFORM.                    " FRM_CREATE_PO
+*&---------------------------------------------------------------------*
+*&      Form  FRM_CALLFUN_CREATPO
+*&---------------------------------------------------------------------*
+*       无销售订单且不弹BOM消息
+*----------------------------------------------------------------------*
+*      -->P_IW_ORDERDATA  text
+*----------------------------------------------------------------------*
+FORM FRM_CALLFUN_CREATPO  USING    P_IW_ORDERDATA TYPE TY_ORDERLIST
+                          CHANGING L_OK TYPE I.
+  DATA: BDCDATA TYPE STANDARD TABLE OF BDCDATA .
+  DATA: WBDCDATA TYPE BDCDATA .
+  DATA: MESSTAB  TYPE STANDARD TABLE OF BDCMSGCOLL,
+        WMESSTAB TYPE                   BDCMSGCOLL.
+  DATA OPT TYPE CTU_PARAMS.
+  DATA:L_TEXT  TYPE CHAR140,
+       L_GAMNG TYPE CHAR18.
+  L_GAMNG = IW_ORDERDATA-GAMNG.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0100'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_CURSOR'.
+  WBDCDATA-FVAL = 'CAUFVD-AUFNR'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '/00'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-MATNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MATNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-WERKS'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WERKS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-AUFNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUFNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AUFPAR-PP_AUFART'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUART.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KOWE'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GAMNG'.
+  WBDCDATA-FVAL = L_GAMNG.
+  APPEND WBDCDATA TO BDCDATA.
+
+*物料主数据单位
+  IF P_IW_ORDERDATA-MEINS IS INITIAL.
+    READ TABLE GT_MARA INTO GS_MARA
+    WITH KEY MATNR = IW_ORDERDATA-MATNR.
+    IF SY-SUBRC = 0.
+      P_IW_ORDERDATA-MEINS = GS_MARA-MEINS.
+    ENDIF.
+  ENDIF.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GMEIN'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MEINS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GLTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GLTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GSTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GSTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KPU2'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-WEMPF'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WEMPF.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-ABLAD'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-ABLAD.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=AMAK'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=DEL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+  WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_CURSOR'.
+    WBDCDATA-FVAL = 'RESBD-MATNR(01)'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '=KEIN'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-MATNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMATNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    L_GAMNG = IW_ORDERLIST-MENGE.
+    WBDCDATA-FNAM = 'RESBD-MENGE(01)'.
+    WBDCDATA-FVAL =  L_GAMNG.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-EINHEIT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMEINS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSTP(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSTP.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-VORNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-VORNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RCOLS-APLFL(01)'.
+    WBDCDATA-FVAL = ''.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-WERKS(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RWERKS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-LGORT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-LGORT.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-RGEKZ(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RGEKZ.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMD'.
+    WBDCDATA-DYNPRO   = '0110'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+  ENDLOOP.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=BU'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+  OPT-DISMODE = 'N'.
+  OPT-UPDMODE = 'S'.
+  OPT-DEFSIZE = 'X'.
+*  opt-nobinpt = 'X'.
+  CALL TRANSACTION 'CO01' USING BDCDATA
+        OPTIONS FROM OPT
+        MESSAGES INTO MESSTAB.
+
+  L_OK = 1.
+
+  READ TABLE MESSTAB INTO WMESSTAB WITH KEY MSGTYP = 'E'.
+  IF SY-SUBRC = 0.
+    CLEAR L_TEXT.
+    CALL FUNCTION 'MESSAGE_TEXT_BUILD'
+      EXPORTING
+        MSGID               = WMESSTAB-MSGID
+        MSGNR               = WMESSTAB-MSGNR
+        MSGV1               = WMESSTAB-MSGV1
+        MSGV2               = WMESSTAB-MSGV2
+        MSGV3               = WMESSTAB-MSGV3
+        MSGV4               = WMESSTAB-MSGV4
+      IMPORTING
+        MESSAGE_TEXT_OUTPUT = L_TEXT.
+    LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+    WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+      IW_ORDERLIST-MESSAGE = L_TEXT.
+      IW_ORDERLIST-TYPE    = 'E'.
+      MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+    ENDLOOP.
+
+  ELSE.
+
+    LOOP AT MESSTAB INTO WMESSTAB
+    WHERE MSGTYP = 'S'
+     AND MSGV1 IS NOT INITIAL.
+      L_OK = 0.
+      LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+      WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+        IW_ORDERLIST-AUFNR = WMESSTAB-MSGV1.
+        IW_ORDERLIST-TYPE  = 'S'.
+        MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+      ENDLOOP.
+    ENDLOOP.
+  ENDIF.
+
+ENDFORM.                    " FRM_CALLFUN_CREATPO
+
+*&---------------------------------------------------------------------*
+*&      Form  OUTPUT_TABLE_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM OUTPUT_TABLE_DATA .
+  IW_LAYOUT-CWIDTH_OPT = 'X'.             "最优化宽度
+  IW_LAYOUT-SEL_MODE = 'A'.               "选择列
+  IW_LAYOUT-ZEBRA = 'X'.
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY_LVC'
+    EXPORTING
+      I_CALLBACK_PROGRAM       = SY-REPID
+      I_CALLBACK_PF_STATUS_SET = 'PF_STATUS_SET'
+      IS_LAYOUT_LVC            = IW_LAYOUT
+      IT_FIELDCAT_LVC          = IT_STRUCTURE
+      I_SAVE                   = 'U'
+      I_GRID_TITLE             = L_TITLE
+    TABLES
+      T_OUTTAB                 = IT_ORDERLIST
+    EXCEPTIONS
+      PROGRAM_ERROR            = 1
+      OTHERS                   = 2.
+  IF SY-SUBRC <> 0.
+    MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+    WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+  ENDIF.
+ENDFORM.                    " OUTPUT_TABLE_DATA
+*&---------------------------------------------------------------------*
+*&      Form  FRM_INIT_STRUCTURE
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_INIT_STRUCTURE  .
+  PERFORM FRM_INIT_STRUCTURE_LINE USING :
+        'TYPE'  '消息类型' 'X',
+        'AUFNR' '订单号' 'X',
+        'MESSAGE' '错误信息' 'X',
+        'DATE' '录入日期' '',
+        'KDAUF' '销售订单号' 'X',
+        'KDPOS' '销售订单行项目' 'X',
+        'MATNR' '物料' '',
+        'WERKS' '生产工厂' '',
+        'AUART' '订单类型' '',
+        'GAMNG' '总数量' '',
+        'MEINS' '单位' '',
+        'GSTRP' '开工时间' '',
+        'GLTRP' '完工时间' '',
+        'WEMPF' '原系统生产订单编号' '',
+        'ABLAD' '原系统销售订单编号' '',
+        'POSNR' '项目' 'X',
+        'RMATNR' '组件' '',
+        'MENGE' '需求数量' '',
+        'RMEINS' '计量单位' '',
+        'POSTP' '项目类型' '',
+        'VORNR' '工序' '',
+        'RWERKS' '组件工厂' '',
+        'LGORT' '仓储地点' '',
+        'RGEKZ' '反冲' ''.
+ENDFORM.                    " FRM_INIT_STRUCTURE
+*&---------------------------------------------------------------------*
+*&      Form  FRM_INIT_STRUCTURE_LINE
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM FRM_INIT_STRUCTURE_LINE USING P_NAME  P_TXT P_NO_ZERO.
+  CLEAR IW_STRUCTURE.
+  IW_STRUCTURE-FIELDNAME = P_NAME.  " 列名
+  IW_STRUCTURE-COLTEXT = P_TXT.
+  IW_STRUCTURE-NO_ZERO = P_NO_ZERO.
+
+  APPEND IW_STRUCTURE TO IT_STRUCTURE.
+ENDFORM.                    " FRM_INIT_STRUCTURE_LINE
+
+*&---------------------------------------------------------------------*
+*&      Form  PF_STATUS_SET
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM PF_STATUS_SET USING RT_EXTAB TYPE SLIS_T_EXTAB.
+  SET PF-STATUS 'STANDARD_FULLSCREEN'.
+ENDFORM.                    "PF_STATUS_SET
+*&---------------------------------------------------------------------*
+*&      Form  FRM_CALLFUN_CREATPO_SO
+*&---------------------------------------------------------------------*
+*       无销售订单，不弹BOM
+*----------------------------------------------------------------------*
+*      -->P_IW_ORDERDATA  text
+*      <--P_L_OK  text
+*----------------------------------------------------------------------*
+FORM FRM_CALLFUN_CREATPO_SO   USING    P_IW_ORDERDATA TYPE TY_ORDERLIST
+                          CHANGING L_OK TYPE I.
+  DATA: BDCDATA TYPE STANDARD TABLE OF BDCDATA .
+  DATA: WBDCDATA TYPE BDCDATA .
+  DATA: MESSTAB  TYPE STANDARD TABLE OF BDCMSGCOLL,
+        WMESSTAB TYPE                   BDCMSGCOLL.
+  DATA OPT TYPE CTU_PARAMS.
+  DATA:L_TEXT  TYPE CHAR140,
+       L_GAMNG TYPE CHAR18.
+  L_GAMNG = IW_ORDERDATA-GAMNG.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0220'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_CURSOR'.
+  WBDCDATA-FVAL = 'CAUFVD-AUFNR'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '/00'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-KDAUF'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-KDAUF.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-KDPOS'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-KDPOS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-MATNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MATNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-WERKS'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WERKS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-AUFNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUFNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AUFPAR-PP_AUFART'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUART.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '/00'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  L_GAMNG = IW_ORDERDATA-GAMNG.
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GAMNG'.
+  WBDCDATA-FVAL = L_GAMNG.
+  APPEND WBDCDATA TO BDCDATA.
+
+*物料主数据单位
+  IF P_IW_ORDERDATA-MEINS IS INITIAL.
+    READ TABLE GT_MARA INTO GS_MARA
+    WITH KEY MATNR = IW_ORDERDATA-MATNR.
+    IF SY-SUBRC = 0.
+      P_IW_ORDERDATA-MEINS = GS_MARA-MEINS.
+    ENDIF.
+  ENDIF.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GMEIN'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MEINS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GLTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GLTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GSTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GSTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KOWE'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KPU2'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-WEMPF'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WEMPF.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-ABLAD'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-ABLAD.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=AMAK'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=DEL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+  WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_CURSOR'.
+    WBDCDATA-FVAL = 'RESBD-MATNR(01)'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '=KEIN'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-MATNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMATNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    L_GAMNG = IW_ORDERLIST-MENGE.
+    WBDCDATA-FNAM = 'RESBD-MENGE(01)'.
+    WBDCDATA-FVAL =  L_GAMNG.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-EINHEIT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMEINS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSTP(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSTP.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-VORNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-VORNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RCOLS-APLFL(01)'.
+    WBDCDATA-FVAL = ''.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-WERKS(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RWERKS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-LGORT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-LGORT.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-RGEKZ(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RGEKZ.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMD'.
+    WBDCDATA-DYNPRO   = '0110'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+  ENDLOOP.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=BU'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  OPT-DISMODE = 'N'.
+  OPT-UPDMODE = 'S'.
+  OPT-DEFSIZE = 'X'.
+*  opt-nobinpt = 'X'.
+  CALL TRANSACTION 'CO08' USING BDCDATA
+        OPTIONS FROM OPT
+        MESSAGES INTO MESSTAB.
+
+  L_OK = 1.
+  READ TABLE MESSTAB INTO WMESSTAB WITH KEY MSGTYP = 'E'.
+  IF SY-SUBRC = 0.
+    CLEAR L_TEXT.
+    CALL FUNCTION 'MESSAGE_TEXT_BUILD'
+      EXPORTING
+        MSGID               = WMESSTAB-MSGID
+        MSGNR               = WMESSTAB-MSGNR
+        MSGV1               = WMESSTAB-MSGV1
+        MSGV2               = WMESSTAB-MSGV2
+        MSGV3               = WMESSTAB-MSGV3
+        MSGV4               = WMESSTAB-MSGV4
+      IMPORTING
+        MESSAGE_TEXT_OUTPUT = L_TEXT.
+    LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+    WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+      IW_ORDERLIST-MESSAGE = L_TEXT.
+      IW_ORDERLIST-TYPE    = 'E'.
+      MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+    ENDLOOP.
+
+  ELSE.
+    LOOP AT MESSTAB INTO WMESSTAB WHERE MSGTYP = 'S' AND MSGV1 IS NOT INITIAL.
+      L_OK = 0.
+      LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+      WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+        IW_ORDERLIST-AUFNR = WMESSTAB-MSGV1.
+        IW_ORDERLIST-TYPE  = 'S'.
+        MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+      ENDLOOP.
+    ENDLOOP.
+  ENDIF.
+ENDFORM.                    " FRM_CALLFUN_CREATPO_SO
+*&---------------------------------------------------------------------*
+*&      Form  FRM_CALLFUN_CREATPO_SOV2
+*&---------------------------------------------------------------------*
+*       有销售订单，弹出BOM
+*----------------------------------------------------------------------*
+*      -->P_IW_ORDERDATA  text
+*      <--P_L_OK  text
+*----------------------------------------------------------------------*
+FORM FRM_CALLFUN_CREATPO_SOV2   USING    P_IW_ORDERDATA TYPE TY_ORDERLIST
+                          CHANGING L_OK TYPE I.
+  DATA: BDCDATA TYPE STANDARD TABLE OF BDCDATA .
+  DATA: WBDCDATA TYPE BDCDATA .
+  DATA: MESSTAB  TYPE STANDARD TABLE OF BDCMSGCOLL,
+        WMESSTAB TYPE                   BDCMSGCOLL.
+  DATA OPT TYPE CTU_PARAMS.
+  DATA:L_TEXT  TYPE CHAR140,
+       L_GAMNG TYPE CHAR18.
+  L_GAMNG = IW_ORDERDATA-GAMNG.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0220'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_CURSOR'.
+  WBDCDATA-FVAL = 'CAUFVD-AUFNR'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '/00'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-KDAUF'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-KDAUF.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-KDPOS'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-KDPOS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-MATNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MATNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-WERKS'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WERKS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-AUFNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUFNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AUFPAR-PP_AUFART'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUART.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KOSD'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  L_GAMNG = IW_ORDERDATA-GAMNG.
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GAMNG'.
+  WBDCDATA-FVAL = L_GAMNG.
+  APPEND WBDCDATA TO BDCDATA.
+
+*物料主数据单位
+  IF P_IW_ORDERDATA-MEINS IS INITIAL.
+    READ TABLE GT_MARA INTO GS_MARA
+    WITH KEY MATNR = IW_ORDERDATA-MATNR.
+    IF SY-SUBRC = 0.
+      P_IW_ORDERDATA-MEINS = GS_MARA-MEINS.
+    ENDIF.
+  ENDIF.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GMEIN'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MEINS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GLTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GLTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GSTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GSTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOSD'.
+  WBDCDATA-DYNPRO   = '0310'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=OPT2'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KOWE'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KPU2'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-WEMPF'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WEMPF.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-ABLAD'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-ABLAD.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=AMAK'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=DEL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+  WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_CURSOR'.
+    WBDCDATA-FVAL = 'RESBD-MATNR(01)'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '=KEIN'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-MATNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMATNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    L_GAMNG = IW_ORDERLIST-MENGE.
+    WBDCDATA-FNAM = 'RESBD-MENGE(01)'.
+    WBDCDATA-FVAL =  L_GAMNG.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-EINHEIT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMEINS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSTP(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSTP.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-VORNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-VORNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RCOLS-APLFL(01)'.
+    WBDCDATA-FVAL = ''.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-WERKS(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RWERKS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-LGORT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-LGORT.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-RGEKZ(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RGEKZ.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMD'.
+    WBDCDATA-DYNPRO   = '0110'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+  ENDLOOP.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=BU'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  OPT-DISMODE = 'N'.
+  OPT-UPDMODE = 'S'.
+  OPT-DEFSIZE = 'X'.
+*  opt-nobinpt = 'X'.
+  CALL TRANSACTION 'CO08' USING BDCDATA
+        OPTIONS FROM OPT
+        MESSAGES INTO MESSTAB.
+
+  L_OK = 1.
+  READ TABLE MESSTAB INTO WMESSTAB WITH KEY MSGTYP = 'E'.
+  IF SY-SUBRC = 0.
+    CLEAR L_TEXT.
+    CALL FUNCTION 'MESSAGE_TEXT_BUILD'
+      EXPORTING
+        MSGID               = WMESSTAB-MSGID
+        MSGNR               = WMESSTAB-MSGNR
+        MSGV1               = WMESSTAB-MSGV1
+        MSGV2               = WMESSTAB-MSGV2
+        MSGV3               = WMESSTAB-MSGV3
+        MSGV4               = WMESSTAB-MSGV4
+      IMPORTING
+        MESSAGE_TEXT_OUTPUT = L_TEXT.
+
+    LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+    WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+      IW_ORDERLIST-MESSAGE = L_TEXT.
+      IW_ORDERLIST-TYPE    = 'E'.
+      MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+    ENDLOOP.
+
+  ELSE.
+    LOOP AT MESSTAB INTO WMESSTAB WHERE MSGTYP = 'S' AND MSGV1 IS NOT INITIAL.
+      L_OK = 0.
+      LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+      WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+        IW_ORDERLIST-AUFNR = WMESSTAB-MSGV1.
+        IW_ORDERLIST-TYPE  = 'S'.
+        MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+      ENDLOOP.
+    ENDLOOP.
+  ENDIF.
+ENDFORM.                    " FRM_CALLFUN_CREATPO_SOV2
+*&---------------------------------------------------------------------*
+*&      Form  FRM_CALLFUN_CREATPO_V2
+*&---------------------------------------------------------------------*
+*       无销售订单，需要弹出BOM
+*----------------------------------------------------------------------*
+*      -->P_IW_ORDERDATA  text
+*      <--P_L_OK  text
+*----------------------------------------------------------------------*
+FORM FRM_CALLFUN_CREATPO_V2   USING    P_IW_ORDERDATA TYPE TY_ORDERLIST
+                          CHANGING L_OK TYPE I.
+  DATA: BDCDATA TYPE STANDARD TABLE OF BDCDATA .
+  DATA: WBDCDATA TYPE BDCDATA .
+  DATA: MESSTAB  TYPE STANDARD TABLE OF BDCMSGCOLL,
+        WMESSTAB TYPE                   BDCMSGCOLL.
+  DATA OPT TYPE CTU_PARAMS.
+  DATA:L_TEXT  TYPE CHAR140,
+       L_GAMNG TYPE CHAR18.
+  L_GAMNG = IW_ORDERDATA-GAMNG.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0100'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '/00'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-MATNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MATNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-WERKS'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WERKS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AUFPAR-PP_AUFART'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUART.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-AUFNR'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-AUFNR.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '/00'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  L_GAMNG = IW_ORDERDATA-GAMNG.
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GAMNG'.
+  WBDCDATA-FVAL = L_GAMNG.
+  APPEND WBDCDATA TO BDCDATA.
+
+*物料主数据单位
+  IF P_IW_ORDERDATA-MEINS IS INITIAL.
+    READ TABLE GT_MARA INTO GS_MARA
+    WITH KEY MATNR = IW_ORDERDATA-MATNR.
+    IF SY-SUBRC = 0.
+      P_IW_ORDERDATA-MEINS = GS_MARA-MEINS.
+    ENDIF.
+  ENDIF.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GMEIN'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-MEINS.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GLTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GLTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'CAUFVD-GSTRP'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-GSTRP.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOSD'.
+  WBDCDATA-DYNPRO   = '0310'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=OPT2'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KOWE'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOKO1'.
+  WBDCDATA-DYNPRO   = '0115'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=KPU2'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-WEMPF'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-WEMPF.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'AFPOD-ABLAD'.
+  WBDCDATA-FVAL = P_IW_ORDERDATA-ABLAD.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=AMAK'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=DEL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+  WHERE AUFNR = P_IW_ORDERDATA-AUFNR .
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_CURSOR'.
+    WBDCDATA-FVAL = 'RESBD-MATNR(01)'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '=KEIN'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+    WBDCDATA-DYNPRO   = '0120'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'FILTER_BOX'.
+    WBDCDATA-FVAL = 'NO_FIL'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'SORT_BOX'.
+    WBDCDATA-FVAL = 'ST_STA'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-MATNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMATNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    L_GAMNG = IW_ORDERLIST-MENGE.
+    WBDCDATA-FNAM = 'RESBD-MENGE(01)'.
+    WBDCDATA-FVAL =  L_GAMNG.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-EINHEIT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RMEINS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-POSTP(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-POSTP.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-VORNR(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-VORNR.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RCOLS-APLFL(01)'.
+    WBDCDATA-FVAL = ''.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-WERKS(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RWERKS.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-LGORT(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-LGORT.
+    APPEND WBDCDATA TO BDCDATA.
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'RESBD-RGEKZ(01)'.
+    WBDCDATA-FVAL = IW_ORDERLIST-RGEKZ.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-PROGRAM  = 'SAPLCOMD'.
+    WBDCDATA-DYNPRO   = '0110'.
+    WBDCDATA-DYNBEGIN = 'X'.
+    APPEND WBDCDATA TO BDCDATA.
+
+    CLEAR WBDCDATA.
+    WBDCDATA-FNAM = 'BDC_OKCODE'.
+    WBDCDATA-FVAL = '/00'.
+    APPEND WBDCDATA TO BDCDATA.
+  ENDLOOP.
+  CLEAR WBDCDATA.
+  WBDCDATA-PROGRAM  = 'SAPLCOMK'.
+  WBDCDATA-DYNPRO   = '0120'.
+  WBDCDATA-DYNBEGIN = 'X'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'BDC_OKCODE'.
+  WBDCDATA-FVAL = '=BU'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'FILTER_BOX'.
+  WBDCDATA-FVAL = 'NO_FIL'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  CLEAR WBDCDATA.
+  WBDCDATA-FNAM = 'SORT_BOX'.
+  WBDCDATA-FVAL = 'ST_STA'.
+  APPEND WBDCDATA TO BDCDATA.
+
+  OPT-DISMODE = 'N'.
+  OPT-UPDMODE = 'S'.
+  OPT-DEFSIZE = 'X'.
+
+  CALL TRANSACTION 'CO01' USING BDCDATA
+        OPTIONS FROM OPT
+        MESSAGES INTO MESSTAB.
+  L_OK = 1. "失败
+  READ TABLE MESSTAB INTO WMESSTAB WITH KEY MSGTYP = 'E'.
+  IF SY-SUBRC = 0.
+    CLEAR L_TEXT.
+
+    CALL FUNCTION 'MESSAGE_TEXT_BUILD'
+      EXPORTING
+        MSGID               = WMESSTAB-MSGID
+        MSGNR               = WMESSTAB-MSGNR
+        MSGV1               = WMESSTAB-MSGV1
+        MSGV2               = WMESSTAB-MSGV2
+        MSGV3               = WMESSTAB-MSGV3
+        MSGV4               = WMESSTAB-MSGV4
+      IMPORTING
+        MESSAGE_TEXT_OUTPUT = L_TEXT.
+*有错误
+    LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+    WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+      IW_ORDERLIST-MESSAGE = L_TEXT.
+      IW_ORDERLIST-TYPE    = 'E'.
+      MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+    ENDLOOP.
+  ELSE.
+*成功
+    LOOP AT MESSTAB INTO WMESSTAB WHERE MSGTYP = 'S' AND MSGV1 IS NOT INITIAL.
+      L_OK = 0.
+      LOOP AT IT_ORDERLIST INTO IW_ORDERLIST
+      WHERE AUFNR = P_IW_ORDERDATA-AUFNR.
+        IW_ORDERLIST-AUFNR = WMESSTAB-MSGV1.
+        IW_ORDERLIST-TYPE    = 'S'.
+        MODIFY IT_ORDERLIST FROM IW_ORDERLIST.
+      ENDLOOP.
+    ENDLOOP.
+  ENDIF.
+ENDFORM.                    " FRM_CALLFUN_CREATPO_V2

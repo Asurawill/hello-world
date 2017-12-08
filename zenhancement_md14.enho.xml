@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>计划订单转采购申请的增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>M61H</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>M61H</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLM61H</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLM61H</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLM61H\FO:SAVE_REQUISITION\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*added by it02 :在事务：MD04、MD14、MD15的2110工厂 计划订单转采购申请的records 存储在表:ZMD14_ZHRZ</item>
+      <item>&quot;break-point.</item>
+      <item>&quot; MESSAGE &apos;TEST&apos;  TYPE &apos;E&apos;.</item>
+      <item>&quot;Request:add 1500 and 1100&apos;S 工厂 计划订单转采购申请记录</item>
+      <item>if MDBA-BANNR IS NOT INITIAL</item>
+      <item>AND</item>
+      <item>( MDBA-WERKS EQ &apos;2110&apos;</item>
+      <item>OR</item>
+      <item>MDBA-WERKS EQ &apos;1500&apos;</item>
+      <item>OR</item>
+      <item>MDBA-WERKS EQ &apos;1100&apos;</item>
+      <item>).</item>
+      <item>if  sy-tcode eq &apos;MD14&apos; OR  sy-tcode eq &apos;MD15&apos;  .</item>
+      <item>DATA:GT_MD14  TYPE TABLE OF ZMD14_ZHRZ,</item>
+      <item>GS_MD14  TYPE ZMD14_ZHRZ.</item>
+      <item/>
+      <item>DATA:GS_EBAN  TYPE EBAN .</item>
+      <item>CLEAR:GS_MD14,GS_EBAN..</item>
+      <item>REFRESH:GT_MD14 .</item>
+      <item>&quot;先判断刚生成的采购申请号、行号是否有效</item>
+      <item>WAIT UP TO 1 SECONDS .</item>
+      <item>SELECT SINGLE * INTO GS_EBAN</item>
+      <item>FROM EBAN</item>
+      <item>WHERE BANFN = MDBA-BANNR</item>
+      <item>AND  BNFPO = MDBA-BANPS .</item>
+      <item/>
+      <item>IF SY-SUBRC EQ 0 .</item>
+      <item>&quot;若有效更新自建表数据</item>
+      <item>CLEAR:GS_MD14.</item>
+      <item>GS_MD14-BANFN = MDBA-BANNR .   &quot;采购申请编号</item>
+      <item>GS_MD14-BNFPO = MDBA-BANPS .   &quot;采购申请的项目编号</item>
+      <item>GS_MD14-PLNUM = CM61P-PLNUM .  &quot;计划订单号</item>
+      <item>GS_MD14-MATNR = MDBA-MATNR .   &quot;计划物料</item>
+      <item>GS_MD14-PLWRK = MDBA-WERKS .   &quot;计划工厂</item>
+      <item>GS_MD14-GSMNG = CM61P-GSMNG .  &quot;全部的计划数量</item>
+      <item>GS_MD14-MEINS = MDBA-MEINS .   &quot;基本单位</item>
+      <item>GS_MD14-ERNAM = SY-UNAME .     &quot;登陆账号</item>
+      <item>GS_MD14-ZCJRQ = SY-DATUM .     &quot;创建日期</item>
+      <item>GS_MD14-ZCJSJ = SY-UZEIT .     &quot;创建时间</item>
+      <item>APPEND GS_MD14 TO GT_MD14 .</item>
+      <item>MODIFY ZMD14_ZHRZ FROM TABLE GT_MD14 . &quot;根据转换值保存到自建表:ZMD14_ZHRZ</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item>endif.</item>
+      <item>ENDIF.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLM61H\FO:SAVE_REQUISITION\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>7</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>5</item>
+      <item>2</item>
+      <item>3</item>
+      <item>8</item>
+      <item>0</item>
+      <item>3</item>
+      <item>4</item>
+      <item>4</item>
+      <item>5</item>
+      <item>4</item>
+      <item>3</item>
+      <item>9</item>
+      <item>9</item>
+      <item>10</item>
+      <item>0</item>
+      <item>5</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>0</item>
+      <item>5</item>
+      <item>1</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

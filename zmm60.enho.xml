@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>MM60 增加物料历史价,最高价,最低价</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>RMMVRZ00</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>RMMVRZ00</ORG_MAIN_NAME>
+    <PROGRAMNAME>RMMVRZ00</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RMMVRZ00</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_FIELDCAT_CREATE\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*  c_structure_name = &apos;ZPLM_ALV_230&apos;.</item>
+      <item>IF SY-TCODE NE &apos;MM60&apos;.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RMMVRZ00</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_FIELDCAT_CREATE\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>ELSE .</item>
+      <item/>
+      <item>* data declaration</item>
+      <item>*  DATA: ls_fieldcat TYPE slis_fieldcat_alv.</item>
+      <item/>
+      <item>DATA L_STRUCTURE_NAME TYPE tabname VALUE &apos;ZPLM_ALV_230&apos; .</item>
+      <item/>
+      <item>* initialize export parameters</item>
+      <item>REFRESH: et_fieldcat.</item>
+      <item/>
+      <item>* create initial ALV field catalog</item>
+      <item>CALL FUNCTION &apos;REUSE_ALV_FIELDCATALOG_MERGE&apos;</item>
+      <item>EXPORTING</item>
+      <item>*     I_PROGRAM_NAME         =</item>
+      <item>*     I_INTERNAL_TABNAME     =</item>
+      <item>i_structure_name       = L_STRUCTURE_NAME</item>
+      <item>*     I_CLIENT_NEVER_DISPLAY = &apos;X&apos;</item>
+      <item>*     I_INCLNAME             =</item>
+      <item>*     I_BYPASSING_BUFFER     =</item>
+      <item>*     I_BUFFER_ACTIVE        =</item>
+      <item>CHANGING</item>
+      <item>ct_fieldcat            = et_fieldcat</item>
+      <item>EXCEPTIONS</item>
+      <item>inconsistent_interface = 1</item>
+      <item>program_error          = 2</item>
+      <item>OTHERS                 = 3.</item>
+      <item>IF ( sy-subrc NE 0 ).</item>
+      <item>* =&gt; bug</item>
+      <item>MESSAGE a899(ig) WITH sy-repid &apos;ALV_LISTTAB_FIELDCAT_CREATE&apos;</item>
+      <item>&apos;REUSE_ALV_FIELDCATALOG_MERGE&apos; sy-subrc.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>* set key fields</item>
+      <item>LS_FIELDCAT-KEY = c_marked.</item>
+      <item>MODIFY ET_FIELDCAT FROM LS_FIELDCAT TRANSPORTING KEY</item>
+      <item>WHERE ( FIELDNAME EQ c_werk  )</item>
+      <item>OR    ( FIELDNAME EQ c_matnr ).</item>
+      <item>IF ( SY-SUBRC NE 0 ).</item>
+      <item>* =&gt; bug</item>
+      <item>MESSAGE A899(IG) WITH SY-REPID &apos;ALV_LIST_FIELDCAT_CREATE&apos;</item>
+      <item>&apos;MODIFY ET_FIELDCAT&apos; &apos;TRANSPORTING KEY&apos;.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF .</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RMMVRZ00</PROGRAMNAME>
+     <EXTID>3</EXTID>
+     <ID>3</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_OUTPUT\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>IF SY-TCODE NE &apos;MM60&apos;.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RMMVRZ00</PROGRAMNAME>
+     <EXTID>5</EXTID>
+     <ID>5</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_OUTPUT\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>ELSE .</item>
+      <item/>
+      <item>DATA: BEGIN OF LS_EKPO ,</item>
+      <item>EBELN TYPE EKPO-EBELN ,</item>
+      <item>EBELP TYPE EKPO-EBELP ,</item>
+      <item>MATNR TYPE EKPO-MATNR ,</item>
+      <item>WERKS TYPE EKPO-WERKS ,</item>
+      <item>NETPR TYPE EKPO-NETPR ,</item>
+      <item>PEINH TYPE EKPO-PEINH ,</item>
+      <item>WKURS TYPE EKKO-WKURS ,</item>
+      <item>END OF LS_EKPO .</item>
+      <item>DATA LT_EKPO LIKE TABLE OF LS_EKPO .</item>
+      <item/>
+      <item>DATA: LT_LIST TYPE TABLE OF ZPLM_ALV_230 ,</item>
+      <item>LS_LIST LIKE LINE OF LT_LIST .</item>
+      <item/>
+      <item>DATA L_NUM TYPE I VALUE IS INITIAL .</item>
+      <item>DATA L_SUM TYPE EKPO-NETPR .</item>
+      <item>DATA L_LOW TYPE EKPO-NETPR .</item>
+      <item>DATA L_HIGH TYPE EKPO-NETPR .</item>
+      <item>DATA L_NETPR TYPE EKPO-NETPR .</item>
+      <item/>
+      <item>SELECT A~EBELN</item>
+      <item>A~EBELP</item>
+      <item>A~MATNR</item>
+      <item>A~WERKS</item>
+      <item>A~NETPR</item>
+      <item>A~PEINH</item>
+      <item>B~WKURS</item>
+      <item>INTO CORRESPONDING FIELDS OF TABLE LT_EKPO</item>
+      <item>FROM EKPO AS A</item>
+      <item>INNER JOIN EKKO AS B</item>
+      <item>ON A~EBELN = B~EBELN</item>
+      <item>FOR ALL ENTRIES IN GT_LIST</item>
+      <item>WHERE A~MATNR = GT_LIST-MATNR</item>
+      <item>AND A~WERKS = GT_LIST-WERKS</item>
+      <item>AND A~LOEKZ = &apos;&apos;</item>
+      <item>AND A~PSTYP = &apos;0&apos;.</item>
+      <item>SORT LT_EKPO BY MATNR WERKS .</item>
+      <item/>
+      <item>REFRESH LT_LIST .</item>
+      <item>MOVE-CORRESPONDING GT_LIST TO LT_LIST .</item>
+      <item>LOOP AT LT_LIST INTO LS_LIST .</item>
+      <item>READ TABLE LT_EKPO WITH KEY MATNR = LS_LIST-MATNR</item>
+      <item>WERKS = LS_LIST-WERKS BINARY SEARCH TRANSPORTING NO FIELDS .</item>
+      <item>IF SY-SUBRC EQ 0 .</item>
+      <item>LOOP AT LT_EKPO INTO LS_EKPO FROM SY-TABIX .</item>
+      <item>IF LS_EKPO-MATNR = LS_LIST-MATNR AND</item>
+      <item>LS_EKPO-WERKS = LS_LIST-WERKS .</item>
+      <item/>
+      <item>&quot; 累计总共多少个价格</item>
+      <item>L_NUM = L_NUM + 1 .</item>
+      <item/>
+      <item>&quot; 净价 / EKPO价格单位 * 汇率 * 报表价格单位</item>
+      <item>L_NETPR = LS_EKPO-NETPR / LS_EKPO-PEINH * LS_EKPO-WKURS * LS_LIST-PEINH .</item>
+      <item/>
+      <item>&quot; 累计金额</item>
+      <item>L_SUM = L_SUM + L_NETPR .</item>
+      <item/>
+      <item>IF L_NUM = 1 .  &quot; 第一次进来</item>
+      <item>L_LOW = L_NETPR .</item>
+      <item>L_HIGH = L_NETPR .</item>
+      <item>ELSE .  &quot; 不是第一次进来</item>
+      <item>IF L_LOW GT L_NETPR .</item>
+      <item>L_LOW = L_NETPR .</item>
+      <item>ENDIF.</item>
+      <item>IF L_HIGH LT L_NETPR .</item>
+      <item>L_HIGH = L_NETPR .</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>CLEAR LS_EKPO .</item>
+      <item>ELSE .</item>
+      <item>CLEAR LS_EKPO .</item>
+      <item>EXIT .</item>
+      <item>ENDIF.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>LS_LIST-NETPR = L_SUM / L_NUM .</item>
+      <item>LS_LIST-NETPR_L = L_LOW .</item>
+      <item>LS_LIST-NETPR_H = L_HIGH .</item>
+      <item/>
+      <item>MODIFY LT_LIST FROM LS_LIST .</item>
+      <item>CLEAR LS_LIST .</item>
+      <item/>
+      <item>CLEAR: L_NUM,L_SUM,L_LOW,L_HIGH,L_NETPR .</item>
+      <item>ENDLOOP.</item>
+      <item/>
+      <item>* data declaration</item>
+      <item>*  DATA: lt_fieldcat TYPE slis_t_fieldcat_alv,</item>
+      <item>*        ls_layout   TYPE slis_layout_alv.</item>
+      <item/>
+      <item>* create ALV field catalog</item>
+      <item>PERFORM alv_list_fieldcat_create</item>
+      <item>CHANGING</item>
+      <item>lt_fieldcat.</item>
+      <item/>
+      <item>*   set layout</item>
+      <item>CLEAR: ls_layout.</item>
+      <item>*   - zebra list</item>
+      <item>ls_layout-zebra                = c_marked.</item>
+      <item>*   - optimize column width</item>
+      <item>ls_layout-colwidth_optimize    = c_marked.</item>
+      <item>*   - allow switch to classic ALV</item>
+      <item>ls_layout-allow_switch_to_list = c_marked.</item>
+      <item/>
+      <item>*   display output list</item>
+      <item>CALL FUNCTION &apos;REUSE_ALV_GRID_DISPLAY&apos;</item>
+      <item>EXPORTING</item>
+      <item>i_interface_check           = &apos; &apos;</item>
+      <item>i_bypassing_buffer          = &apos; &apos;</item>
+      <item>i_buffer_active             = &apos; &apos;</item>
+      <item>i_callback_program          = cs_callback-program</item>
+      <item>i_callback_pf_status_set    = cs_callback-pf_status_set</item>
+      <item>i_callback_user_command     = cs_callback-user_command</item>
+      <item>i_callback_top_of_page      = cs_callback-top_of_page</item>
+      <item>*       I_CALLBACK_HTML_TOP_OF_PAGE = &apos; &apos;</item>
+      <item>*       I_CALLBACK_HTML_END_OF_LIST = &apos; &apos;</item>
+      <item>*       I_STRUCTURE_NAME            =</item>
+      <item>*       I_BACKGROUND_ID             = &apos; &apos;</item>
+      <item>*       I_GRID_TITLE                =</item>
+      <item>*       I_GRID_SETTINGS             =</item>
+      <item>is_layout                   = ls_layout</item>
+      <item>it_fieldcat                 = lt_fieldcat</item>
+      <item>*       IT_EXCLUDING                =</item>
+      <item>*       IT_SPECIAL_GROUPS           =</item>
+      <item>*       IT_SORT                     =</item>
+      <item>*       IT_FILTER                   =</item>
+      <item>*       IS_SEL_HIDE                 =</item>
+      <item>*       I_DEFAULT                   = &apos;X&apos;</item>
+      <item>i_save                      = c_save</item>
+      <item>*       IS_VARIANT                  =</item>
+      <item>*       IT_EVENTS                   =</item>
+      <item>*       IT_EVENT_EXIT               =</item>
+      <item>*       IS_PRINT                    =</item>
+      <item>*       IS_REPREP_ID                =</item>
+      <item>*       I_SCREEN_START_COLUMN       = 0</item>
+      <item>*       I_SCREEN_START_LINE         = 0</item>
+      <item>*       I_SCREEN_END_COLUMN         = 0</item>
+      <item>*       I_SCREEN_END_LINE           = 0</item>
+      <item>*       I_HTML_HEIGHT_TOP           = 0</item>
+      <item>*       I_HTML_HEIGHT_END           = 0</item>
+      <item>*       IT_ALV_GRAPHICS             =</item>
+      <item>*       IT_HYPERLINK                =</item>
+      <item>*       IT_ADD_FIELDCAT             =</item>
+      <item>*       IT_EXCEPT_QINFO             =</item>
+      <item>*       IR_SALV_FULLSCREEN_ADAPTER  =</item>
+      <item>*     IMPORTING</item>
+      <item>*       E_EXIT_CAUSED_BY_CALLER     =</item>
+      <item>*       ES_EXIT_CAUSED_BY_USER      =</item>
+      <item>TABLES</item>
+      <item>t_outtab                    = LT_LIST</item>
+      <item>EXCEPTIONS</item>
+      <item>program_error                 = 1</item>
+      <item>OTHERS                        = 2.</item>
+      <item>IF ( sy-subrc NE 0 ).</item>
+      <item>*   =&gt; bug</item>
+      <item>MESSAGE a899(ig) WITH sy-repid &apos;ALV_LISTTAB_OUTPUT&apos;</item>
+      <item>&apos;REUSE_ALV_GRID_DISPLAY&apos; sy-subrc.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_FIELDCAT_CREATE\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_FIELDCAT_CREATE\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+      <item>6</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>2</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>9</item>
+      <item>9</item>
+      <item>2</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_OUTPUT\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>2</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RMMVRZ00\FO:ALV_LIST_OUTPUT\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>8</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>4</item>
+      <item>4</item>
+      <item>3</item>
+      <item>6</item>
+      <item>5</item>
+      <item>3</item>
+      <item>5</item>
+      <item>5</item>
+      <item>5</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>32</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>12</item>
+      <item>0</item>
+      <item>10</item>
+      <item>10</item>
+      <item>0</item>
+      <item>10</item>
+      <item>10</item>
+      <item>0</item>
+      <item>10</item>
+      <item>10</item>
+      <item>0</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>14</item>
+      <item>12</item>
+      <item>12</item>
+      <item>14</item>
+      <item>12</item>
+      <item>10</item>
+      <item>0</item>
+      <item>10</item>
+      <item>8</item>
+      <item>10</item>
+      <item>10</item>
+      <item>8</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>8</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>6</item>
+      <item>8</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>6</item>
+      <item>8</item>
+      <item>4</item>
+      <item>0</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

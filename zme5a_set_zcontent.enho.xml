@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>ME5a将长文本取到自定义字段zcontent</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>RM06BA00</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>RM06BA00</ORG_MAIN_NAME>
+    <PROGRAMNAME>RM06BA00</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM06BA00</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RM06BA00\FO:DATEN_LESEN\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>FIELD-SYMBOLS &lt;lw_eban&gt; like LINE OF it_eban.</item>
+      <item>DATA l_longtext TYPE THEAD-TDNAME .</item>
+      <item>DATA lt_longtext TYPE TABLE OF THEAD-TDNAME .</item>
+      <item>DATA lt_tline TYPE TABLE OF tline WITH HEADER LINE.</item>
+      <item>DATA:stxl LIKE stxl OCCURS 0 WITH HEADER LINE.&quot;抬头备注</item>
+      <item>DATA:GT_EINA LIKE TABLE OF EINA WITH HEADER LINE.</item>
+      <item>DATA:GT_EINE LIKE TABLE OF EINE WITH HEADER LINE.</item>
+      <item>DATA:GT_T163Y LIKE TABLE OF T163Y WITH HEADER LINE.</item>
+      <item>DATA:GS_DD07T TYPE DD07T .</item>
+      <item>DATA:TLEN TYPE I.</item>
+      <item>&quot;150721 增加采购申请 读取信息记录表识  begin</item>
+      <item>IF IT_EBAN[] IS NOT INITIAL.</item>
+      <item>CLEAR: GT_T163Y[] , GT_EINA[] .</item>
+      <item>SELECT * INTO CORRESPONDING FIELDS  OF TABLE GT_T163Y</item>
+      <item>FROM T163Y    &quot;读取项目类型文本</item>
+      <item>FOR ALL ENTRIES IN IT_EBAN</item>
+      <item>WHERE PSTYP = IT_EBAN-PSTYP AND SPRAS = SY-LANGU.</item>
+      <item/>
+      <item>SELECT * INTO CORRESPONDING FIELDS OF TABLE GT_EINA</item>
+      <item>FROM EINA</item>
+      <item>FOR ALL ENTRIES IN IT_EBAN    &quot;根据物料号、固定供应商读取采购信息记录-一般数据</item>
+      <item>WHERE MATNR = IT_EBAN-MATNR. &quot;AND LIFNR = IT_EBAN-FLIEF .&quot;CHANGE BY HANDWY</item>
+      <item/>
+      <item>SORT  GT_EINA BY MATNR LIFNR.</item>
+      <item>ENDIF.</item>
+      <item>&quot;150721 增加采购申请 读取信息记录表识  end</item>
+      <item>&quot;项目类别：空，信息记录类别：0</item>
+      <item>&quot;项目类别：L，信息记录类别：3</item>
+      <item>LOOP AT it_eban ASSIGNING &lt;lw_eban&gt;.</item>
+      <item>&quot;150721 增加采购申请 读取信息记录表识  begin</item>
+      <item>IF &lt;lw_eban&gt;-MATNR &lt;&gt; &apos;&apos; .</item>
+      <item>IF &lt;lw_eban&gt;-PSTYP = &apos;0&apos; OR &lt;lw_eban&gt;-PSTYP = &apos;3&apos;.</item>
+      <item>CLEAR: GT_EINE ,GT_EINE[].</item>
+      <item>LOOP AT  GT_EINA WHERE  MATNR = &lt;lw_eban&gt;-MATNR  .&quot;LIFNR = &lt;lw_eban&gt;-FLIEF . &quot;根据物料号、固定供应商读取信息记录</item>
+      <item>SELECT * APPENDING CORRESPONDING FIELDS OF  TABLE GT_EINE</item>
+      <item>FROM EINE                              &quot;再根据信息记录、采购组织、工厂读取 信息记录行数</item>
+      <item>WHERE INFNR = GT_EINA-INFNR</item>
+      <item>AND   EKORG = &lt;lw_eban&gt;-EKORG  &quot;AND WERKS = &lt;lw_eban&gt;-WERKS</item>
+      <item>AND   ESOKZ = &lt;lw_eban&gt;-PSTYP.</item>
+      <item>ENDLOOP.</item>
+      <item/>
+      <item>*根据信息记录删除 相同信息记录号</item>
+      <item>SORT GT_EINE BY INFNR EKORG ESOKZ werks.</item>
+      <item>DELETE ADJACENT DUPLICATES FROM GT_EINE COMPARING INFNR EKORG ESOKZ .</item>
+      <item/>
+      <item>*   IF GT_EINE[] IS INITIAL.</item>
+      <item>*     SELECT * INTO CORRESPONDING FIELDS OF TABLE GT_EINE</item>
+      <item>*      FROM EINE                              &quot;再根据信息记录、采购组织、工厂读取 信息记录行数</item>
+      <item>*      WHERE INFNR = GT_EINA-INFNR AND  EKORG = &lt;lw_eban&gt;-EKORG  &quot; AND WERKS = &lt;lw_eban&gt;-WERKS</item>
+      <item>*        AND  ESOKZ = &lt;lw_eban&gt;-PSTYP.</item>
+      <item>*   ENDIF.</item>
+      <item/>
+      <item>DESCRIBE TABLE GT_EINE LINES TLEN. &quot;读取信息记录的行数</item>
+      <item/>
+      <item>IF TLEN = 0 .</item>
+      <item>&lt;lw_eban&gt;-ZCONTENT2 = 1 . &quot;无采购信息记录</item>
+      <item>&quot;  CONCATENATE  &lt;lw_eban&gt;-ZCONTENT2 &apos;-&apos; &apos;无采购信息记录&apos; INTO &lt;lw_eban&gt;-ZCONTENT3.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF TLEN = 1 .</item>
+      <item>&lt;lw_eban&gt;-ZCONTENT2 = 2 . &quot;有一个采购信息记录</item>
+      <item>&quot;CONCATENATE  &lt;lw_eban&gt;-ZCONTENT2 &apos;-&apos; &apos;有一个采购信息记录&apos; INTO &lt;lw_eban&gt;-ZCONTENT3.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF TLEN &gt; 1 .</item>
+      <item>&lt;lw_eban&gt;-ZCONTENT2 = 3 . &quot;有多个采购信息记录</item>
+      <item>&quot;     CONCATENATE  &lt;lw_eban&gt;-ZCONTENT2 &apos;-&apos; &apos;有多个采购信息记录&apos; INTO &lt;lw_eban&gt;-ZCONTENT3.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>&quot;添加标识描述</item>
+      <item>CLEAR GS_DD07T.</item>
+      <item>SELECT SINGLE DDTEXT INTO &lt;lw_eban&gt;-ZCONTENT3  FROM DD07T</item>
+      <item>WHERE DOMNAME     =  &apos;ZXXJLBS&apos;</item>
+      <item>AND   VALPOS      = &lt;lw_eban&gt;-ZCONTENT2</item>
+      <item>AND   DDLANGUAGE  = SY-LANGU.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>&quot;150721 增加采购申请 读取信息记录表识  end</item>
+      <item>CONCATENATE &lt;lw_eban&gt;-banfn &lt;lw_eban&gt;-bnfpo INTO l_longtext .</item>
+      <item/>
+      <item>SELECT SINGLE TDNAME FROM STXL INTO stxl-TDNAME</item>
+      <item>WHERE TDNAME = l_longtext AND TDID = &apos;B03&apos; AND TDSPRAS = sy-langu AND TDOBJECT = &apos;EBAN&apos;.</item>
+      <item>IF sy-SUBRC = 0.</item>
+      <item/>
+      <item>CALL FUNCTION &apos;READ_TEXT&apos;</item>
+      <item>EXPORTING</item>
+      <item>*     CLIENT   = SY-MANDT</item>
+      <item>id       = &apos;B03&apos;</item>
+      <item>language = sy-langu</item>
+      <item>name     = l_longtext</item>
+      <item>object   = &apos;EBAN&apos;</item>
+      <item>*     ARCHIVE_HANDLE                = 0</item>
+      <item>*     LOCAL_CAT                     = &apos; &apos;</item>
+      <item>*   IMPORTING</item>
+      <item>*     HEADER   =</item>
+      <item>*     OLD_LINE_COUNTER              =</item>
+      <item>TABLES</item>
+      <item>lines    = lt_tline</item>
+      <item>*   EXCEPTIONS</item>
+      <item>*     ID       = 1</item>
+      <item>*     LANGUAGE = 2</item>
+      <item>*     NAME     = 3</item>
+      <item>*     NOT_FOUND                     = 4</item>
+      <item>*     OBJECT   = 5</item>
+      <item>*     REFERENCE_CHECK               = 6</item>
+      <item>*     WRONG_ACCESS_TO_ARCHIVE       = 7</item>
+      <item>*     OTHERS   = 8</item>
+      <item>.</item>
+      <item>IF sy-subrc &lt;&gt; 0.</item>
+      <item>* Implement suitable error handling here</item>
+      <item>ELSE.</item>
+      <item>LOOP AT lt_tline.</item>
+      <item>CONCATENATE  &lt;lw_eban&gt;-zcontent lt_tline-tdline INTO &lt;lw_eban&gt;-zcontent SEPARATED BY space.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item/>
+      <item/>
+      <item>ENDLOOP.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:RM06BA00\FO:DATEN_LESEN\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>1</item>
+      <item>1</item>
+      <item>3</item>
+      <item>3</item>
+      <item>3</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>1</item>
+      <item>1</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>3</item>
+      <item>0</item>
+      <item>3</item>
+      <item>5</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>3</item>
+      <item>6</item>
+      <item>5</item>
+      <item>3</item>
+      <item>0</item>
+      <item>3</item>
+      <item>6</item>
+      <item>2</item>
+      <item>3</item>
+      <item>0</item>
+      <item>3</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>1</item>
+      <item>4</item>
+      <item>3</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>0</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+      <item>3</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

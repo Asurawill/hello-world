@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>VA05N Price Field Auth Check</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SD_SALES_ORDERS_VIEW</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SD_SALES_ORDERS_VIEW</ORG_MAIN_NAME>
+    <PROGRAMNAME>SD_SALES_ORDERS_VIEW</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SD_SALES_ORDERS_VIEW</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:SD_SALES_ORDERS_VIEW\FO:FIELDCAT_INIT\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>authority-check object &apos;Z_SD_PRICE&apos; id &apos;ZPRICE&apos; field &apos;Y&apos;.</item>
+      <item>if sy-subrc ne 0.   &quot; 无权限则隐藏金额字段</item>
+      <item>delete u_er_fieldcat where fieldname = &apos;NETWR&apos;.</item>
+      <item>endif.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SD_SALES_ORDERS_VIEW</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:SD_SALES_ORDERS_VIEW\FO:LISTE_ANZEIGEN\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>data: l_objname type thead-tdname.</item>
+      <item/>
+      <item>data: lt_lines type table of tline,</item>
+      <item>lw_lines type tline.</item>
+      <item>data:lt_vbak type table of vbak,</item>
+      <item>lw_vbak type vbak.</item>
+      <item>data:lt_konv type table of konv,</item>
+      <item>lw_konv type konv.</item>
+      <item>&quot;add 项目 合同金额(含税) 150721 it02 begin</item>
+      <item>IF POSTAB IS NOT INITIAL.</item>
+      <item>SELECT * INTO CORRESPONDING FIELDS OF TABLE lt_vbak</item>
+      <item>from vbak</item>
+      <item>for all entries in postab</item>
+      <item>where vbeln = postab-vbeln.</item>
+      <item>if lt_vbak is not initial.</item>
+      <item>select * into corresponding fields of table lt_konv</item>
+      <item>from konv</item>
+      <item>for all entries in lt_vbak   &quot;读取 MWSI 、ZWSI、ZWS1 税率</item>
+      <item>where knumv = lt_vbak-knumv</item>
+      <item>and KSCHL IN (&apos;MWSI&apos; , &apos;ZWSI&apos; ,&apos;ZWS1&apos;) .</item>
+      <item>endif.</item>
+      <item>ENDIF.</item>
+      <item>&quot;add 项目 合同金额(含税) 150721 it02 end</item>
+      <item>loop at postab.</item>
+      <item>authority-check object &apos;Z_VA05N&apos; id &apos;USR20_1&apos; field postab-ernam.</item>
+      <item>if sy-subrc ne 0.</item>
+      <item>delete postab.</item>
+      <item>continue.</item>
+      <item>endif.</item>
+      <item/>
+      <item>&quot; 取项目名称 - 销售订单抬头文本</item>
+      <item>l_objname = postab-vbeln.</item>
+      <item>refresh lt_lines.</item>
+      <item>call function &apos;READ_TEXT&apos;</item>
+      <item>exporting</item>
+      <item>id                      = &apos;Z001&apos;</item>
+      <item>language                = sy-langu</item>
+      <item>name                    = l_objname</item>
+      <item>object                  = &apos;VBBK&apos;</item>
+      <item>tables</item>
+      <item>lines                   = lt_lines</item>
+      <item>exceptions</item>
+      <item>id                      = 1</item>
+      <item>language                = 2</item>
+      <item>name                    = 3</item>
+      <item>not_found               = 4</item>
+      <item>object                  = 5</item>
+      <item>reference_check         = 6</item>
+      <item>wrong_access_to_archive = 7</item>
+      <item>others                  = 8.</item>
+      <item>if sy-subrc = 0.</item>
+      <item>read table lt_lines into lw_lines index 1.</item>
+      <item>if sy-subrc = 0.</item>
+      <item>postab-pjnam = lw_lines-tdline.</item>
+      <item>modify postab transporting pjnam.</item>
+      <item>endif.</item>
+      <item>endif.</item>
+      <item>endloop.</item>
+      <item>&quot;添加质保年限字段</item>
+      <item>loop at postab.</item>
+      <item>select single vsnmr_v from vbak into postab-vsnmr_v where vbeln eq postab-vbeln.</item>
+      <item>modify postab transporting vsnmr_v.</item>
+      <item>endloop.</item>
+      <item>&quot;添加合同金额(含税)&quot;add 项目 合同金额(含税) 150721 it02 begin</item>
+      <item>SORT lt_vbak by vbeln .</item>
+      <item>sort lt_konv by knumv .</item>
+      <item>loop at  postab .</item>
+      <item>read table  lt_vbak into lw_vbak with key vbeln = postab-vbeln binary search .</item>
+      <item>if sy-subrc = 0.</item>
+      <item>read table lt_konv into lw_konv with key knumv = lw_vbak-knumv binary search .</item>
+      <item>if sy-subrc = 0.</item>
+      <item>postab-zhsj = lw_vbak-netwr  + lw_vbak-netwr *  lw_konv-kbetr / 1000 .</item>
+      <item>else.</item>
+      <item>postab-zhsj = lw_vbak-netwr  .</item>
+      <item>endif.</item>
+      <item>endif.</item>
+      <item>modify postab transporting zhsj .</item>
+      <item>endloop.</item>
+      <item>&quot;&quot;add 项目 合同金额(含税) 150721 it02 end</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SD_SALES_ORDERS_VIEW\FO:FIELDCAT_INIT\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:SD_SALES_ORDERS_VIEW\FO:LISTE_ANZEIGEN\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>8</item>
+      <item>2</item>
+      <item>8</item>
+      <item>2</item>
+      <item>7</item>
+      <item>2</item>
+      <item>2</item>
+      <item>3</item>
+      <item>5</item>
+      <item>5</item>
+      <item>5</item>
+      <item>4</item>
+      <item>5</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>7</item>
+      <item>5</item>
+      <item>2</item>
+      <item>3</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>6</item>
+      <item>8</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>1</item>
+      <item>3</item>
+      <item>3</item>
+      <item>7</item>
+      <item>8</item>
+      <item>10</item>
+      <item>9</item>
+      <item>10</item>
+      <item>8</item>
+      <item>3</item>
+      <item>1</item>
+      <item>1</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

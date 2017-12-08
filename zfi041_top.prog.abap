@@ -1,0 +1,510 @@
+*&---------------------------------------------------------------------*
+*&  包含                ZFI041_TOP
+*&---------------------------------------------------------------------*
+
+************************************************************************
+* Tables
+************************************************************************
+TABLES: T001,T001W,T001L,BKPF,MARA,VBAK,LFA1.
+
+************************************************************************
+* Type Declaration
+************************************************************************
+* 期初状态报表 ALV 输出参数
+TYPES: BEGIN OF TY_ALV1 ,
+         SEL    TYPE C,
+         NUM    TYPE I,
+         WERKS  TYPE T001W-WERKS,
+         MATNR  TYPE MARA-MATNR,
+         MAKTX  TYPE MAKT-MAKTX,
+         LGORT  TYPE T001L-LGORT,
+         LGOBE  TYPE T001L-LGOBE,
+         VBELN  TYPE MSKA-VBELN,
+         POSNR  TYPE MSKA-POSNR,
+         LIFNR  TYPE LFA1-LIFNR,
+         NAME1  TYPE LFA1-NAME1,
+         ZYWLX  TYPE ZZLYW-ZYWLX,
+         OS_QTY TYPE MARD-LABST,
+         MENGE  TYPE MARD-LABST,
+         MEINS  TYPE MARA-MEINS,
+         ANLN1  TYPE ANLA-ANLN1,
+         NAFAZ  TYPE ANLP-NAFAZ,
+         FTBL   TYPE ZFTBL,
+         FTZJCB TYPE ANLP-NAFAZ,
+       END OF TY_ALV1 .
+
+* 转储报表 ALV 输出参数
+TYPES: BEGIN OF TY_ALV2 ,
+         SEL       TYPE C,
+         NUM       TYPE I,
+         MBLNR     TYPE MSEG-MBLNR,
+         BWART     TYPE MSEG-BWART,
+         BUDAT     TYPE MKPF-BUDAT,
+         WERKS     TYPE MSEG-WERKS,
+         MATNR     TYPE MSEG-MATNR,
+         MAKTX     TYPE MAKT-MAKTX,
+         LGORT     TYPE MSEG-LGORT,
+         LGOBE1    TYPE T001L-LGOBE,
+         SOBKZ     TYPE MSEG-SOBKZ,
+         MAT_KDAUF TYPE MSEG-MAT_KDAUF,
+         MAT_KDPOS TYPE MSEG-MAT_KDPOS,
+         LIFNR1    TYPE MSEG-LIFNR,
+         NAME1     TYPE LFA1-NAME1,
+         ZYWLX1    TYPE ZZLYW-ZYWLX,
+         UMLGO     TYPE MSEG-UMLGO,
+         LGOBE2    TYPE T001L-LGOBE,
+         UMSOK     TYPE MSEG-UMSOK,
+         KDAUF     TYPE MSEG-KDAUF,
+         KDPOS     TYPE MSEG-KDPOS,
+         LIFNR2    TYPE MSEG-LIFNR,
+         NAME2     TYPE LFA1-NAME1,
+         ZYWLX2    TYPE ZZLYW-ZYWLX,
+         MENGE     TYPE MSEG-MENGE,
+         QCKC      TYPE MARD-LABST,
+         MEINS     TYPE MSEG-MEINS,
+         ANLN1     TYPE ANLP-ANLN1,
+         NAFAZ     TYPE ANLP-NAFAZ,
+         ZYTS      TYPE VTBBEWE-ATAGE,
+         DYTS      TYPE VTBBEWE-ATAGE,
+         FTBL      TYPE ZFTBL,
+         FTZJCB    TYPE ANLP-NAFAZ,
+       END OF TY_ALV2 .
+
+* 明细数据
+TYPES: BEGIN OF TY_ALV3 ,
+         SEL       TYPE C,
+         NUM       TYPE I,
+         BUKRS     TYPE ZZJFT-BUKRS,
+         WERKS     TYPE ZZJFT-WERKS,
+         GJAHR     TYPE ZZJFT-GJAHR,
+         MONAT     TYPE ZZJFT-MONAT,
+         BUDAT     TYPE ZZJFT-BUDAT,
+         ZYWLX     TYPE ZZJFT-ZYWLX,
+         MATNR     TYPE ZZJFT-MATNR,
+         LGORT     TYPE ZZJFT-LGORT,
+         VBELN     TYPE ZZJFT-VBELN,
+         POSNR     TYPE ZZJFT-POSNR,
+         POST1     TYPE PROJ-POST1,
+         LIFNR     TYPE ZZJFT-LIFNR,
+         NAME1     TYPE LFA1-NAME1,
+         MENGE     TYPE ZZJFT-MENGE,
+         MENGE_SUM TYPE ZZJFT-MENGE_SUM,
+         MEINS     TYPE ZZJFT-MEINS,
+         NAFAZ     TYPE ZZJFT-NAFAZ,
+         ZYTS      TYPE ZZJFT-ZYTS,
+         DYTS      TYPE ZZJFT-DYTS,
+         ZFTBL     TYPE ZFTBL,
+         NAFAP_DIV TYPE ZZJFT-NAFAP_DIV,
+       END OF TY_ALV3 .
+
+* 汇总数据
+TYPES: BEGIN OF TY_ALV4 ,
+         SEL       TYPE C,
+         NUM       TYPE I,
+         BUKRS     TYPE ZZJFT-BUKRS,
+         WERKS     TYPE ZZJFT-WERKS,
+         MATNR     TYPE ZZJFT-MATNR,
+         VBELN     TYPE ZZJFT-VBELN,
+         POST1     TYPE STRING,
+         POSNR     TYPE ZZJFT-POSNR,
+         NAFAP_DIV TYPE ZZJFT-NAFAP_DIV,
+       END OF TY_ALV4 .
+
+* 过账数据
+TYPES: BEGIN OF TY_ALV5 ,
+         SEL       TYPE C,
+         NUM       TYPE I,
+         BUKRS     TYPE ZZJFT-BUKRS,
+         WERKS     TYPE ZZJFT-WERKS,
+         GJAHR     TYPE BKPF-GJAHR,
+         MONAT     TYPE BKPF-MONAT,
+         MATNR     TYPE ZZJFT-MATNR,
+         VBELN     TYPE ZZJFT-VBELN,
+         POSNR     TYPE ZZJFT-POSNR,
+         NAFAP_DIV TYPE ZZJFT-NAFAP_DIV,
+         FLAG(1)   TYPE C,
+         TEXT      TYPE STRING,
+         BELNR     TYPE BKPF-BELNR,
+         BUZEI     TYPE BSEG-BUZEI,
+         TYPE      TYPE C,
+         MSG       TYPE STRING,
+         BELNR_REV TYPE BKPF-BELNR,
+         BUZEI_REV TYPE BSEG-BUZEI,
+         TYPE_REV  TYPE C,
+         MSG_REV   TYPE STRING,
+       END OF TY_ALV5 .
+
+* 凭证过账头、行
+TYPES: BEGIN OF TY_HEAD ,
+         WERKS TYPE T001W-WERKS,
+         MATNR TYPE MARA-MATNR,
+         VBELN TYPE VBAK-VBELN,
+         BLART TYPE BKPF-BLART,
+         BLDAT TYPE BKPF-BLDAT,
+         BUDAT TYPE BKPF-BUDAT,
+         BUKRS TYPE BKPF-BUKRS,
+         WAERS TYPE BKPF-WAERS,
+         MONAT TYPE BKPF-MONAT,
+         NAFAZ TYPE ANLP-NAFAZ,
+         BKTXT TYPE BKPF-BKTXT,
+         BELNR TYPE BKPF-BELNR,
+         BUZEI TYPE BSEG-BUZEI,
+         MSG   TYPE STRING,
+       END OF TY_HEAD .
+TYPES: BEGIN OF TY_ITEM ,
+         WERKS TYPE T001W-WERKS,
+         BUZEI TYPE BSEG-BUZEI,
+         BSCHL TYPE BSEG-BSCHL,
+         HKONT TYPE BSEG-HKONT,
+         VBEL2 TYPE BSEG-VBEL2,
+         POSN2 TYPE BSEG-POSN2,
+         KOSTL TYPE BSEG-KOSTL,
+         MATNR TYPE BSEG-MATNR,
+         WRBTR TYPE BSEG-WRBTR,
+         SGTXT TYPE BSEG-SGTXT,
+       END OF TY_ITEM .
+
+************************************************************************
+* Internal Table & WorkArea
+************************************************************************
+* 期初状态报表 ALV 输出参数
+DATA: GT_ALV1 TYPE TABLE OF TY_ALV1,
+      GS_ALV1 TYPE TY_ALV1.
+FIELD-SYMBOLS <FS_ALV1> TYPE TY_ALV1.
+
+* 转储报表 ALV 输出参数
+DATA: GT_ALV2 TYPE TABLE OF TY_ALV2,
+      GS_ALV2 TYPE TY_ALV2.
+FIELD-SYMBOLS <FS_ALV2> TYPE TY_ALV2.
+
+* 明细数据 ALV 输出参数
+DATA: GT_ALV3 TYPE TABLE OF TY_ALV3,
+      GS_ALV3 TYPE TY_ALV3.
+
+* 汇总数据 ALV 输出参数
+DATA: GT_ALV4 TYPE TABLE OF TY_ALV4,
+      GS_ALV4 TYPE TY_ALV4.
+
+* 过账数据 ALV 输出参数
+DATA: GT_ALV5 TYPE TABLE OF TY_ALV5,
+      GS_ALV5 TYPE TY_ALV5.
+
+* 共用数据
+" 公司代码
+DATA: BEGIN OF GS_T001K ,
+        BWKEY TYPE T001K-BWKEY,
+        BUKRS TYPE T001K-BUKRS,
+      END OF GS_T001K .
+DATA GT_T001K LIKE TABLE OF GS_T001K .
+" 工厂
+DATA: BEGIN OF GS_T001W ,
+        WERKS TYPE T001W-WERKS,
+        BWKEY TYPE T001W-BWKEY,
+      END OF GS_T001W .
+DATA GT_T001W LIKE TABLE OF GS_T001W .
+
+* 取库存
+" 主库存 当前占用
+*DATA: BEGIN OF GS_MARD_NOW ,
+*        MATNR TYPE MARD-MATNR,
+*        WERKS TYPE MARD-WERKS,
+*        LGORT TYPE MARD-LGORT,
+*        LABST TYPE MARD-LABST,
+*        UMLME TYPE MARD-UMLME,
+*        INSME TYPE MARD-INSME,
+*        EINME TYPE MARD-EINME,
+*        SPEME TYPE MARD-SPEME,
+*        RETME TYPE MARD-RETME,
+*      END OF GS_MARD_NOW .
+*DATA GT_MARD_NOW LIKE TABLE OF GS_MARD_NOW .
+*DATA: BEGIN OF GS_MARDH_NOW ,
+*        MATNR TYPE MARDH-MATNR,
+*        WERKS TYPE MARDH-WERKS,
+*        LGORT TYPE MARDH-LGORT,
+*        LABST TYPE MARDH-LABST,
+*        UMLME TYPE MARDH-UMLME,
+*        INSME TYPE MARDH-INSME,
+*        EINME TYPE MARDH-EINME,
+*        SPEME TYPE MARDH-SPEME,
+*        RETME TYPE MARDH-RETME,
+*      END OF GS_MARDH_NOW .
+*DATA GT_MARDH_NOW LIKE TABLE OF GS_MARDH_NOW .
+" 主库存 期初
+DATA: BEGIN OF GS_MARD_BEFORE,
+        MATNR TYPE MARD-MATNR,
+        WERKS TYPE MARD-WERKS,
+        LGORT TYPE MARD-LGORT,
+        LFGJA TYPE MARD-LFGJA,
+        LFMON TYPE MARD-LFMON,
+        LABST TYPE MARD-LABST,
+        UMLME TYPE MARD-UMLME,
+        INSME TYPE MARD-INSME,
+        EINME TYPE MARD-EINME,
+        SPEME TYPE MARD-SPEME,
+        RETME TYPE MARD-RETME,
+      END OF GS_MARD_BEFORE .
+DATA GT_MARD_BEFORE LIKE TABLE OF GS_MARD_BEFORE .
+DATA: BEGIN OF GS_MARDH_BEFORE,
+        MATNR TYPE MARDH-MATNR,
+        WERKS TYPE MARDH-WERKS,
+        LGORT TYPE MARDH-LGORT,
+        LFGJA TYPE MARDH-LFGJA,
+        LFMON TYPE MARDH-LFMON,
+        LABST TYPE MARDH-LABST,
+        UMLME TYPE MARDH-UMLME,
+        INSME TYPE MARDH-INSME,
+        EINME TYPE MARDH-EINME,
+        SPEME TYPE MARDH-SPEME,
+        RETME TYPE MARDH-RETME,
+      END OF GS_MARDH_BEFORE .
+DATA GT_MARDH_BEFORE LIKE TABLE OF GS_MARDH_BEFORE .
+
+" 特殊库存E 当前占用
+*DATA: BEGIN OF GS_MSKA_NOW,
+*        MATNR TYPE MSKA-MATNR,
+*        WERKS TYPE MSKA-WERKS,
+*        LGORT TYPE MSKA-LGORT,
+*        SOBKZ TYPE MSKA-SOBKZ,
+*        VBELN TYPE MSKA-VBELN,
+*        POSNR TYPE MSKA-POSNR,
+*        KALAB TYPE MSKA-KALAB,
+*        KAINS TYPE MSKA-KAINS,
+*        KASPE TYPE MSKA-KASPE,
+*        KAEIN TYPE MSKA-KAEIN,
+*      END OF GS_MSKA_NOW .
+*DATA GT_MSKA_NOW LIKE TABLE OF GS_MSKA_NOW .
+*DATA: BEGIN OF GS_MSKAH_NOW,
+*        MATNR TYPE MSKAH-MATNR,
+*        WERKS TYPE MSKAH-WERKS,
+*        LGORT TYPE MSKAH-LGORT,
+*        SOBKZ TYPE MSKAH-SOBKZ,
+*        VBELN TYPE MSKAH-VBELN,
+*        POSNR TYPE MSKAH-POSNR,
+*        KALAB TYPE MSKAH-KALAB,
+*        KAINS TYPE MSKAH-KAINS,
+*        KASPE TYPE MSKAH-KASPE,
+*        KAEIN TYPE MSKAH-KAEIN,
+*      END OF GS_MSKAH_NOW .
+*DATA GT_MSKAH_NOW LIKE TABLE OF GS_MSKAH_NOW .
+" 特殊库存E 期初
+DATA: BEGIN OF GS_MSKA_BEFORE,
+        MATNR TYPE MSKA-MATNR,
+        WERKS TYPE MSKA-WERKS,
+        LGORT TYPE MSKA-LGORT,
+        VBELN TYPE MSKA-VBELN,
+        POSNR TYPE MSKA-POSNR,
+        SOBKZ TYPE MSKA-SOBKZ,
+        LFGJA TYPE MSKA-LFGJA,
+        LFMON TYPE MSKA-LFMON,
+        KALAB TYPE MSKA-KALAB,
+        KAINS TYPE MSKA-KAINS,
+        KASPE TYPE MSKA-KASPE,
+        KAEIN TYPE MSKA-KAEIN,
+      END OF GS_MSKA_BEFORE .
+DATA GT_MSKA_BEFORE LIKE TABLE OF GS_MSKA_BEFORE .
+DATA: BEGIN OF GS_MSKAH_BEFORE,
+        MATNR TYPE MSKAH-MATNR,
+        WERKS TYPE MSKAH-WERKS,
+        LGORT TYPE MSKAH-LGORT,
+        VBELN TYPE MSKAH-VBELN,
+        POSNR TYPE MSKAH-POSNR,
+        SOBKZ TYPE MSKAH-SOBKZ,
+        LFGJA TYPE MSKAH-LFGJA,
+        LFMON TYPE MSKAH-LFMON,
+        KALAB TYPE MSKAH-KALAB,
+        KAINS TYPE MSKAH-KAINS,
+        KASPE TYPE MSKAH-KASPE,
+        KAEIN TYPE MSKAH-KAEIN,
+      END OF GS_MSKAH_BEFORE .
+DATA GT_MSKAH_BEFORE LIKE TABLE OF GS_MSKAH_BEFORE .
+
+" 特殊库存O 当前占用
+*DATA: BEGIN OF GS_MSLB_NOW,
+*        MATNR TYPE MSLB-MATNR,
+*        WERKS TYPE MSLB-WERKS,
+*        SOBKZ TYPE MSLB-SOBKZ,
+*        LIFNR TYPE MSLB-LIFNR,
+*        LBLAB TYPE MSLB-LBLAB,
+*        LBINS TYPE MSLB-LBINS,
+*        LBUML TYPE MSLB-LBUML,
+*      END OF GS_MSLB_NOW .
+*DATA GT_MSLB_NOW LIKE TABLE OF GS_MSLB_NOW .
+*DATA: BEGIN OF GS_MSLBH_NOW,
+*        MATNR TYPE MSLBH-MATNR,
+*        WERKS TYPE MSLBH-WERKS,
+*        SOBKZ TYPE MSLBH-SOBKZ,
+*        LIFNR TYPE MSLBH-LIFNR,
+*        LBLAB TYPE MSLBH-LBLAB,
+*        LBINS TYPE MSLBH-LBINS,
+*        LBUML TYPE MSLBH-LBUML,
+*      END OF GS_MSLBH_NOW .
+*DATA GT_MSLBH_NOW LIKE TABLE OF GS_MSLBH_NOW .
+" 特殊库存O 期初
+DATA: BEGIN OF GS_MSLB_BEFORE,
+        MATNR TYPE MSLBH-MATNR,
+        WERKS TYPE MSLBH-WERKS,
+        LIFNR TYPE MSLBH-LIFNR,
+        SOBKZ TYPE MSLBH-SOBKZ,
+        LFGJA TYPE MSLBH-LFGJA,
+        LFMON TYPE MSLBH-LFMON,
+        LBLAB TYPE MSLBH-LBLAB,
+        LBINS TYPE MSLBH-LBINS,
+        LBUML TYPE MSLBH-LBUML,
+      END OF GS_MSLB_BEFORE .
+DATA GT_MSLB_BEFORE LIKE TABLE OF GS_MSLB_BEFORE .
+DATA: BEGIN OF GS_MSLBH_BEFORE,
+        MATNR TYPE MSLBH-MATNR,
+        WERKS TYPE MSLBH-WERKS,
+        LIFNR TYPE MSLBH-LIFNR,
+        SOBKZ TYPE MSLBH-SOBKZ,
+        LFGJA TYPE MSLBH-LFGJA,
+        LFMON TYPE MSLBH-LFMON,
+        LBLAB TYPE MSLBH-LBLAB,
+        LBINS TYPE MSLBH-LBINS,
+        LBUML TYPE MSLBH-LBUML,
+      END OF GS_MSLBH_BEFORE .
+DATA GT_MSLBH_BEFORE LIKE TABLE OF GS_MSLBH_BEFORE .
+
+" 租赁业务类型自建表
+DATA: GT_ZZLYW TYPE TABLE OF ZZLYW,
+      GS_ZZLYW TYPE ZZLYW.
+
+* 过账头、行
+DATA: GT_HEAD TYPE TABLE OF TY_HEAD,
+      GS_HEAD TYPE TY_HEAD.
+DATA: GT_ITEM TYPE TABLE OF TY_ITEM,
+      GS_ITEM TYPE TY_ITEM.
+FIELD-SYMBOLS <FS_ITEM> TYPE TY_ITEM .
+
+* 租赁折旧分摊
+DATA: GT_ZZJFT TYPE TABLE OF ZZJFT,
+      GS_ZZJFT TYPE ZZJFT.
+DATA: GT_ZZJFT_H TYPE TABLE OF ZZJFT,
+      GS_ZZJFT_H TYPE ZZJFT.
+************************************************************************
+*      DEFINITION
+************************************************************************
+DEFINE INIT_FIELDCAT.      "  ALV Fieldcat Setting
+  GS_LVC-fieldname = &1.
+  GS_LVC-coltext   = &2.
+  GS_LVC-scrtext_l = &2.
+  GS_LVC-scrtext_m = &2.
+  GS_LVC-scrtext_s = &2.
+  GS_LVC-reptext   = &2.
+  GS_LVC-outputlen = &3.
+  IF &4 = 'X'.
+    GS_LVC-key = 'X'.
+  ENDIF.
+  GS_LVC-checkbox = &5.
+  GS_LVC-edit = &6.
+*  GW_LVC-FIX_COLUMN =  &7.
+  GS_LVC-hotspot   = &7.
+  GS_LVC-ref_field = &9.
+  GS_LVC-ref_table = &8.
+
+*IF gw_lvc-fieldname = 'PROJK'.
+*   gw_lvc-NO_ZERO = 'X'.
+*ENDIF.
+  APPEND GS_LVC TO gt_lvc.
+  CLEAR GS_LVC.
+END-OF-DEFINITION.
+
+*&---------------------------------------------------------------------*
+*&      ALV Declaration
+*&---------------------------------------------------------------------*
+DATA: GT_LVC    TYPE LVC_T_FCAT,
+      GS_LVC    TYPE LVC_S_FCAT,
+      GS_LAYOUT TYPE LVC_S_LAYO .   "alv的格式
+
+* 过账要用到的ALV
+" 期初状态报表
+DATA: GT_ALV_POST1 TYPE TABLE OF TY_ALV1,
+      GS_ALV_POST1 TYPE TY_ALV1.
+
+* 转储报表
+DATA: GT_ALV_POST2 TYPE TABLE OF TY_ALV2,
+      GS_ALV_POST2 TYPE TY_ALV2.
+DATA: GT_ALV_POST3 TYPE TABLE OF TY_ALV2,
+      GS_ALV_POST3 TYPE TY_ALV2.
+
+* 过账：根据工厂、物料、订单号合并ALV数据，前台只显示一行
+DATA: BEGIN OF GS_ALV5_1 ,
+        SEL       TYPE C,
+        NUM       TYPE I,
+        BUKRS     TYPE ZZJFT-BUKRS,
+        WERKS     TYPE ZZJFT-WERKS,
+        GJAHR(4)  TYPE C,
+        MONAT(2)  TYPE C,
+        MATNR     TYPE ZZJFT-MATNR,
+        VBELN     TYPE ZZJFT-VBELN,
+        POST1     TYPE STRING,
+        NAFAZ     TYPE ANLP-NAFAZ,
+        " 凭证字段
+        BELNR     TYPE BKPF-BELNR,
+        BUZEI     TYPE BSEG-BUZEI,
+        TYPE      TYPE C,
+        MSG       TYPE STRING,
+        BELNR_REV TYPE BKPF-BELNR,
+        BUZEI_REV TYPE BSEG-BUZEI,
+        TYPE_REV  TYPE C,
+        MSG_REV   TYPE STRING,
+      END OF GS_ALV5_1 .
+DATA GT_ALV5_1 LIKE TABLE OF GS_ALV5_1 .
+************************************************************************
+* Global Variant
+************************************************************************
+* 屏幕事件
+DATA: SAVE_OK TYPE SY-UCOMM,
+      OK_CODE TYPE SY-UCOMM.
+
+* 9001 屏幕的参数
+DATA: P_BUKRS TYPE T001-BUKRS,
+      P_WERKS TYPE T001W-WERKS,
+      P_LFGJA TYPE MARD-LFGJA,
+      P_LFMON TYPE MARD-LFMON.
+
+* 9002 屏幕参数
+DATA: P3 TYPE C,
+      P4 TYPE C.
+
+* 公司、工厂、年度、期间
+DATA: G_BUKRS TYPE T001-BUKRS,
+      G_WERKS TYPE T001W-WERKS,
+      G_LFGJA TYPE MARD-LFGJA,
+      G_LFMON TYPE MARD-LFMON.
+
+DATA: G_STGRD TYPE BKPF-STGRD.  " 冲销原因
+
+* 没数据的报错加前提条件
+DATA: G_BUT1 TYPE C,
+      G_BUT2 TYPE C.
+
+*DATA: G_SUC.  " BAPI 是否执行成功标识
+
+************************************************************************
+* BAPI
+************************************************************************
+* 过账BAPI
+DATA: GS_DOCUMENTHEADER    TYPE BAPIACHE09,
+      GT_ACCOUNTGL         TYPE TABLE OF BAPIACGL09,
+      GS_ACCOUNTGL         TYPE BAPIACGL09,
+      GT_ACCOUNTRECEIVABLE TYPE TABLE OF BAPIACAR09,
+      GS_ACCOUNTRECEIVABLE TYPE BAPIACAR09,
+      GT_CURRENCYAMOUNT    TYPE TABLE OF BAPIACCR09,
+      GS_CURRENCYAMOUNT    TYPE BAPIACCR09,
+      GT_CRITERIA          TYPE TABLE OF BAPIACKEC9,
+      GS_CRITERIA          TYPE BAPIACKEC9,
+      GT_VALUEFIELD        TYPE TABLE OF BAPIACKEV9,
+      GS_VALUEFIELD        TYPE BAPIACKEV9,
+      GT_EXTENSION2        TYPE TABLE OF BAPIPAREX,
+      GS_EXTENSION2        TYPE BAPIPAREX,
+      GT_RETURN            TYPE TABLE OF BAPIRET2,
+      GS_RETURN            TYPE BAPIRET2.
+
+DATA: GS_OBJ TYPE BAPIACHE09.
+
+DATA: GS_ZACCDOCUEXT TYPE ZACCDOCUEXT.
+
+" BAPI_ACC_DOCUMENT_REV_POST
+DATA: GS_REVERSAL TYPE BAPIACREV,
+      GS_BUS      TYPE BAPIACHE09.

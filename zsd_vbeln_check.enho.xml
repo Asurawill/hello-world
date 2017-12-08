@@ -1,0 +1,399 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>销售订单编码规则检查</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SAPMV45A</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SAPMV45A</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPMV45A</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPMV45A</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPMV45A\FO:VBELN_UEBERNEHMEN\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>DATA l_vbeln_matcher TYPE REF TO cl_abap_matcher.</item>
+      <item>data l_regex TYPE string.</item>
+      <item/>
+      <item>*公司标识 代码  销售组织</item>
+      <item>*北京光电  A 1000</item>
+      <item>*深圳国内  C 1100</item>
+      <item>*深圳国外  D 1110</item>
+      <item>*深圳采购  E 1100/1110</item>
+      <item>*美国公司  F 1310</item>
+      <item>*         Z  1100</item>
+      <item>*北京视频 B   1200</item>
+      <item>*利亚德香港 J  1300</item>
+      <item>*利亚德美国 F  1310</item>
+      <item>*电视国内   L  1500</item>
+      <item>*电视国际   M 1510</item>
+      <item>*深圳渠道   Q 1100</item>
+      <item>&quot;黑金科技   N 2200</item>
+      <item>&quot;广州品能   P 2110</item>
+      <item>&quot;广州品能   P 2120</item>
+      <item>&quot;上海品能   S 2100</item>
+      <item>&quot;北京德甲   O 2600</item>
+      <item>&quot;青岛潘格林 N 2210</item>
+      <item/>
+      <item>*&amp;--代码添加 BY HANDYBY 22.05.2017 11:27:12  BEGIN</item>
+      <item>&quot;北京金立翔  K   1600</item>
+      <item>&quot;西安万科   R     2800</item>
+      <item>&quot;蓝硕       T     2901/2902</item>
+      <item>&quot;奕硕       U     2911/2912</item>
+      <item>&quot;深圳金立翔   V    1610/1611/1660</item>
+      <item>&quot;励丰      W     1700/1710/1720</item>
+      <item>&quot;厦门合道  X     2300/2301/2310/2311/2320/2321</item>
+      <item>*装备技术有限公司   Y   3300</item>
+      <item>*美国公司   F   1520</item>
+      <item>*欧洲公司   G   1530</item>
+      <item>*&amp;--代码添加 BY HANDYBY 22.05.2017 11:27:12  END</item>
+      <item/>
+      <item>&quot;add  other vkorgs&apos; rule by it02  150917</item>
+      <item>*&amp;--代码添加 BY IT02 20170713 begin</item>
+      <item>&quot;  公司       销售组织  销售订单编号首字母 对应订单类型</item>
+      <item>&quot;  文化事业部  1010       AW               ZPO</item>
+      <item>*&amp;--代码添加 BY IT02 20170713 end</item>
+      <item/>
+      <item>&quot;AND vbak-vkorg &lt;&gt; &apos;1100&apos; AND vbak-vkorg &lt;&gt; &apos;1110&apos;.&quot;2015.4.2 修改 去除北京公司编码规则检验 150710 ADD  四家销售组织&quot;执行下边编号检查</item>
+      <item>IF vbak-vkorg &lt;&gt; &apos;1000&apos;  AND vbak-vkorg &lt;&gt; &apos;1200&apos; AND vbak-vkorg &lt;&gt; &apos;1300&apos; AND vbak-vkorg &lt;&gt; &apos;1500&apos; AND vbak-vkorg &lt;&gt; &apos;1510&apos; AND vbak-vkorg &lt;&gt; &apos;1010&apos;  .</item>
+      <item/>
+      <item/>
+      <item>case vbak-vkorg.</item>
+      <item>when  &apos;1000&apos;.</item>
+      <item>CONCATENATE &apos;A&apos; l_regex INTO l_regex.</item>
+      <item>when  &apos;1100&apos;.</item>
+      <item>CONCATENATE &apos;[CEZQ]&apos; l_regex INTO l_regex.</item>
+      <item>when  &apos;1110&apos;.</item>
+      <item>CONCATENATE &apos;[DE]&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;1200&apos;.</item>
+      <item>CONCATENATE &apos;B&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;1300&apos;.</item>
+      <item>CONCATENATE &apos;J&apos; l_regex INTO l_regex.</item>
+      <item>when  &apos;1310&apos;.</item>
+      <item>CONCATENATE &apos;F&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;1500&apos;.</item>
+      <item>CONCATENATE &apos;L&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;1510&apos;.</item>
+      <item>CONCATENATE &apos;M&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;2200&apos;.</item>
+      <item>CONCATENATE &apos;N&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;2110&apos;.</item>
+      <item>CONCATENATE &apos;P&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;2120&apos;.</item>
+      <item>CONCATENATE &apos;P&apos; l_regex INTO l_regex.</item>
+      <item>when &apos;2100&apos;.</item>
+      <item>concatenate &apos;S&apos; l_regex into l_regex.</item>
+      <item>when &apos;2600&apos;.</item>
+      <item>concatenate &apos;O&apos; l_regex into l_regex.</item>
+      <item>when &apos;2210&apos;.</item>
+      <item>concatenate &apos;N&apos; l_regex into l_regex.</item>
+      <item/>
+      <item>*&amp;--代码添加 BY HANDYBY 22.05.2017 11:04:11  BEGIN</item>
+      <item>when &apos;1600&apos;.</item>
+      <item>concatenate &apos;K&apos; l_regex into l_regex. &quot;北京金立翔</item>
+      <item>when &apos;2800&apos;.</item>
+      <item>concatenate &apos;R&apos; l_regex into l_regex. &quot;西安万科</item>
+      <item>when &apos;2901&apos; OR &apos;2902&apos;.</item>
+      <item>concatenate &apos;T&apos; l_regex into l_regex. &quot;蓝硕</item>
+      <item>when &apos;2911&apos; OR &apos;2912&apos;.</item>
+      <item>concatenate &apos;U&apos; l_regex into l_regex. &quot;奕硕</item>
+      <item>when &apos;1610&apos; OR &apos;1611&apos; OR &apos;1660&apos;.</item>
+      <item>concatenate &apos;V&apos; l_regex into l_regex. &quot;深圳金立翔</item>
+      <item>when &apos;1700&apos; OR &apos;1710&apos; OR &apos;1720&apos;.</item>
+      <item>concatenate &apos;W&apos; l_regex into l_regex. &quot;励丰</item>
+      <item>when &apos;2300&apos; OR &apos;2301&apos; OR &apos;2310&apos; OR</item>
+      <item>&apos;2311&apos; OR &apos;2320&apos; OR &apos;2321&apos; .</item>
+      <item>concatenate &apos;X&apos; l_regex into l_regex. &quot;厦门合道</item>
+      <item>when &apos;3300&apos; .</item>
+      <item>concatenate &apos;Y&apos; l_regex into l_regex. &quot;装备技术有限公司</item>
+      <item>when &apos;1520&apos; .</item>
+      <item>concatenate &apos;F&apos; l_regex into l_regex. &quot;装备技术有限公司</item>
+      <item>when &apos;1530&apos; .</item>
+      <item>concatenate &apos;G&apos; l_regex into l_regex. &quot;装备技术有限公司</item>
+      <item>*&amp;--代码添加 BY HANDYBY 22.05.2017 11:04:11  END</item>
+      <item/>
+      <item>*      when  &apos;1800&apos;.</item>
+      <item>*       CONCATENATE &apos;K&apos; l_regex INTO l_regex.&quot;1800 不启用SD</item>
+      <item>&quot;20170927增加订单首字母检查,1120增加D类型 郭雷需求</item>
+      <item>WHEN &apos;1120&apos;.</item>
+      <item>CONCATENATE &apos;Z&apos; l_regex INTO l_regex.</item>
+      <item>&quot;20170927增加订单首字母检查,1120增加D类型 郭雷需求</item>
+      <item>&quot;20171115增加订单首字母检查,1360增加H类型 郭雷需求</item>
+      <item>WHEN &apos;1360&apos;.</item>
+      <item>CONCATENATE &apos;H&apos; l_regex INTO l_regex.</item>
+      <item>&quot;20171115增加订单首字母检查,1360增加H类型 郭雷需求</item>
+      <item>&quot;20171122增加订单首字母检查,1520增加F类型 郭雷需求</item>
+      <item>WHEN &apos;1520&apos;.</item>
+      <item>CONCATENATE &apos;F&apos; l_regex INTO l_regex.</item>
+      <item>&quot;20171122增加订单首字母检查,1520增加F类型 郭雷需求</item>
+      <item>when OTHERS.</item>
+      <item>endcase.</item>
+      <item/>
+      <item>*订单标识 代码  订单类型  订单类型描述</item>
+      <item>*项目合同  X ZPO 项目订单</item>
+      <item>*产品合同  C ZOR 产品订单</item>
+      <item>*服务合同  W ZSO 服务订单</item>
+      <item>*租赁合同  Z ZWV 租赁订单</item>
+      <item>*非合同   F  ZF1/ZF2 免费订单（项目/产品）</item>
+      <item>*产品退货  T ZRE 产品退货订单</item>
+      <item>*产品补货  B ZSD 产品补货订单</item>
+      <item>*年保      Y ZSO 服务订单</item>
+      <item>*单次维修  S ZSO 服务订单</item>
+      <item>*验收后整改  R ZZG 整改订单</item>
+      <item>&quot; 渠道合同  Q ZQD 渠道订单   add it02 20160322</item>
+      <item>case vbak-AUART.</item>
+      <item>when  &apos;ZPO&apos;.</item>
+      <item>CONCATENATE l_regex &apos;X&apos;  INTO l_regex.</item>
+      <item>when  &apos;ZOR&apos;.</item>
+      <item>CONCATENATE l_regex &apos;C&apos;  INTO l_regex.</item>
+      <item>when  &apos;ZSO&apos;.</item>
+      <item>CONCATENATE l_regex &apos;[WYS]&apos;  INTO l_regex.</item>
+      <item>when  &apos;ZWV&apos;.</item>
+      <item>CONCATENATE l_regex &apos;Z&apos;  INTO l_regex.</item>
+      <item>when  &apos;ZF1&apos; or &apos;ZF2&apos;.</item>
+      <item>CONCATENATE l_regex &apos;F&apos;  INTO l_regex.</item>
+      <item>when  &apos;ZRE&apos;.</item>
+      <item>CONCATENATE l_regex &apos;T&apos;  INTO l_regex.</item>
+      <item>when  &apos;ZSD&apos;.</item>
+      <item>CONCATENATE l_regex &apos;B&apos;  INTO l_regex.</item>
+      <item>when  &apos;ZZG&apos;.</item>
+      <item>CONCATENATE l_regex &apos;R&apos;  INTO l_regex.</item>
+      <item>*     when  &apos;ZQD&apos;.</item>
+      <item>*       CONCATENATE l_regex &apos;Q&apos;  INTO l_regex.</item>
+      <item>when OTHERS.</item>
+      <item>endcase.</item>
+      <item/>
+      <item>&quot;add:销售组织1100 订单类型 ZPO 首字母：CQ 需求来源：郭雷 begin 2017-08-014</item>
+      <item>if vbak-vkorg eq &apos;1100&apos; and vbak-auart eq &apos;ZPO&apos;.</item>
+      <item>CLEAR:l_regex..</item>
+      <item>CONCATENATE &apos;[CEZQ]&apos; l_regex INTO l_regex.</item>
+      <item>CONCATENATE l_regex &apos;[XQ]&apos;  INTO l_regex.</item>
+      <item/>
+      <item>endif.</item>
+      <item>&quot;add:销售组织1100 订单类型 ZPO 首字母：CQ 需求来源：郭雷 end 2017-08-14</item>
+      <item/>
+      <item>CONCATENATE l_regex sy-datum+2(2) &apos;\d{3}&apos; INTO l_regex.</item>
+      <item/>
+      <item>&quot;BREAK handlj.</item>
+      <item>l_vbeln_matcher = cl_abap_matcher=&gt;create( pattern = l_regex</item>
+      <item>ignore_case = &apos;X&apos;</item>
+      <item>text = vbak-VBELN ).</item>
+      <item>IF l_vbeln_matcher-&gt;match( ) IS INITIAL.</item>
+      <item>MESSAGE e002(AIN_EPC) WITH l_regex vbak-VBELN.</item>
+      <item>endif.</item>
+      <item>CHECK l_vbeln_matcher-&gt;match( ) is NOT INITIAL.</item>
+      <item>ELSEif vbak-vkorg EQ &apos;1010&apos; and vbak-AUART eq &apos;ZPO&apos;.</item>
+      <item>l_regex = &apos;AW&apos;.</item>
+      <item>CONCATENATE l_regex sy-datum+2(2) &apos;\d{3}&apos; INTO l_regex.</item>
+      <item>l_vbeln_matcher = cl_abap_matcher=&gt;create( pattern     = l_regex</item>
+      <item>ignore_case = &apos;X&apos;</item>
+      <item>text        = vbak-VBELN ).</item>
+      <item>IF l_vbeln_matcher-&gt;match( ) IS INITIAL.</item>
+      <item>MESSAGE e002(AIN_EPC) WITH l_regex vbak-VBELN.</item>
+      <item>endif.</item>
+      <item>CHECK l_vbeln_matcher-&gt;match( ) is NOT INITIAL.</item>
+      <item/>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPMV45A\FO:VBELN_UEBERNEHMEN\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>8</item>
+      <item>5</item>
+      <item>8</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>8</item>
+      <item>5</item>
+      <item>8</item>
+      <item>5</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>9</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>4</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>5</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>5</item>
+      <item>7</item>
+      <item>0</item>
+      <item>0</item>
+      <item>5</item>
+      <item>2</item>
+      <item>0</item>
+      <item>3</item>
+      <item>4</item>
+      <item>6</item>
+      <item>9</item>
+      <item>9</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>3</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>35</item>
+      <item>35</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>3</item>
+      <item>46</item>
+      <item>46</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

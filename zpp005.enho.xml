@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>生产订单客供料替换增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>COBC</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>COBC</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLCOBC</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLCOBC</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\FU:CO_BC_ORDER_POST\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*ADD BY HANDWY 2015-02-09</item>
+      <item>*生产订单创建在展开BOM时，对组件物料号进行检查，当物料时客供料时，进行替换</item>
+      <item>DATA GS_ZPP017 TYPE ZPP017.</item>
+      <item>DATA L_MATNR TYPE MATNR.</item>
+      <item/>
+      <item>LOOP AT resbtab WHERE AUFNR CP &apos;A*&apos; AND WERKS = &apos;1100&apos;.</item>
+      <item>CLEAR: GS_ZPP017.</item>
+      <item/>
+      <item>*值为Y且MARA-MTART=ZROH，则将物料替换为后面加个B的编码</item>
+      <item>SELECT SINGLE * FROM ZPP017</item>
+      <item>INTO CORRESPONDING FIELDS OF GS_ZPP017</item>
+      <item>WHERE MATNR = RESBTAB-MATNR.</item>
+      <item/>
+      <item>*当物料存在对应关系的时候，不存在报错。</item>
+      <item>IF SY-SUBRC = 0.</item>
+      <item>CLEAR L_MATNR.</item>
+      <item>L_MATNR = RESBTAB-MATNR.</item>
+      <item/>
+      <item>RESBTAB-MATNR = GS_ZPP017-MATNR_B.</item>
+      <item>MODIFY resbtab.</item>
+      <item>MESSAGE S007(ZPP01) WITH L_MATNR resbtab-MATNR.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDLOOP.</item>
+      <item>*ENDADD.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\FU:CO_BC_ORDER_POST\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>0</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>9</item>
+      <item>0</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>8</item>
+      <item>0</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>7</item>
+      <item>0</item>
+      <item>4</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

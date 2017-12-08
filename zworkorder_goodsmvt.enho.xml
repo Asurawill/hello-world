@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>BADI_IMPL</TOOL>
+   <SPOT_NAME>WORKORDER_GOODSMVT</SPOT_NAME>
+   <IMPL>
+    <ENH_BADI_IMPL_DATA>
+     <SPOT_NAME>WORKORDER_GOODSMVT</SPOT_NAME>
+     <BADI_NAME>WORKORDER_GOODSMVT</BADI_NAME>
+     <IMPL_NAME>ZWORKORDER_GOODSMVT</IMPL_NAME>
+     <IMPL_CLASS>ZCL_IM_WORKORDER_GOODSMVT</IMPL_CLASS>
+     <ACTIVE>X</ACTIVE>
+     <IMPL_SHORTTEXT>生产报工发料增强</IMPL_SHORTTEXT>
+     <IMPL_SHORTTEXT_ID>643E8CC1BDAB1EE4AE9B033E91E812B1</IMPL_SHORTTEXT_ID>
+     <MIG_BADI_IMPL>ZWORKORDER_GOODSMVT</MIG_BADI_IMPL>
+    </ENH_BADI_IMPL_DATA>
+   </IMPL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

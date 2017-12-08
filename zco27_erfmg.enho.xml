@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>Enhancement for CO27 ERFMG Change</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>COWB</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>COWB</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLCOWB</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLCOWB</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:SAPLCOWB\FO:MODIFY_T_COMP_TAB\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>IF SY-TCODE = &apos;CO27&apos;.</item>
+      <item>IF &lt;G_TC_CONTROL&gt;-CURRENT_LINE LE &lt;G_TC_CONTROL&gt;-LINES.</item>
+      <item>READ TABLE GT_COMP TRANSPORTING NO FIELDS WITH KEY MARK = &apos;&apos;.</item>
+      <item>IF SY-SUBRC NE 0. &quot; 只有在全选时生效</item>
+      <item>READ TABLE GT_CONTROL_TAB INDEX G_TAB_POS.</item>
+      <item>IF SY-SUBRC = 0.</item>
+      <item>LOOP AT GT_COMP WHERE IND_ST EQ GT_CONTROL_TAB-IND_TO_TABLE.</item>
+      <item>IF GT_COMP-ERFMG &lt;&gt; COWB_COMP-ERFMG.  &quot; 拣配数量修改</item>
+      <item/>
+      <item>DATA L_ERFMG TYPE COWB_COMP-ERFMG.</item>
+      <item>L_ERFMG = GT_COMP-ERFMG.</item>
+      <item/>
+      <item>LOOP AT GT_COMP WHERE IND_ST NE GT_CONTROL_TAB-IND_TO_TABLE.</item>
+      <item>GT_COMP-ERFMG = GT_COMP-ERFMG * COWB_COMP-ERFMG / L_ERFMG.  &quot; 按比例修改其余行的数量</item>
+      <item>MODIFY GT_COMP.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLCOWB\FO:MODIFY_T_COMP_TAB\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>10</item>
+      <item>12</item>
+      <item>0</item>
+      <item>14</item>
+      <item>14</item>
+      <item>0</item>
+      <item>14</item>
+      <item>16</item>
+      <item>16</item>
+      <item>14</item>
+      <item>12</item>
+      <item>10</item>
+      <item>8</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

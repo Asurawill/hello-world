@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>采购收货将物料凭证号写入物料凭证交货单号，miro参考该号码收货</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>MIGO</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>MIGO</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLMIGO</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLMIGO</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLMIGO\TY:LCL_MIGO_HEADER_GENERAL\ME:PAI\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*  data l_mblnr TYPE mblnr.</item>
+      <item/>
+      <item>IF SY-UCOMM CP &apos;OK_POST*&apos;.</item>
+      <item/>
+      <item>IF GODYNPRO-ACTION = &apos;A01&apos; AND GODYNPRO-REFDOC = &apos;R01&apos;.</item>
+      <item/>
+      <item>*ADD BY HANDWY  2015-7-29 增加移动类型限制，当交货单已经存在，不产生新的流水号</item>
+      <item>IF GOITEM-BUSTR = &apos;101&apos;</item>
+      <item>OR GOITEM-BUSTR = &apos;103&apos;</item>
+      <item>OR GOITEM-BUSTR = &apos;161&apos;</item>
+      <item>.</item>
+      <item/>
+      <item>CHECK GOHEAD-LFSNR IS INITIAL.</item>
+      <item/>
+      <item>CHECK GOHEAD-MTSNR IS INITIAL.</item>
+      <item/>
+      <item>CALL FUNCTION &apos;NUMBER_RANGE_ENQUEUE&apos;</item>
+      <item>EXPORTING</item>
+      <item>OBJECT           = &apos;ZMIGO_WE&apos;</item>
+      <item>EXCEPTIONS</item>
+      <item>FOREIGN_LOCK     = 1</item>
+      <item>OBJECT_NOT_FOUND = 2</item>
+      <item>SYSTEM_FAILURE   = 3</item>
+      <item>OTHERS           = 4.</item>
+      <item>*  **如果号码范围存在</item>
+      <item>IF SY-SUBRC EQ 0 .</item>
+      <item>*  ****得到一个号码，</item>
+      <item>CALL FUNCTION &apos;NUMBER_GET_NEXT&apos;</item>
+      <item>EXPORTING</item>
+      <item>NR_RANGE_NR             = &apos;00&apos;</item>
+      <item>OBJECT                  = &apos;ZMIGO_WE&apos;</item>
+      <item>IMPORTING</item>
+      <item>NUMBER                  = GOHEAD-XBLNR</item>
+      <item>EXCEPTIONS</item>
+      <item>INTERVAL_NOT_FOUND      = 1</item>
+      <item>NUMBER_RANGE_NOT_INTERN = 2</item>
+      <item>OBJECT_NOT_FOUND        = 3</item>
+      <item>QUANTITY_IS_0           = 4</item>
+      <item>QUANTITY_IS_NOT_1       = 5</item>
+      <item>INTERVAL_OVERFLOW       = 6</item>
+      <item>BUFFER_OVERFLOW         = 7</item>
+      <item>OTHERS                  = 8.</item>
+      <item/>
+      <item>CALL FUNCTION &apos;NUMBER_RANGE_DEQUEUE&apos;</item>
+      <item>EXPORTING</item>
+      <item>OBJECT           = &apos;ZMIGO_WE&apos;</item>
+      <item>EXCEPTIONS</item>
+      <item>OBJECT_NOT_FOUND = 1</item>
+      <item>OTHERS           = 2.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>GOHEAD-LFSNR = GOHEAD-XBLNR .</item>
+      <item>GOHEAD-MTSNR = GOHEAD-XBLNR .</item>
+      <item>CONDENSE GOHEAD-LFSNR NO-GAPS.</item>
+      <item>CONDENSE GOHEAD-XBLNR NO-GAPS.</item>
+      <item>CONDENSE GOHEAD-MTSNR NO-GAPS.</item>
+      <item>GOHEAD-XBLNR_MANUAL = &apos;X&apos;.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>*检查交货单必输</item>
+      <item>IF GOITEM-BUSTR = &apos;101&apos; OR GOITEM-BUSTR = &apos;103&apos;</item>
+      <item>OR GOITEM-BUSTR = &apos;161&apos;.</item>
+      <item>IF GOHEAD-LFSNR IS INITIAL</item>
+      <item>OR  GOHEAD-MTSNR IS INITIAL.</item>
+      <item>MESSAGE E020(ZMM01).</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLMIGO\TY:LCL_MIGO_HEADER_GENERAL\ME:PAI\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>1</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>5</item>
+      <item>5</item>
+      <item>6</item>
+      <item>0</item>
+      <item>6</item>
+      <item>0</item>
+      <item>6</item>
+      <item>0</item>
+      <item>6</item>
+      <item>8</item>
+      <item>10</item>
+      <item>8</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>0</item>
+      <item>6</item>
+      <item>0</item>
+      <item>8</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>0</item>
+      <item>8</item>
+      <item>10</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>6</item>
+      <item>0</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>5</item>
+      <item>6</item>
+      <item>4</item>
+      <item>8</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

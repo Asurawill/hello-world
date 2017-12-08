@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>俄罗斯进销存报表增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>J_3RMOBVED</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>J_3RMOBVED</ORG_MAIN_NAME>
+    <PROGRAMNAME>J_3RMOBVED</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>J_3RMOBVED</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:J_3RMOBVED\FO:ALV_SHOW\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item/>
+      <item>*ADD BY HANDWY 2015-07-28 俄罗斯报表保存自建表</item>
+      <item>DATA GT_ZFI029   TYPE TABLE OF ZFI029.</item>
+      <item>DATA GT_ZFI029_H TYPE TABLE OF ZFI029_H.</item>
+      <item/>
+      <item>DELETE  FROM ZFI029_H .</item>
+      <item>DELETE  FROM ZFI029 .</item>
+      <item/>
+      <item>REFRESH GT_ZFI029.</item>
+      <item>REFRESH GT_ZFI029_H.</item>
+      <item/>
+      <item/>
+      <item>MOVE-CORRESPONDING docmat[] TO GT_ZFI029.</item>
+      <item>MOVE-CORRESPONDING listmat[] TO GT_ZFI029_H.</item>
+      <item/>
+      <item>*DELETE GT_ZFI029 WHERE xbelnr = &apos;##########&apos;.</item>
+      <item/>
+      <item>MODIFY ZFI029_H FROM TABLE GT_ZFI029_H.</item>
+      <item>MODIFY ZFI029   FROM TABLE GT_ZFI029.</item>
+      <item/>
+      <item/>
+      <item>*END ADD.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:J_3RMOBVED\FO:ALV_SHOW\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>
