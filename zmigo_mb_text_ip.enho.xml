@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>物料凭证抬头文本增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>LCMB</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>LCMB</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLLCMB</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLLCMB</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\FU:LVS_COMMUNICATION_MB\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item/>
+      <item>* ADD BY HANDWY 2015-8-7 物料凭证记录 计算机名 以及IP</item>
+      <item>DATA: IPX      LIKE MSXXLIST-HOSTADR,  &quot;IP地址（16进制）</item>
+      <item>IP(15)   TYPE C,                 &quot;IP地址（10进制字符串）</item>
+      <item>HOST(20) TYPE C.                 &quot;主机名</item>
+      <item/>
+      <item>*  获取客户端IP地址（16进制）、主机名</item>
+      <item>CALL FUNCTION &apos;TH_USER_INFO&apos;</item>
+      <item>IMPORTING</item>
+      <item>HOSTADDR = IPX    &quot;IP地址（16进制）</item>
+      <item>TERMINAL = HOST.  &quot;主机名</item>
+      <item/>
+      <item>* 转换IP地址（16进制转换为10进制字符串）</item>
+      <item>CALL FUNCTION &apos;GWY_IPADR2STRING&apos;</item>
+      <item>EXPORTING</item>
+      <item>IPADR  = IPX</item>
+      <item>IMPORTING</item>
+      <item>STRING = IP.   &quot;IP地址（10进制字符串）</item>
+      <item/>
+      <item>CONCATENATE HOST IP INTO E_MKPF-BKTXT.</item>
+      <item>*ENDADD.</item>
+      <item/>
+      <item>*检查采购订单收货时候，系统产生交货单号  BY HANDWY 2015-8-24</item>
+      <item>IF   SY-UCOMM CP &apos;OK_POST*&apos;.</item>
+      <item>IF ( E_MSEG-BWART = &apos;101&apos;</item>
+      <item>OR  E_MSEG-BWART = &apos;103&apos;</item>
+      <item>OR  E_MSEG-BWART = &apos;161&apos;)</item>
+      <item>AND E_MKPF-XBLNR IS INITIAL</item>
+      <item>AND E_MSEG-EBELN IS NOT INITIAL.</item>
+      <item/>
+      <item>CALL FUNCTION &apos;NUMBER_RANGE_ENQUEUE&apos;</item>
+      <item>EXPORTING</item>
+      <item>OBJECT           = &apos;ZMIGO_WE&apos;</item>
+      <item>EXCEPTIONS</item>
+      <item>FOREIGN_LOCK     = 1</item>
+      <item>OBJECT_NOT_FOUND = 2</item>
+      <item>SYSTEM_FAILURE   = 3</item>
+      <item>OTHERS           = 4.</item>
+      <item>*  **如果号码范围存在</item>
+      <item>IF SY-SUBRC EQ 0 .</item>
+      <item>*  ****得到一个号码，</item>
+      <item>CALL FUNCTION &apos;NUMBER_GET_NEXT&apos;</item>
+      <item>EXPORTING</item>
+      <item>NR_RANGE_NR             = &apos;00&apos;</item>
+      <item>OBJECT                  = &apos;ZMIGO_WE&apos;</item>
+      <item>IMPORTING</item>
+      <item>NUMBER                  = E_MKPF-XBLNR</item>
+      <item>EXCEPTIONS</item>
+      <item>INTERVAL_NOT_FOUND      = 1</item>
+      <item>NUMBER_RANGE_NOT_INTERN = 2</item>
+      <item>OBJECT_NOT_FOUND        = 3</item>
+      <item>QUANTITY_IS_0           = 4</item>
+      <item>QUANTITY_IS_NOT_1       = 5</item>
+      <item>INTERVAL_OVERFLOW       = 6</item>
+      <item>BUFFER_OVERFLOW         = 7</item>
+      <item>OTHERS                  = 8.</item>
+      <item/>
+      <item>CALL FUNCTION &apos;NUMBER_RANGE_DEQUEUE&apos;</item>
+      <item>EXPORTING</item>
+      <item>OBJECT           = &apos;ZMIGO_WE&apos;</item>
+      <item>EXCEPTIONS</item>
+      <item>OBJECT_NOT_FOUND = 1</item>
+      <item>OTHERS           = 2.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>*检查交货单必输</item>
+      <item>IF ( E_MSEG-BWART = &apos;101&apos; OR E_MSEG-BWART = &apos;103&apos;</item>
+      <item>OR E_MSEG-BWART = &apos;161&apos;)</item>
+      <item>AND E_MSEG-EBELN IS NOT INITIAL.</item>
+      <item>IF E_MKPF-XBLNR IS INITIAL.</item>
+      <item>MESSAGE E020(ZMM01).</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>*1800公司，写入项目WBS描述</item>
+      <item>IF E_MSEG-WERKS = &apos;1800&apos;.</item>
+      <item>&quot;BREAK HAND.</item>
+      <item>IF E_MSEG-MAT_PSPNR IS NOT INITIAL .</item>
+      <item>SELECT SINGLE POST1 FROM PRPS</item>
+      <item>INTO E_MSEG-ZTEXT</item>
+      <item>WHERE PSPNR = E_MSEG-MAT_PSPNR.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\FU:LVS_COMMUNICATION_MB\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>8</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>6</item>
+      <item>8</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>6</item>
+      <item>8</item>
+      <item>10</item>
+      <item>8</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>0</item>
+      <item>6</item>
+      <item>0</item>
+      <item>8</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>0</item>
+      <item>8</item>
+      <item>10</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>0</item>
+      <item>7</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>5</item>
+      <item>5</item>
+      <item>6</item>
+      <item>8</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>8</item>
+      <item>9</item>
+      <item>9</item>
+      <item>6</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

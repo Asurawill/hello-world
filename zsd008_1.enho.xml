@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>订单修改记录</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SAPMV45A</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SAPMV45A</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPMV45A</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPMV45A</PROGRAMNAME>
+     <EXTID>3</EXTID>
+     <ID>3</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPMV45A\FO:FCODE_SICH\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*订单修改记录 HAND - 唐博</item>
+      <item>*BEGIN OF ENHANCEMENT BY HANDTB</item>
+      <item>*  IF SY-TCODE EQ &apos;VA01&apos; OR SY-TCODE EQ &apos;VA02&apos;.</item>
+      <item>IF SY-TCODE EQ &apos;VA02&apos;.</item>
+      <item>&quot;BREAK HANDTB.</item>
+      <item>DATA LT_XVBAP LIKE TABLE OF XVBAP WITH HEADER LINE.</item>
+      <item>DATA LW_YVBAP LIKE LINE OF YVBAP.</item>
+      <item>DATA LT_ZSD008 LIKE TABLE OF ZSD008 WITH HEADER LINE.</item>
+      <item>DATA L_KWMENG_ZERO LIKE LT_XVBAP-KWMENG.</item>
+      <item>DATA L_NETWR_ZERO LIKE LT_XVBAP-NETWR.</item>
+      <item>CLEAR: LT_XVBAP[],LT_ZSD008[],L_KWMENG_ZERO,L_NETWR_ZERO.</item>
+      <item>LT_XVBAP[] = XVBAP[].</item>
+      <item>*    IF SY-UCOMM EQ &apos;SICH&apos;.</item>
+      <item>LOOP AT LT_XVBAP WHERE UPDKZ EQ &apos;I&apos; OR UPDKZ EQ &apos;D&apos; OR UPDKZ EQ &apos;U&apos;.&quot;遍历添加的行或删除的行或更新的行</item>
+      <item>LT_ZSD008-CHANGENR(8) = SY-DATUM.</item>
+      <item>LT_ZSD008-CHANGENR+8(6) = SY-UZEIT.</item>
+      <item>CASE LT_XVBAP-UPDKZ.</item>
+      <item>WHEN &apos;I&apos; OR &apos;D&apos;.</item>
+      <item>LT_ZSD008-VBELN = LT_XVBAP-VBELN.</item>
+      <item>LT_ZSD008-POSNR = LT_XVBAP-POSNR.</item>
+      <item>LT_ZSD008-MATNR = LT_XVBAP-MATNR.</item>
+      <item>LT_ZSD008-ARKTX = LT_XVBAP-ARKTX.</item>
+      <item>LT_ZSD008-CHNGIND = LT_XVBAP-UPDKZ.</item>
+      <item>IF LT_XVBAP-UPDKZ EQ &apos;I&apos;.&quot;插入数量</item>
+      <item>*              LT_ZSD008-VALUE_NEW = LT_XVBAP-MATNR.</item>
+      <item>IF LT_XVBAP-KWMENG IS NOT INITIAL.</item>
+      <item>LT_ZSD008-VALUE_NEW = LT_XVBAP-KWMENG.</item>
+      <item>LT_ZSD008-VALUE_OLD = L_KWMENG_ZERO.</item>
+      <item>LT_ZSD008-FNAME = &apos;WMENG&apos;.</item>
+      <item>ELSE.</item>
+      <item>LT_ZSD008-VALUE_NEW = LT_XVBAP-ZMENG.</item>
+      <item>LT_ZSD008-VALUE_OLD = L_KWMENG_ZERO.</item>
+      <item>LT_ZSD008-FNAME = &apos;ZMENG&apos;.</item>
+      <item>ENDIF.</item>
+      <item>ELSE.&quot;删除数量</item>
+      <item>*              LT_ZSD008-VALUE_OLD = LT_XVBAP-MATNR.</item>
+      <item>READ TABLE YVBAP INTO LW_YVBAP WITH KEY VBELN = LT_XVBAP-VBELN POSNR = LT_XVBAP-POSNR.&quot;获取变更前数量</item>
+      <item>IF SY-SUBRC EQ 0.</item>
+      <item>IF LW_YVBAP-KWMENG IS NOT INITIAL.</item>
+      <item>LT_ZSD008-VALUE_OLD = LW_YVBAP-KWMENG.</item>
+      <item>LT_ZSD008-VALUE_NEW = L_KWMENG_ZERO.</item>
+      <item>LT_ZSD008-FNAME = &apos;WMENG&apos;.</item>
+      <item>ELSE.</item>
+      <item>LT_ZSD008-VALUE_OLD = LW_YVBAP-ZMENG.</item>
+      <item>LT_ZSD008-VALUE_NEW = L_KWMENG_ZERO.</item>
+      <item>LT_ZSD008-FNAME = &apos;ZMENG&apos;.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>CONDENSE: LT_ZSD008-VALUE_NEW,LT_ZSD008-VALUE_OLD.</item>
+      <item>LT_ZSD008-USERNAME = SY-UNAME.</item>
+      <item>APPEND LT_ZSD008.</item>
+      <item>CLEAR: LT_ZSD008-VALUE_NEW,LT_ZSD008-VALUE_OLD.</item>
+      <item>IF LT_XVBAP-NETWR IS NOT INITIAL.&quot;插入金额</item>
+      <item>LT_ZSD008-FNAME = &apos;NETWR&apos;.</item>
+      <item>IF LT_XVBAP-UPDKZ EQ &apos;I&apos;.</item>
+      <item>LT_ZSD008-VALUE_NEW = LT_XVBAP-NETWR.</item>
+      <item>LT_ZSD008-VALUE_OLD = L_NETWR_ZERO.</item>
+      <item>ELSE.&quot;删除金额</item>
+      <item>READ TABLE YVBAP INTO LW_YVBAP WITH KEY VBELN = LT_XVBAP-VBELN POSNR = LT_XVBAP-POSNR.&quot;获取变更前金额</item>
+      <item>IF SY-SUBRC EQ 0.</item>
+      <item>LT_ZSD008-VALUE_OLD = LW_YVBAP-NETWR.</item>
+      <item>LT_ZSD008-VALUE_NEW = L_NETWR_ZERO.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>CONDENSE: LT_ZSD008-VALUE_NEW,LT_ZSD008-VALUE_OLD.</item>
+      <item>LT_ZSD008-USERNAME = SY-UNAME.</item>
+      <item>APPEND LT_ZSD008.</item>
+      <item>CLEAR LT_ZSD008.</item>
+      <item>ENDIF.</item>
+      <item>WHEN &apos;U&apos;.</item>
+      <item>READ TABLE YVBAP INTO LW_YVBAP WITH KEY VBELN = LT_XVBAP-VBELN POSNR = LT_XVBAP-POSNR.</item>
+      <item>IF SY-SUBRC EQ 0.</item>
+      <item>IF LW_YVBAP-NETWR NE LT_XVBAP-NETWR.</item>
+      <item>LT_ZSD008-VBELN = LW_YVBAP-VBELN.</item>
+      <item>LT_ZSD008-POSNR = LW_YVBAP-POSNR.</item>
+      <item>LT_ZSD008-MATNR = LW_YVBAP-MATNR.</item>
+      <item>LT_ZSD008-ARKTX = LW_YVBAP-ARKTX.</item>
+      <item>LT_ZSD008-FNAME = &apos;NETWR&apos;.</item>
+      <item>LT_ZSD008-CHNGIND = LT_XVBAP-UPDKZ.</item>
+      <item>LT_ZSD008-VALUE_NEW = LT_XVBAP-NETWR.</item>
+      <item>LT_ZSD008-VALUE_OLD = LW_YVBAP-NETWR.</item>
+      <item>LT_ZSD008-USERNAME = SY-UNAME.</item>
+      <item>CONDENSE: LT_ZSD008-VALUE_NEW,LT_ZSD008-VALUE_OLD.</item>
+      <item>APPEND LT_ZSD008.</item>
+      <item>CLEAR LT_ZSD008.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>ENDCASE.</item>
+      <item>ENDLOOP.</item>
+      <item>IF LT_ZSD008[] IS NOT INITIAL.</item>
+      <item>MODIFY ZSD008 FROM TABLE LT_ZSD008.</item>
+      <item>COMMIT WORK.</item>
+      <item>ENDIF.</item>
+      <item>*    ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>*END OF ENHANCEMENT BY HANDTB</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPMV45A\FO:FCODE_SICH\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>0</item>
+      <item>14</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>14</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>14</item>
+      <item>12</item>
+      <item>0</item>
+      <item>14</item>
+      <item>14</item>
+      <item>16</item>
+      <item>18</item>
+      <item>18</item>
+      <item>18</item>
+      <item>16</item>
+      <item>18</item>
+      <item>18</item>
+      <item>18</item>
+      <item>16</item>
+      <item>14</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>12</item>
+      <item>14</item>
+      <item>14</item>
+      <item>16</item>
+      <item>16</item>
+      <item>14</item>
+      <item>16</item>
+      <item>16</item>
+      <item>18</item>
+      <item>18</item>
+      <item>16</item>
+      <item>14</item>
+      <item>14</item>
+      <item>14</item>
+      <item>14</item>
+      <item>14</item>
+      <item>12</item>
+      <item>10</item>
+      <item>12</item>
+      <item>12</item>
+      <item>14</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>16</item>
+      <item>14</item>
+      <item>12</item>
+      <item>8</item>
+      <item>6</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>6</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>按单会计凭证参考销售单号结算行替代</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>FACI</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>FACI</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLFACI</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLFACI</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:SAPLFACI\FO:DOCUMENT_SAVE\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>data l_flag TYPE c.</item>
+      <item>GET PARAMETER ID &apos;2312E_FLAG&apos; FIELD l_flag.</item>
+      <item>IF l_flag = &apos;E&apos;.&quot;231/2E E类型的过账会替代行号会写入MAT_KDPOS不会写入KDPOS，在此写入</item>
+      <item>LOOP AT ACCIT_FI.</item>
+      <item>IF ACCIT_FI-KDPOS &gt; 0 .</item>
+      <item>ACCIT_FI-KDPOS = ACCIT_FI-MAT_KDPOS.</item>
+      <item>MODIFY ACCIT_FI.</item>
+      <item>ENDIF.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLFACI\FO:DOCUMENT_SAVE\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>3</item>
+      <item>5</item>
+      <item>5</item>
+      <item>3</item>
+      <item>1</item>
+      <item>1</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

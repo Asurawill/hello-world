@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>抛出内表g_t_totals_flat用于进销存报表</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>RM07MLBD</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>RM07MLBD</ORG_MAIN_NAME>
+    <PROGRAMNAME>RM07MLBD</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07MLBD</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:RM07MLBD\FO:ALV_FLAT_LIST_SUMS_ONLY\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*抛出内表g_t_totals_flat用于进销存报表.</item>
+      <item>*IF SY-REPID+0(1) = &apos;R&apos; AND SY-TCODE = &apos;SE38&apos;.</item>
+      <item>IF sy-tcode &lt;&gt; &apos;MB5B&apos;.</item>
+      <item>IF PA_SUMFL IS NOT INITIAL AND BWBST = &apos;X&apos;.</item>
+      <item>EXPORT A = G_T_TOTALS_FLAT TO MEMORY ID &apos;ZMMR035_A&apos;.</item>
+      <item>LEAVE PROGRAM.</item>
+      <item>ELSEIF PA_SUMFL IS NOT INITIAL AND  LGBST = &apos;X&apos; .</item>
+      <item>EXPORT A = G_T_TOTALS_FLAT TO MEMORY ID &apos;ZMMR035_A&apos;.</item>
+      <item>LEAVE PROGRAM.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07MLBD</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:RM07MLBD\FO:LISTAUSGABE\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>DATA: L_STRING TYPE C LENGTH 20.</item>
+      <item>DATA: GV_TIMES TYPE N LENGTH 6...</item>
+      <item>*  BREAK HANDHM.</item>
+      <item>*IF SY-REPID+0(1) = &apos;R&apos; AND SY-TCODE = &apos;SE38&apos; AND G_T_BELEGE[] IS NOT INITIAL.</item>
+      <item>IF SY-TCODE &lt;&gt; &apos;MB5B&apos;.</item>
+      <item>IF G_T_BELEGE[] IS NOT INITIAL.</item>
+      <item>GV_TIMES = GV_TIMES + 1.</item>
+      <item>CLEAR L_STRING.</item>
+      <item>CONCATENATE &apos;ZMMR035_TIMES_&apos; GV_TIMES INTO L_STRING.</item>
+      <item>EXPORT G_T_BELEGE[] TO MEMORY ID L_STRING.</item>
+      <item>EXPORT C = GV_TIMES TO MEMORY ID &apos;ZMMR035_TIMES&apos;.</item>
+      <item>ENDIF.</item>
+      <item>RETURN.</item>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07MLBD</PROGRAMNAME>
+     <EXTID>3</EXTID>
+     <ID>3</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:RM07MLBD\FO:LISTAUSGABE1\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*抛出内表g_t_belege1用于进销存报表.</item>
+      <item>*IF SY-REPID+0(1) = &apos;R&apos; AND SY-TCODE = &apos;SE38&apos;.</item>
+      <item>IF sy-tcode &lt;&gt; &apos;MB5B&apos;.</item>
+      <item>IF PA_SUMFL IS INITIAL AND BWBST = &apos;X&apos; AND MATNR IS NOT INITIAL.</item>
+      <item>EXPORT B = G_T_BELEGE1 TO MEMORY ID &apos;ZMMR035_B&apos;.</item>
+      <item>LEAVE PROGRAM.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:RM07MLBD\FO:ALV_FLAT_LIST_SUMS_ONLY\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>9</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RM07MLBD\FO:LISTAUSGABE\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>1</item>
+      <item>1</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RM07MLBD\FO:LISTAUSGABE1\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>SO价格显示增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SAPMV45A</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SAPMV45A</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPMV45A</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPMV45A</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPMV45A\FO:USEREXIT_FIELD_MODIFICATION\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>data l_vbeln TYPE vbeln_va.</item>
+      <item>get PARAMETER ID &apos;AUN&apos; FIELD l_vbeln.</item>
+      <item/>
+      <item/>
+      <item>if sy-tcode = &apos;VA01&apos; or sy-tcode = &apos;VA02&apos; OR sy-tcode = &apos;VA03&apos;.</item>
+      <item>IF l_vbeln(1) = &apos;Z&apos;.</item>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;Z&apos;.</item>
+      <item/>
+      <item/>
+      <item>if sy-subrc &lt;&gt; 0.&quot;不等于0就表示没有权限，下面会屏蔽金额</item>
+      <item>CASE SCREEN-NAME.</item>
+      <item>WHEN &apos;VBAK-NETWR&apos;.&quot;抬头</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;KOMV-KBETR&apos;.&quot;行项目金额</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;VBAP-NETPR&apos;.&quot;行项目金额净价</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;VBAP-NETWR&apos;.&quot;行项目金额净价值</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;KOMP-NETWR&apos;.&quot;条件表中</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDCASE.</item>
+      <item>endif.</item>
+      <item>else.</item>
+      <item/>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;X&apos;.</item>
+      <item/>
+      <item/>
+      <item>if sy-subrc &lt;&gt; 0.&quot;不等于0就表示没有权限，下面会屏蔽金额</item>
+      <item>CASE SCREEN-NAME.</item>
+      <item>WHEN &apos;VBAK-NETWR&apos;.&quot;抬头</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;KOMV-KBETR&apos;.&quot;行项目金额</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;VBAP-NETPR&apos;.&quot;行项目金额净价</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;VBAP-NETWR&apos;.&quot;行项目金额净价值</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>when &apos;KOMP-NETWR&apos;.&quot;条件表中</item>
+      <item>SCREEN-ACTIVE = 0.</item>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDCASE.</item>
+      <item>endif.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>endif.</item>
+      <item/>
+      <item/>
+      <item>**订单原因默认</item>
+      <item>IF VBAK-AUGRU IS INITIAL.</item>
+      <item>IF VBAK-AUART = &apos;ZWV&apos;.</item>
+      <item>VBAK-AUGRU = &apos;Z03&apos;.</item>
+      <item>ELSEIF VBAK-AUART = &apos;ZF1&apos; OR  VBAK-AUART = &apos;ZF2&apos;.</item>
+      <item>VBAK-AUGRU = &apos;Z12&apos;.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPMV45A\FO:USEREXIT_FIELD_MODIFICATION\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>5</item>
+      <item>2</item>
+      <item>5</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

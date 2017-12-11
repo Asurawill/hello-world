@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>BADI_IMPL</TOOL>
+   <SHORTTEXT>S价物料0价格控制增强</SHORTTEXT>
+   <SPOT_NAME>MB_GOODSMOVEMENT</SPOT_NAME>
+   <IMPL>
+    <ENH_BADI_IMPL_DATA>
+     <SPOT_NAME>MB_GOODSMOVEMENT</SPOT_NAME>
+     <BADI_NAME>MB_DOCUMENT_BADI</BADI_NAME>
+     <IMPL_NAME>ZMB_DOCUMENT_BADI</IMPL_NAME>
+     <IMPL_CLASS>ZCL_IM_MB_DOCUMENT_BADI</IMPL_CLASS>
+     <ACTIVE>X</ACTIVE>
+     <IMPL_SHORTTEXT>S价物料0价格控制增强</IMPL_SHORTTEXT>
+     <IMPL_SHORTTEXT_ID>0000001435221EE78FD6093E23EAF718</IMPL_SHORTTEXT_ID>
+     <MIG_BADI_IMPL>ZMB_DOCUMENT_BADI</MIG_BADI_IMPL>
+    </ENH_BADI_IMPL_DATA>
+   </IMPL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

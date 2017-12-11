@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SRFC" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SRFC>
+    <HEADER>
+     <ID>ZMES_SAP_BOM_SEL</ID>
+     <VERSION>A</VERSION>
+     <SCOPE>S</SCOPE>
+     <FUNCNAME>ZMES_SAP_BOM_SEL</FUNCNAME>
+     <CREATEDBY>IT02</CREATEDBY>
+     <CREATEDON>2016-07-14</CREATEDON>
+     <CREATEDAT>07:09:22</CREATEDAT>
+    </HEADER>
+   </SRFC>
+  </asx:values>
+ </asx:abap>
+</abapGit>

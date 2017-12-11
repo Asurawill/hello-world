@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_FUGR" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <INCLUDES>
+    <SOBJ_NAME>LZFISELTOP</SOBJ_NAME>
+    <SOBJ_NAME>SAPLZFISEL</SOBJ_NAME>
+   </INCLUDES>
+   <FUNCTIONS>
+    <item>
+     <FUNCNAME>ZFISEL01</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>R_MSG</PARAMETER>
+       <TYP>CHAR0256</TYP>
+      </RSEXP>
+     </EXPORT>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>T_VKORG</PARAMETER>
+       <DBSTRUCT>ZVKORG</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_AUART</PARAMETER>
+       <DBSTRUCT>ZAUART</DBSTRUCT>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_ZXSXX</PARAMETER>
+       <DBSTRUCT>ZSSXX</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>R_MSG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_VKORG</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_AUART</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 003</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_ZXSXX</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 004</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZFISEL02</FUNCNAME>
+     <REMOTE_CALL>R</REMOTE_CALL>
+     <TABLES>
+      <RSTBL>
+       <PARAMETER>T_ZFIFB01</PARAMETER>
+       <DBSTRUCT>ZFIFB01</DBSTRUCT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSTBL>
+      <RSTBL>
+       <PARAMETER>T_ZFIFB01OUT</PARAMETER>
+       <DBSTRUCT>ZFIFB01OUT</DBSTRUCT>
+      </RSTBL>
+     </TABLES>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>T_ZFIFB01</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 001</INDEX>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>T_ZFIFB01OUT</PARAMETER>
+       <KIND>P</KIND>
+       <INDEX> 002</INDEX>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+   </FUNCTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

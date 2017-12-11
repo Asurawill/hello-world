@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD04V>
+    <ROLLNAME>ZYSLX</ROLLNAME>
+    <DOMNAME>ZYSLX</DOMNAME>
+    <HEADLEN>10</HEADLEN>
+    <SCRLEN1>07</SCRLEN1>
+    <SCRLEN2>08</SCRLEN2>
+    <SCRLEN3>09</SCRLEN3>
+    <DTELMASTER>1</DTELMASTER>
+    <REFKIND>D</REFKIND>
+   </DD04V>
+   <I18N_LANGS>
+    <LANGU>1</LANGU>
+   </I18N_LANGS>
+   <DD04_TEXTS>
+    <item>
+     <DDLANGUAGE>1</DDLANGUAGE>
+     <DDTEXT>预算类型</DDTEXT>
+     <REPTEXT>预算类型</REPTEXT>
+     <SCRTEXT_S>预算类型</SCRTEXT_S>
+     <SCRTEXT_M>预算类型</SCRTEXT_M>
+     <SCRTEXT_L>预算类型</SCRTEXT_L>
+    </item>
+   </DD04_TEXTS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

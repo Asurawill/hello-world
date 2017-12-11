@@ -1,0 +1,468 @@
+<?sap.transform simple?>
+<?mso-application progid="Excel.Sheet"?>
+<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">
+
+  <!--   <tt:variable name= "VARI" val="22332" />
+    <tt:variable name="VARI2" val="3243" />-->
+
+  <tt:root name="table"/>
+  <tt:template>
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html=
+"http://www.w3.org/TR/REC-html40">
+      <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+      </ExcelWorkbook>
+      <Worksheet ss:Name="Sheet1">
+        <!--        <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="1000" x:FullColumns="1" x:FullRows="1">-->
+        <Table ss:ExpandedColumnCount="40" x:FullColumns="1" x:FullRows="1">
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+           <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Column ss:Width="150"/>
+          <Row>
+            <Cell>
+              <Data ss:Type="String">
+               采购申请
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购申请行
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购申请删除标识
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+          申请人
+       </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        物料号
+       </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        短文本
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        需求跟踪号
+         </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        项目描述
+         </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        申请数量
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        单位
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        工厂
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        申请日期
+       </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        请求交货日期
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        计划交货天数
+       </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购订单
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+        采购订单审批
+         </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购订单行项目
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购订单下单日期
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        回复交货日期
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        统计交货日期
+         </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购订单数量
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购订单单位
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        备注
+         </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        供应商
+         </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+         供应商描述
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购组
+       </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        采购组描述
+         </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        已收货未入库数量
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+       入库数量
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        未入库数量
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+        实际到货日期
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+        预计超期天数
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+        实际超期天数
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+        采购超期天数
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+        净价
+        </Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String">
+        价格单位
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+        净值
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+       含税值
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+       标准价
+         </Data>
+            </Cell>
+             <Cell>
+              <Data ss:Type="String">
+       标准价格单位
+         </Data>
+            </Cell>
+          </Row>
+          <tt:loop ref=".table">
+            <Row>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="BANFN"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="BNFPO"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="LOEKZ"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="AFNAM"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="MATNR"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="TXZ01"/>
+                </Data>
+              </Cell>
+               <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="BEDNR"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="XMMS"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="MENGE"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="MEINS"/>
+                </Data>
+              </Cell>
+
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="WERKS"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="BADAT"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="LFDAT"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="PLIFZ"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="EBELN"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="CGDDSP"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="EBELP"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="BEDAT"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="EINDT"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="SLFDT"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="CG_MENGE"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="CG_MEINS"/>
+                </Data>
+              </Cell>
+               <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="BZ"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="LIFNR"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="GYSMS"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="EKGRP"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="EKNAM"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="YSHWRK"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="RKSL"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="WRKSL"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="SJDHRQ"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="YJCQTS"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="SJCQTS"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="CGCQTS"/>
+                </Data>
+              </Cell>
+                 <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="NETPR"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="PEINH_CG"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="NETWR"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="BRTWR"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="VERPR"/>
+                </Data>
+              </Cell>
+              <Cell>
+                <Data ss:Type="String">
+                  <tt:value ref="PEINH_BZJ"/>
+                </Data>
+              </Cell>
+            </Row>
+          </tt:loop>
+        </Table>
+      </Worksheet>
+    </Workbook>
+  </tt:template>
+</tt:transform>

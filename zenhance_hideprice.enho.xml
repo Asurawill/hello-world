@@ -1,0 +1,675 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>SO价格显示权限控制</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>V69A</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>V69A</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLV69A</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLV69A</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLV69A\FO:USEREXIT_FIELD_MODIFIC_KZWI\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>data l_vbeln TYPE vbeln_va.</item>
+      <item>get PARAMETER ID &apos;AUN&apos; FIELD l_vbeln.</item>
+      <item/>
+      <item>IF SY-TCODE = &apos;VA01&apos; OR SY-TCODE = &apos;VA02&apos; OR SY-TCODE = &apos;VA03&apos;.&quot;权限检查</item>
+      <item>IF l_vbeln(1) = &apos;Z&apos;.</item>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;Z&apos;.</item>
+      <item>IF sy-subrc &lt;&gt; 0.  &quot;不等于零表示没有权限，敏感字段将被隐藏</item>
+      <item>IF KOMV-KSCHL = &apos;VPRS&apos; OR KOMV-KSCHL = &apos;Z100&apos; OR KOMV-KSCHL = &apos;ZA01&apos; OR KOMV-KSCHL = &apos;ZA02&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZA03&apos; OR KOMV-KSCHL = &apos;ZA04&apos; OR KOMV-KSCHL = &apos;ZC01&apos; OR KOMV-KSCHL = &apos;ZE01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE02&apos; OR KOMV-KSCHL = &apos;ZE03&apos; OR KOMV-KSCHL = &apos;ZE04&apos; OR KOMV-KSCHL = &apos;ZE05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE06&apos; OR KOMV-KSCHL = &apos;ZE07&apos; OR KOMV-KSCHL = &apos;ZE08&apos; OR KOMV-KSCHL = &apos;ZE09&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZF00&apos; OR KOMV-KSCHL = &apos;ZNE1&apos; OR KOMV-KSCHL = &apos;ZNE2&apos; OR KOMV-KSCHL = &apos;ZNE3&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZNET&apos; OR KOMV-KSCHL = &apos;ZP01&apos; OR KOMV-KSCHL = &apos;ZP02&apos; OR KOMV-KSCHL = &apos;ZP03&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP04&apos; OR KOMV-KSCHL = &apos;ZP05&apos; OR KOMV-KSCHL = &apos;ZP06&apos; OR KOMV-KSCHL = &apos;ZP07&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP08&apos; OR KOMV-KSCHL = &apos;ZP09&apos; OR KOMV-KSCHL = &apos;ZP10&apos; OR KOMV-KSCHL = &apos;ZP11&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP12&apos; OR KOMV-KSCHL = &apos;ZP13&apos; OR KOMV-KSCHL = &apos;ZPRS&apos; OR KOMV-KSCHL = &apos;ZR01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR02&apos; OR KOMV-KSCHL = &apos;ZR03&apos; OR KOMV-KSCHL = &apos;ZR04&apos; OR KOMV-KSCHL = &apos;ZR05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR10&apos; OR KOMV-KSCHL = &apos;ZR20&apos; OR KOMV-KSCHL = &apos;ZR30&apos; OR KOMV-KSCHL = &apos;ZR40&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZRA1&apos; OR KOMV-KSCHL = &apos;ZRA2&apos; OR KOMV-KSCHL = &apos;ZRA3&apos; OR KOMV-KSCHL = &apos;ZRA4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWS1&apos; OR KOMV-KSCHL = &apos;ZWS2&apos; OR KOMV-KSCHL = &apos;ZWS3&apos; OR KOMV-KSCHL = &apos;ZWS4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWSI&apos; OR KOMV-KSCHL = &apos;ZYQ1&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润率&apos; OR  T685T-VTEXT = &apos;项目含税总金额&apos; OR  T685T-VTEXT = &apos;项目净值总金额&apos;</item>
+      <item>OR  T685T-VTEXT = &apos;产品售价&apos; OR  T685T-VTEXT = &apos;租赁含税价&apos; .</item>
+      <item>IF SCREEN-NAME = &apos;KOMV-KBETR&apos; OR &quot;价格</item>
+      <item>SCREEN-NAME = &apos;RV61A-KOEIN&apos; OR&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>SCREEN-NAME = &apos;KOMV-KPEIN&apos; OR &quot;条件定价单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KMEIN&apos; OR &quot;条件单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KWERT&apos;. &quot;定价值</item>
+      <item>SCREEN-ACTIVE = 0.&quot;隐藏敏感字段</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF ( screen-name = &apos;KOMP-NETWR&apos;</item>
+      <item>OR screen-name = &apos;KOMP-MWSBP&apos;</item>
+      <item>OR screen-name = &apos;RV61A-SELKZ&apos;&quot;选择标识</item>
+      <item>OR screen-name = &apos;KOMV-KAWRT&apos;</item>
+      <item>OR screen-name = &apos;RV61A-AWEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KBETR&apos;</item>
+      <item>OR screen-name = &apos;RV61A-KOEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KPEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KMEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT_K&apos; ).</item>
+      <item>screen-active = 0.</item>
+      <item>endif.</item>
+      <item/>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>CLEAR: KOMP-NETWR,KOMP-MWSBP.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>else.</item>
+      <item/>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;X&apos;.</item>
+      <item>IF sy-subrc &lt;&gt; 0.  &quot;不等于零表示没有权限，敏感字段将被隐藏</item>
+      <item>IF KOMV-KSCHL = &apos;VPRS&apos; OR KOMV-KSCHL = &apos;Z100&apos; OR KOMV-KSCHL = &apos;ZA01&apos; OR KOMV-KSCHL = &apos;ZA02&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZA03&apos; OR KOMV-KSCHL = &apos;ZA04&apos; OR KOMV-KSCHL = &apos;ZC01&apos; OR KOMV-KSCHL = &apos;ZE01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE02&apos; OR KOMV-KSCHL = &apos;ZE03&apos; OR KOMV-KSCHL = &apos;ZE04&apos; OR KOMV-KSCHL = &apos;ZE05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE06&apos; OR KOMV-KSCHL = &apos;ZE07&apos; OR KOMV-KSCHL = &apos;ZE08&apos; OR KOMV-KSCHL = &apos;ZE09&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZF00&apos; OR KOMV-KSCHL = &apos;ZNE1&apos; OR KOMV-KSCHL = &apos;ZNE2&apos; OR KOMV-KSCHL = &apos;ZNE3&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZNET&apos; OR KOMV-KSCHL = &apos;ZP01&apos; OR KOMV-KSCHL = &apos;ZP02&apos; OR KOMV-KSCHL = &apos;ZP03&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP04&apos; OR KOMV-KSCHL = &apos;ZP05&apos; OR KOMV-KSCHL = &apos;ZP06&apos; OR KOMV-KSCHL = &apos;ZP07&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP08&apos; OR KOMV-KSCHL = &apos;ZP09&apos; OR KOMV-KSCHL = &apos;ZP10&apos; OR KOMV-KSCHL = &apos;ZP11&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP12&apos; OR KOMV-KSCHL = &apos;ZP13&apos; OR KOMV-KSCHL = &apos;ZPRS&apos; OR KOMV-KSCHL = &apos;ZR01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR02&apos; OR KOMV-KSCHL = &apos;ZR03&apos; OR KOMV-KSCHL = &apos;ZR04&apos; OR KOMV-KSCHL = &apos;ZR05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR10&apos; OR KOMV-KSCHL = &apos;ZR20&apos; OR KOMV-KSCHL = &apos;ZR30&apos; OR KOMV-KSCHL = &apos;ZR40&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZRA1&apos; OR KOMV-KSCHL = &apos;ZRA2&apos; OR KOMV-KSCHL = &apos;ZRA3&apos; OR KOMV-KSCHL = &apos;ZRA4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWS1&apos; OR KOMV-KSCHL = &apos;ZWS2&apos; OR KOMV-KSCHL = &apos;ZWS3&apos; OR KOMV-KSCHL = &apos;ZWS4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWSI&apos; OR KOMV-KSCHL = &apos;ZYQ1&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润率&apos; OR  T685T-VTEXT = &apos;项目含税总金额&apos; OR  T685T-VTEXT = &apos;项目净值总金额&apos;</item>
+      <item>OR  T685T-VTEXT = &apos;产品售价&apos; OR  T685T-VTEXT = &apos;租赁含税价&apos; .</item>
+      <item>IF SCREEN-NAME = &apos;KOMV-KBETR&apos; OR &quot;价格</item>
+      <item>SCREEN-NAME = &apos;RV61A-KOEIN&apos; OR&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>SCREEN-NAME = &apos;KOMV-KPEIN&apos; OR &quot;条件定价单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KMEIN&apos; OR &quot;条件单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KWERT&apos;. &quot;定价值</item>
+      <item>SCREEN-ACTIVE = 0.&quot;隐藏敏感字段</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF ( screen-name = &apos;KOMP-NETWR&apos;</item>
+      <item>OR screen-name = &apos;KOMP-MWSBP&apos;</item>
+      <item>OR screen-name = &apos;RV61A-SELKZ&apos;&quot;选择标识</item>
+      <item>OR screen-name = &apos;KOMV-KAWRT&apos;</item>
+      <item>OR screen-name = &apos;RV61A-AWEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KBETR&apos;</item>
+      <item>OR screen-name = &apos;RV61A-KOEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KPEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KMEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT_K&apos; ).</item>
+      <item>screen-active = 0.</item>
+      <item>endif.</item>
+      <item/>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>CLEAR: KOMP-NETWR,KOMP-MWSBP.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item/>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLV69A</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLV69A\FO:USEREXIT_FIELD_MODIFIC_KOPF\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>data l_vbeln TYPE vbeln_va.</item>
+      <item>get PARAMETER ID &apos;AUN&apos; FIELD l_vbeln.</item>
+      <item/>
+      <item>IF SY-TCODE = &apos;VA01&apos; OR SY-TCODE = &apos;VA02&apos; OR SY-TCODE = &apos;VA03&apos;.&quot;权限检查</item>
+      <item>IF l_vbeln(1) = &apos;Z&apos;.</item>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;Z&apos;.</item>
+      <item>IF sy-subrc &lt;&gt; 0.  &quot;不等于零表示没有权限，敏感字段将被隐藏</item>
+      <item>IF KOMV-KSCHL = &apos;VPRS&apos; OR KOMV-KSCHL = &apos;Z100&apos; OR KOMV-KSCHL = &apos;ZA01&apos; OR KOMV-KSCHL = &apos;ZA02&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZA03&apos; OR KOMV-KSCHL = &apos;ZA04&apos; OR KOMV-KSCHL = &apos;ZC01&apos; OR KOMV-KSCHL = &apos;ZE01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE02&apos; OR KOMV-KSCHL = &apos;ZE03&apos; OR KOMV-KSCHL = &apos;ZE04&apos; OR KOMV-KSCHL = &apos;ZE05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE06&apos; OR KOMV-KSCHL = &apos;ZE07&apos; OR KOMV-KSCHL = &apos;ZE08&apos; OR KOMV-KSCHL = &apos;ZE09&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZF00&apos; OR KOMV-KSCHL = &apos;ZNE1&apos; OR KOMV-KSCHL = &apos;ZNE2&apos; OR KOMV-KSCHL = &apos;ZNE3&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZNET&apos; OR KOMV-KSCHL = &apos;ZP01&apos; OR KOMV-KSCHL = &apos;ZP02&apos; OR KOMV-KSCHL = &apos;ZP03&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP04&apos; OR KOMV-KSCHL = &apos;ZP05&apos; OR KOMV-KSCHL = &apos;ZP06&apos; OR KOMV-KSCHL = &apos;ZP07&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP08&apos; OR KOMV-KSCHL = &apos;ZP09&apos; OR KOMV-KSCHL = &apos;ZP10&apos; OR KOMV-KSCHL = &apos;ZP11&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP12&apos; OR KOMV-KSCHL = &apos;ZP13&apos; OR KOMV-KSCHL = &apos;ZPRS&apos; OR KOMV-KSCHL = &apos;ZR01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR02&apos; OR KOMV-KSCHL = &apos;ZR03&apos; OR KOMV-KSCHL = &apos;ZR04&apos; OR KOMV-KSCHL = &apos;ZR05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR10&apos; OR KOMV-KSCHL = &apos;ZR20&apos; OR KOMV-KSCHL = &apos;ZR30&apos; OR KOMV-KSCHL = &apos;ZR40&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZRA1&apos; OR KOMV-KSCHL = &apos;ZRA2&apos; OR KOMV-KSCHL = &apos;ZRA3&apos; OR KOMV-KSCHL = &apos;ZRA4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWS1&apos; OR KOMV-KSCHL = &apos;ZWS2&apos; OR KOMV-KSCHL = &apos;ZWS3&apos; OR KOMV-KSCHL = &apos;ZWS4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWSI&apos; OR KOMV-KSCHL = &apos;ZYQ1&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润率&apos; OR  T685T-VTEXT = &apos;项目含税总金额&apos; OR  T685T-VTEXT = &apos;项目净值总金额&apos;</item>
+      <item>OR  T685T-VTEXT = &apos;产品售价&apos; OR  T685T-VTEXT = &apos;租赁含税价&apos; .</item>
+      <item>IF SCREEN-NAME = &apos;KOMV-KBETR&apos; OR &quot;价格</item>
+      <item>SCREEN-NAME = &apos;RV61A-KOEIN&apos; OR&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>SCREEN-NAME = &apos;KOMV-KPEIN&apos; OR &quot;条件定价单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KMEIN&apos; OR &quot;条件单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KWERT&apos;. &quot;定价值</item>
+      <item>SCREEN-ACTIVE = 0.&quot;隐藏敏感字段</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF ( screen-name = &apos;KOMP-NETWR&apos;</item>
+      <item>OR screen-name = &apos;KOMP-MWSBP&apos;</item>
+      <item>OR screen-name = &apos;RV61A-SELKZ&apos;&quot;选择标识</item>
+      <item>OR screen-name = &apos;KOMV-KAWRT&apos;</item>
+      <item>OR screen-name = &apos;RV61A-AWEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KBETR&apos;</item>
+      <item>OR screen-name = &apos;RV61A-KOEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KPEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KMEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT_K&apos; ).</item>
+      <item>screen-active = 0.</item>
+      <item>endif.</item>
+      <item/>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>CLEAR: KOMP-NETWR,KOMP-MWSBP.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>else.</item>
+      <item/>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;X&apos;.</item>
+      <item>IF sy-subrc &lt;&gt; 0.  &quot;不等于零表示没有权限，敏感字段将被隐藏</item>
+      <item>IF KOMV-KSCHL = &apos;VPRS&apos; OR KOMV-KSCHL = &apos;Z100&apos; OR KOMV-KSCHL = &apos;ZA01&apos; OR KOMV-KSCHL = &apos;ZA02&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZA03&apos; OR KOMV-KSCHL = &apos;ZA04&apos; OR KOMV-KSCHL = &apos;ZC01&apos; OR KOMV-KSCHL = &apos;ZE01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE02&apos; OR KOMV-KSCHL = &apos;ZE03&apos; OR KOMV-KSCHL = &apos;ZE04&apos; OR KOMV-KSCHL = &apos;ZE05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE06&apos; OR KOMV-KSCHL = &apos;ZE07&apos; OR KOMV-KSCHL = &apos;ZE08&apos; OR KOMV-KSCHL = &apos;ZE09&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZF00&apos; OR KOMV-KSCHL = &apos;ZNE1&apos; OR KOMV-KSCHL = &apos;ZNE2&apos; OR KOMV-KSCHL = &apos;ZNE3&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZNET&apos; OR KOMV-KSCHL = &apos;ZP01&apos; OR KOMV-KSCHL = &apos;ZP02&apos; OR KOMV-KSCHL = &apos;ZP03&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP04&apos; OR KOMV-KSCHL = &apos;ZP05&apos; OR KOMV-KSCHL = &apos;ZP06&apos; OR KOMV-KSCHL = &apos;ZP07&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP08&apos; OR KOMV-KSCHL = &apos;ZP09&apos; OR KOMV-KSCHL = &apos;ZP10&apos; OR KOMV-KSCHL = &apos;ZP11&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP12&apos; OR KOMV-KSCHL = &apos;ZP13&apos; OR KOMV-KSCHL = &apos;ZPRS&apos; OR KOMV-KSCHL = &apos;ZR01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR02&apos; OR KOMV-KSCHL = &apos;ZR03&apos; OR KOMV-KSCHL = &apos;ZR04&apos; OR KOMV-KSCHL = &apos;ZR05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR10&apos; OR KOMV-KSCHL = &apos;ZR20&apos; OR KOMV-KSCHL = &apos;ZR30&apos; OR KOMV-KSCHL = &apos;ZR40&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZRA1&apos; OR KOMV-KSCHL = &apos;ZRA2&apos; OR KOMV-KSCHL = &apos;ZRA3&apos; OR KOMV-KSCHL = &apos;ZRA4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWS1&apos; OR KOMV-KSCHL = &apos;ZWS2&apos; OR KOMV-KSCHL = &apos;ZWS3&apos; OR KOMV-KSCHL = &apos;ZWS4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWSI&apos; OR KOMV-KSCHL = &apos;ZYQ1&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润率&apos; OR  T685T-VTEXT = &apos;项目含税总金额&apos; OR  T685T-VTEXT = &apos;项目净值总金额&apos;</item>
+      <item>OR  T685T-VTEXT = &apos;产品售价&apos; OR  T685T-VTEXT = &apos;租赁含税价&apos; .</item>
+      <item>IF SCREEN-NAME = &apos;KOMV-KBETR&apos; OR &quot;价格</item>
+      <item>SCREEN-NAME = &apos;RV61A-KOEIN&apos; OR&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>SCREEN-NAME = &apos;KOMV-KPEIN&apos; OR &quot;条件定价单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KMEIN&apos; OR &quot;条件单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KWERT&apos;. &quot;定价值</item>
+      <item>SCREEN-ACTIVE = 0.&quot;隐藏敏感字段</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF ( screen-name = &apos;KOMP-NETWR&apos;</item>
+      <item>OR screen-name = &apos;KOMP-MWSBP&apos;</item>
+      <item>OR screen-name = &apos;RV61A-SELKZ&apos;&quot;选择标识</item>
+      <item>OR screen-name = &apos;KOMV-KAWRT&apos;</item>
+      <item>OR screen-name = &apos;RV61A-AWEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KBETR&apos;</item>
+      <item>OR screen-name = &apos;RV61A-KOEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KPEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KMEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT_K&apos; ).</item>
+      <item>screen-active = 0.</item>
+      <item>endif.</item>
+      <item/>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>CLEAR: KOMP-NETWR,KOMP-MWSBP.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLV69A</PROGRAMNAME>
+     <EXTID>3</EXTID>
+     <ID>3</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLV69A\FO:USEREXIT_FIELD_MODIFICATION\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>data l_vbeln TYPE vbeln_va.</item>
+      <item>get PARAMETER ID &apos;AUN&apos; FIELD l_vbeln.</item>
+      <item/>
+      <item>IF SY-TCODE = &apos;VA01&apos; OR SY-TCODE = &apos;VA02&apos; OR SY-TCODE = &apos;VA03&apos;.&quot;权限检查</item>
+      <item>IF l_vbeln(1) = &apos;Z&apos;.</item>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;Z&apos;.</item>
+      <item>IF sy-subrc &lt;&gt; 0.  &quot;不等于零表示没有权限，敏感字段将被隐藏</item>
+      <item>IF KOMV-KSCHL = &apos;VPRS&apos; OR KOMV-KSCHL = &apos;Z100&apos; OR KOMV-KSCHL = &apos;ZA01&apos; OR KOMV-KSCHL = &apos;ZA02&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZA03&apos; OR KOMV-KSCHL = &apos;ZA04&apos; OR KOMV-KSCHL = &apos;ZC01&apos; OR KOMV-KSCHL = &apos;ZE01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE02&apos; OR KOMV-KSCHL = &apos;ZE03&apos; OR KOMV-KSCHL = &apos;ZE04&apos; OR KOMV-KSCHL = &apos;ZE05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE06&apos; OR KOMV-KSCHL = &apos;ZE07&apos; OR KOMV-KSCHL = &apos;ZE08&apos; OR KOMV-KSCHL = &apos;ZE09&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZF00&apos; OR KOMV-KSCHL = &apos;ZNE1&apos; OR KOMV-KSCHL = &apos;ZNE2&apos; OR KOMV-KSCHL = &apos;ZNE3&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZNET&apos; OR KOMV-KSCHL = &apos;ZP01&apos; OR KOMV-KSCHL = &apos;ZP02&apos; OR KOMV-KSCHL = &apos;ZP03&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP04&apos; OR KOMV-KSCHL = &apos;ZP05&apos; OR KOMV-KSCHL = &apos;ZP06&apos; OR KOMV-KSCHL = &apos;ZP07&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP08&apos; OR KOMV-KSCHL = &apos;ZP09&apos; OR KOMV-KSCHL = &apos;ZP10&apos; OR KOMV-KSCHL = &apos;ZP11&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP12&apos; OR KOMV-KSCHL = &apos;ZP13&apos; OR KOMV-KSCHL = &apos;ZPRS&apos; OR KOMV-KSCHL = &apos;ZR01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR02&apos; OR KOMV-KSCHL = &apos;ZR03&apos; OR KOMV-KSCHL = &apos;ZR04&apos; OR KOMV-KSCHL = &apos;ZR05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR10&apos; OR KOMV-KSCHL = &apos;ZR20&apos; OR KOMV-KSCHL = &apos;ZR30&apos; OR KOMV-KSCHL = &apos;ZR40&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZRA1&apos; OR KOMV-KSCHL = &apos;ZRA2&apos; OR KOMV-KSCHL = &apos;ZRA3&apos; OR KOMV-KSCHL = &apos;ZRA4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWS1&apos; OR KOMV-KSCHL = &apos;ZWS2&apos; OR KOMV-KSCHL = &apos;ZWS3&apos; OR KOMV-KSCHL = &apos;ZWS4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWSI&apos; OR KOMV-KSCHL = &apos;ZYQ1&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润率&apos; OR  T685T-VTEXT = &apos;项目含税总金额&apos; OR  T685T-VTEXT = &apos;项目净值总金额&apos;</item>
+      <item>OR  T685T-VTEXT = &apos;产品售价&apos; OR  T685T-VTEXT = &apos;租赁含税价&apos; .</item>
+      <item>IF SCREEN-NAME = &apos;KOMV-KBETR&apos; OR &quot;价格</item>
+      <item>SCREEN-NAME = &apos;RV61A-KOEIN&apos; OR&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>SCREEN-NAME = &apos;KOMV-KPEIN&apos; OR &quot;条件定价单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KMEIN&apos; OR &quot;条件单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KWERT&apos;. &quot;定价值</item>
+      <item>SCREEN-ACTIVE = 0.&quot;隐藏敏感字段</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF ( screen-name = &apos;KOMP-NETWR&apos;</item>
+      <item>OR screen-name = &apos;KOMP-MWSBP&apos;</item>
+      <item>OR screen-name = &apos;RV61A-SELKZ&apos;&quot;选择标识</item>
+      <item>OR screen-name = &apos;KOMV-KAWRT&apos;</item>
+      <item>OR screen-name = &apos;RV61A-AWEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KBETR&apos;</item>
+      <item>OR screen-name = &apos;RV61A-KOEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KPEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KMEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT_K&apos; ).</item>
+      <item>screen-active = 0.</item>
+      <item>endif.</item>
+      <item/>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>CLEAR: KOMP-NETWR,KOMP-MWSBP.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>else.</item>
+      <item/>
+      <item>AUTHORITY-CHECK OBJECT &apos;Z_SD_PRICE&apos; ID &apos;ZPRICE&apos; FIELD &apos;X&apos;.</item>
+      <item>IF sy-subrc &lt;&gt; 0.  &quot;不等于零表示没有权限，敏感字段将被隐藏</item>
+      <item>IF KOMV-KSCHL = &apos;VPRS&apos; OR KOMV-KSCHL = &apos;Z100&apos; OR KOMV-KSCHL = &apos;ZA01&apos; OR KOMV-KSCHL = &apos;ZA02&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZA03&apos; OR KOMV-KSCHL = &apos;ZA04&apos; OR KOMV-KSCHL = &apos;ZC01&apos; OR KOMV-KSCHL = &apos;ZE01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE02&apos; OR KOMV-KSCHL = &apos;ZE03&apos; OR KOMV-KSCHL = &apos;ZE04&apos; OR KOMV-KSCHL = &apos;ZE05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZE06&apos; OR KOMV-KSCHL = &apos;ZE07&apos; OR KOMV-KSCHL = &apos;ZE08&apos; OR KOMV-KSCHL = &apos;ZE09&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZF00&apos; OR KOMV-KSCHL = &apos;ZNE1&apos; OR KOMV-KSCHL = &apos;ZNE2&apos; OR KOMV-KSCHL = &apos;ZNE3&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZNET&apos; OR KOMV-KSCHL = &apos;ZP01&apos; OR KOMV-KSCHL = &apos;ZP02&apos; OR KOMV-KSCHL = &apos;ZP03&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP04&apos; OR KOMV-KSCHL = &apos;ZP05&apos; OR KOMV-KSCHL = &apos;ZP06&apos; OR KOMV-KSCHL = &apos;ZP07&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP08&apos; OR KOMV-KSCHL = &apos;ZP09&apos; OR KOMV-KSCHL = &apos;ZP10&apos; OR KOMV-KSCHL = &apos;ZP11&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZP12&apos; OR KOMV-KSCHL = &apos;ZP13&apos; OR KOMV-KSCHL = &apos;ZPRS&apos; OR KOMV-KSCHL = &apos;ZR01&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR02&apos; OR KOMV-KSCHL = &apos;ZR03&apos; OR KOMV-KSCHL = &apos;ZR04&apos; OR KOMV-KSCHL = &apos;ZR05&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZR10&apos; OR KOMV-KSCHL = &apos;ZR20&apos; OR KOMV-KSCHL = &apos;ZR30&apos; OR KOMV-KSCHL = &apos;ZR40&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZRA1&apos; OR KOMV-KSCHL = &apos;ZRA2&apos; OR KOMV-KSCHL = &apos;ZRA3&apos; OR KOMV-KSCHL = &apos;ZRA4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWS1&apos; OR KOMV-KSCHL = &apos;ZWS2&apos; OR KOMV-KSCHL = &apos;ZWS3&apos; OR KOMV-KSCHL = &apos;ZWS4&apos; OR</item>
+      <item>KOMV-KSCHL = &apos;ZWSI&apos; OR KOMV-KSCHL = &apos;ZYQ1&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润&apos; OR</item>
+      <item>T685T-VTEXT = &apos;利润率&apos; OR  T685T-VTEXT = &apos;项目含税总金额&apos; OR  T685T-VTEXT = &apos;项目净值总金额&apos;</item>
+      <item>OR  T685T-VTEXT = &apos;产品售价&apos; OR  T685T-VTEXT = &apos;租赁含税价&apos; .</item>
+      <item>IF SCREEN-NAME = &apos;KOMV-KBETR&apos; OR &quot;价格</item>
+      <item>SCREEN-NAME = &apos;RV61A-KOEIN&apos; OR&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>SCREEN-NAME = &apos;KOMV-KPEIN&apos; OR &quot;条件定价单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KMEIN&apos; OR &quot;条件单位</item>
+      <item>SCREEN-NAME = &apos;KOMV-KWERT&apos;. &quot;定价值</item>
+      <item>SCREEN-ACTIVE = 0.&quot;隐藏敏感字段</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>IF ( screen-name = &apos;KOMP-NETWR&apos;</item>
+      <item>OR screen-name = &apos;KOMP-MWSBP&apos;</item>
+      <item>OR screen-name = &apos;RV61A-SELKZ&apos;&quot;选择标识</item>
+      <item>OR screen-name = &apos;KOMV-KAWRT&apos;</item>
+      <item>OR screen-name = &apos;RV61A-AWEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KBETR&apos;</item>
+      <item>OR screen-name = &apos;RV61A-KOEIN&apos;&quot;价单位 (货币，销售单位，或 % )</item>
+      <item>OR screen-name = &apos;KOMV-KPEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KMEIN&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT&apos;</item>
+      <item>OR screen-name = &apos;KOMV-KWERT_K&apos; ).</item>
+      <item>screen-active = 0.</item>
+      <item>endif.</item>
+      <item/>
+      <item>MODIFY SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>CLEAR: KOMP-NETWR,KOMP-MWSBP.</item>
+      <item>ENDIF.</item>
+      <item/>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLV69A\FO:USEREXIT_FIELD_MODIFIC_KZWI\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>9</item>
+      <item>9</item>
+      <item>8</item>
+      <item>7</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>7</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>6</item>
+      <item>0</item>
+      <item>7</item>
+      <item>6</item>
+      <item>7</item>
+      <item>3</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>9</item>
+      <item>9</item>
+      <item>8</item>
+      <item>7</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>7</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>6</item>
+      <item>0</item>
+      <item>7</item>
+      <item>6</item>
+      <item>7</item>
+      <item>3</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:SAPLV69A\FO:USEREXIT_FIELD_MODIFIC_KOPF\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>9</item>
+      <item>9</item>
+      <item>8</item>
+      <item>7</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>7</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>6</item>
+      <item>0</item>
+      <item>7</item>
+      <item>6</item>
+      <item>7</item>
+      <item>3</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>9</item>
+      <item>9</item>
+      <item>8</item>
+      <item>7</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>7</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>6</item>
+      <item>0</item>
+      <item>7</item>
+      <item>6</item>
+      <item>7</item>
+      <item>3</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:SAPLV69A\FO:USEREXIT_FIELD_MODIFICATION\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>9</item>
+      <item>9</item>
+      <item>8</item>
+      <item>7</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>7</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>6</item>
+      <item>0</item>
+      <item>7</item>
+      <item>6</item>
+      <item>7</item>
+      <item>3</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>9</item>
+      <item>9</item>
+      <item>8</item>
+      <item>7</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>10</item>
+      <item>7</item>
+      <item>0</item>
+      <item>7</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>9</item>
+      <item>6</item>
+      <item>0</item>
+      <item>7</item>
+      <item>6</item>
+      <item>7</item>
+      <item>3</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

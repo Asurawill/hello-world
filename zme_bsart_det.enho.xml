@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>BADI_IMPL</TOOL>
+   <SHORTTEXT>ME57 PR转PO修改订单类型</SHORTTEXT>
+   <SPOT_NAME>ME_BSART_DET</SPOT_NAME>
+   <IMPL>
+    <ENH_BADI_IMPL_DATA>
+     <SPOT_NAME>ME_BSART_DET</SPOT_NAME>
+     <BADI_NAME>ME_BSART_DET</BADI_NAME>
+     <IMPL_NAME>ZME_BSART_DET</IMPL_NAME>
+     <IMPL_CLASS>ZME_BSART_DET</IMPL_CLASS>
+     <ACTIVE>X</ACTIVE>
+     <IMPL_SHORTTEXT>ME57 PR转PO修改订单类型</IMPL_SHORTTEXT>
+     <IMPL_SHORTTEXT_ID>0000001435221EE591E4BD548448F010</IMPL_SHORTTEXT_ID>
+    </ENH_BADI_IMPL_DATA>
+   </IMPL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

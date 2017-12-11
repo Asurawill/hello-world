@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SPLO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TSPLD>
+    <PAPART>ZDINA5</PAPART>
+    <PFORMAT>ZDINA5</PFORMAT>
+    <ORIENT>P</ORIENT>
+    <TYPE>S</TYPE>
+    <CHGNAME2>HANDSSY</CHGNAME2>
+    <CHGTSTMP2>20170801170730</CHGTSTMP2>
+    <CHGSAPREL2>740</CHGSAPREL2>
+    <CHGSAPSYS2>ED1</CHGSAPSYS2>
+   </TSPLD>
+   <TSP0P>
+    <PDPAPER>ZDINA5</PDPAPER>
+   </TSP0P>
+  </asx:values>
+ </asx:abap>
+</abapGit>

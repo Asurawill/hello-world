@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SRFC" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SRFC>
+    <HEADER>
+     <ID>ZRFC_OA_SAP_002</ID>
+     <VERSION>A</VERSION>
+     <FUNCNAME>ZRFC_OA_SAP_002</FUNCNAME>
+     <CREATEDBY>HANDWY</CREATEDBY>
+     <CREATEDON>2015-10-15</CREATEDON>
+     <CREATEDAT>08:30:22</CREATEDAT>
+    </HEADER>
+   </SRFC>
+  </asx:values>
+ </asx:abap>
+</abapGit>

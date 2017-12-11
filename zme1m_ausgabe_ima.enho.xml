@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>不含税价赋值增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SAPFM06I</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SAPFM06I</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPFM06I</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPFM06I</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPFM06I\FO:AUSGABE_IMA\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*</item>
+      <item>DATA: P1 TYPE P DECIMALS 2 VALUE &apos;1.02&apos;. &quot;2%</item>
+      <item>DATA: P2 TYPE P DECIMALS 2 VALUE &apos;1.03&apos;. &quot;3%</item>
+      <item>DATA: P3 TYPE P DECIMALS 2 VALUE &apos;1.06&apos;. &quot;6%</item>
+      <item>DATA: P4 TYPE P DECIMALS 2 VALUE &apos;1.11&apos;. &quot;11%</item>
+      <item>DATA: P5 TYPE P DECIMALS 2 VALUE &apos;1.13&apos;. &quot;13%</item>
+      <item>DATA: P6 TYPE P DECIMALS 2 VALUE &apos;1.17&apos;. &quot;17%</item>
+      <item>LOOP AT XEINE .</item>
+      <item>CASE XEINE-MWSKZ .</item>
+      <item>WHEN &apos;A0&apos; or &apos;J0&apos; or &apos;JA&apos; or &apos;J7&apos;.                      &quot;0%</item>
+      <item>XEINE-ZBHSJ = XEINE-NETPR .</item>
+      <item>WHEN &apos;A2&apos;.                                             &quot;2％</item>
+      <item>XEINE-ZBHSJ = XEINE-NETPR  * 100  / P1 .</item>
+      <item>WHEN &apos;J6&apos;.                                              &quot;3％</item>
+      <item>XEINE-ZBHSJ = XEINE-NETPR  * 100  / P2 .</item>
+      <item>WHEN &apos;J5&apos;.                                              &quot; 6％</item>
+      <item>XEINE-ZBHSJ = XEINE-NETPR  * 100  / P3 .</item>
+      <item>WHEN &apos;J3&apos;.                                              &quot; 11％</item>
+      <item>XEINE-ZBHSJ = XEINE-NETPR  * 100  / P4 .</item>
+      <item>WHEN &apos;J2&apos;.                                              &quot; 13％</item>
+      <item>XEINE-ZBHSJ = XEINE-NETPR  * 100  / P5 .</item>
+      <item>WHEN &apos;A1&apos; or &apos;J1&apos; or &apos;J8&apos; or &apos;JB&apos;.                      &quot; 17％</item>
+      <item>XEINE-ZBHSJ = XEINE-NETPR  * 100  / P6 .</item>
+      <item>ENDCASE.</item>
+      <item>MODIFY XEINE.</item>
+      <item>ENDLOOP.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPFM06I\FO:AUSGABE_IMA\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>4</item>
+      <item>5</item>
+      <item>6</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>1</item>
+      <item>1</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>库存管理预留清单字段增强</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>RM07RESL</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>RM07RESL</ORG_MAIN_NAME>
+    <PROGRAMNAME>RM07RESL</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07RESL</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RM07RESL\FO:DATA_PROCESS\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*&amp;--代码添加 BY HANDYBY 11.05.2017 18:18:03  BEGIN</item>
+      <item>DATA:BEGIN OF LS_PRPS,</item>
+      <item>PSPNR TYPE PRPS-PSPNR,</item>
+      <item>psphi TYPE prps-psphi,</item>
+      <item>END OF LS_PRPS.</item>
+      <item>DATA LT_PRPS LIKE TABLE OF LS_PRPS .</item>
+      <item>DATA:BEGIN OF ls_proj,</item>
+      <item>pspnr type proj-pspnr,</item>
+      <item>post1 TYPE proj-POST1,</item>
+      <item>END OF ls_proj.</item>
+      <item>DATA lt_proj like TABLE OF ls_proj .</item>
+      <item/>
+      <item>SELECT PSPNR</item>
+      <item>psphi</item>
+      <item>INTO CORRESPONDING FIELDS OF TABLE LT_PRPS</item>
+      <item>FROM PRPS</item>
+      <item>FOR ALL ENTRIES IN T_LIST</item>
+      <item>WHERE PSPNR = t_list-ps_psp_pnr_h .</item>
+      <item>SORT lt_prps by pspnr .</item>
+      <item>IF LT_PRPS IS NOT INITIAL .</item>
+      <item>select pspnr</item>
+      <item>POST1</item>
+      <item>INTo CORRESPONDING FIELDS OF TABLE lt_proj</item>
+      <item>FROM proj</item>
+      <item>FOR ALL ENTRIES IN lt_prps</item>
+      <item>WHERE PSPNR = lt_prps-psphi .</item>
+      <item>SORT lt_proj by PSPNR .</item>
+      <item>IF lt_proj IS NOT INITIAL .</item>
+      <item>LOOP AT t_list ASSIGNING &lt;t_list&gt;.</item>
+      <item>READ TABLE LT_PRPS INTO LS_PRPS WITH KEY PSPNR = &lt;t_list&gt;-ps_psp_pnr_h BINARY SEARCH .</item>
+      <item>IF SY-subrc = 0 .</item>
+      <item>READ TABLE lt_proj INTO ls_proj with key PSPNR = ls_prps-psphi BINARY SEARCH .</item>
+      <item>IF sy-subrc = 0 .</item>
+      <item>&lt;t_list&gt;-POST1 = ls_proj-POST1 .</item>
+      <item>CLEAR ls_proj .</item>
+      <item>ENDIF.</item>
+      <item>CLEAR LS_PRPS .</item>
+      <item>ENDIF.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>*&amp;--代码添加 BY HANDYBY 11.05.2017 18:18:03  END</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07RESL</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RM07RESL\TY:TY_S_LIST\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*&amp;--代码添加 BY HANDYBY 11.05.2017 18:16:16  BEGIN</item>
+      <item>TYPES: POST1 TYPE ZPS_POST1.</item>
+      <item>*&amp;--代码添加 BY HANDYBY 11.05.2017 18:16:16  END</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07RESL</PROGRAMNAME>
+     <EXTID>3</EXTID>
+     <ID>3</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:RM07RESL\IC:RM07RESL_FIELDCAT\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>*&amp;--代码添加 BY HANDYBY 11.05.2017 18:17:05  BEGIN</item>
+      <item>def_add &apos;POST1&apos; &apos;ZPOST1&apos; &apos;MEREP_OUTTAB_PURCHDOC&apos; space space.</item>
+      <item>*&amp;--代码添加 BY HANDYBY 11.05.2017 18:17:05  END</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:RM07RESL\FO:DATA_PROCESS\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>9</item>
+      <item>4</item>
+      <item>4</item>
+      <item>5</item>
+      <item>3</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>11</item>
+      <item>6</item>
+      <item>6</item>
+      <item>7</item>
+      <item>5</item>
+      <item>4</item>
+      <item>4</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>11</item>
+      <item>11</item>
+      <item>13</item>
+      <item>13</item>
+      <item>11</item>
+      <item>11</item>
+      <item>8</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RM07RESL\TY:TY_S_LIST\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RM07RESL\IC:RM07RESL_FIELDCAT\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

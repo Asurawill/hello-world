@@ -1,0 +1,35 @@
+FUNCTION-POOL ZEXCEL.                       "MESSAGE-ID ..
+
+* INCLUDE LZEXCELD...                        " Local class definition
+
+TYPE-POOLS: OLE2.
+*      value of excel-cell
+TYPES: TY_D_ITABVALUE TYPE ALSMEX_TABLINE-VALUE,
+*      internal table containing the excel data
+       TY_T_ITAB      TYPE ALSMEX_TABLINE   OCCURS 0,
+
+*      line type of sender table
+       BEGIN OF TY_S_SENDERLINE,
+         LINE(4096) TYPE C,
+       END OF TY_S_SENDERLINE,
+*      sender table
+       TY_T_SENDER TYPE TY_S_SENDERLINE  OCCURS 0.
+
+*
+CONSTANTS:  GC_ESC      VALUE '"'.
+
+*
+**      value of excel-cell
+*TYPES: ty_d_itabvalue             TYPE zalsmex_tabline-value,
+**      internal table containing the excel data
+*       ty_t_itab                  TYPE zalsmex_tabline   OCCURS 0,
+*
+**      line type of sender table
+*       BEGIN OF ty_s_senderline,
+*         line(4096)               TYPE c,
+*       END OF ty_s_senderline,
+**      sender table
+*       ty_t_sender                TYPE ty_s_senderline  OCCURS 0.
+*
+**
+*CONSTANTS:  gc_esc              VALUE '"'.

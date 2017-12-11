@@ -1,0 +1,313 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>vl10d采购订单项目报表客户物料内容改为采购订单供应商物料</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>V50R_VIEW</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>V50R_VIEW</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLV50R_VIEW</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLV50R_VIEW</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLV50R_VIEW\FO:POS_ITEM_FILL_USER_MM\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*获取po对应so客户物料编号*</item>
+      <item>data:l_vbap type vbap-kdmat.</item>
+      <item>data lt_zmm002i TYPE TABLE OF zmm002i WITH HEADER LINE.</item>
+      <item>CLEAR CS_POSTAB-VETYP .</item>
+      <item>SELECT VBELN posnr QTYYDB  FROM zmm002i</item>
+      <item>INTO CORRESPONDING FIELDS OF TABLE lt_zmm002i</item>
+      <item>WHERE ebeln = is_ekpo-ebeln</item>
+      <item>AND   ebelp = is_ekpo-ebelp</item>
+      <item>.</item>
+      <item>IF sy-subrc = 0.</item>
+      <item>LOOP AT lt_zmm002i.</item>
+      <item>CS_POSTAB-VETYP = CS_POSTAB-VETYP + lt_zmm002i-QTYYDB.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item>if is_vetvg-auart = &apos;Z06&apos;.</item>
+      <item/>
+      <item>select single vbap~kdmat into l_vbap from vbap inner join ekkn</item>
+      <item>on ekkn~vbeln = vbap~vbeln and ekkn~vbelp = vbap~posnr</item>
+      <item>where ekkn~ebeln = is_ekpo-ebeln and ekkn~ebelp = is_ekpo-ebelp.</item>
+      <item/>
+      <item>cs_postab-kdmat = l_vbap.</item>
+      <item>*获取po对应so客户物料编号*</item>
+      <item/>
+      <item>types:begin of ty_ekkn,</item>
+      <item>vbeln type ekkn-vbeln,</item>
+      <item>vbelp type ekkn-vbelp,</item>
+      <item>end of ty_ekkn.</item>
+      <item/>
+      <item>data:it_ekkn type table of ty_ekkn.</item>
+      <item>data:is_ekkn type ty_ekkn.</item>
+      <item/>
+      <item/>
+      <item>select single ekkn~vbeln into is_ekkn-vbeln from ekkn where  ekkn~ebeln = is_ekpo-ebeln and ekkn~ebelp = is_ekpo-ebelp.</item>
+      <item>select single ekkn~vbelp into is_ekkn-vbelp from ekkn where  ekkn~ebeln = is_ekpo-ebeln and ekkn~ebelp = is_ekpo-ebelp.</item>
+      <item/>
+      <item>data:lt_tline type tline occurs 0 with header line.</item>
+      <item/>
+      <item>data t_tdname type thead-tdname.</item>
+      <item/>
+      <item/>
+      <item>concatenate is_ekkn-vbeln &apos;   #&apos;  into t_tdname.</item>
+      <item>replace all occurrences of &apos;#&apos;  in t_tdname with is_ekkn-vbelp.</item>
+      <item/>
+      <item>data l_stxl type stxl.</item>
+      <item>l_stxl-tdid     = &apos;0006&apos;     .</item>
+      <item>l_stxl-tdspras  = sy-langu  .</item>
+      <item>l_stxl-tdname   =   t_tdname        .</item>
+      <item>l_stxl-tdobject = &apos;VBBP&apos; .</item>
+      <item>clear cs_postab-packvor_text.</item>
+      <item>*  select single * from stxl into stxl</item>
+      <item>*    where tdname = t_tdname and tdid = t_tdid and tdspras = t_tdspras and tdobject = t_tdobject.</item>
+      <item>call function &apos;READ_TEXT&apos;</item>
+      <item>exporting</item>
+      <item>client                  = sy-mandt</item>
+      <item>id                      = l_stxl-tdid    &quot;读取文本的id</item>
+      <item>language                = l_stxl-tdspras &quot;读取文本的语言</item>
+      <item>name                    = l_stxl-tdname    &quot;读取文本的名字</item>
+      <item>object                  = l_stxl-tdobject</item>
+      <item>tables</item>
+      <item>lines                   = lt_tline</item>
+      <item>exceptions</item>
+      <item>id                      = 1</item>
+      <item>language                = 2</item>
+      <item>name                    = 3</item>
+      <item>not_found               = 4</item>
+      <item>object                  = 5</item>
+      <item>reference_check         = 6</item>
+      <item>wrong_access_to_archive = 7</item>
+      <item>others                  = 8.</item>
+      <item/>
+      <item>*  data: itemp like thead-tdname.&quot;itemp为变量无值</item>
+      <item/>
+      <item>loop at lt_tline .</item>
+      <item>concatenate cs_postab-packvor_text lt_tline-tdline into cs_postab-packvor_text separated by space.  &quot;解决回车事件</item>
+      <item>endloop.</item>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item>endif.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLV50R_VIEW</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>S</ENHMODE>
+     <FULL_NAME>\PR:SAPLV50R_VIEW\FO:POS_ITEM_FILL_USER\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>DATA:lt_tline TYPE tline OCCURS 0 WITH HEADER LINE.</item>
+      <item>*  DATA:stxl LIKE stxl OCCURS 0 WITH HEADER LINE.&quot;抬头备注</item>
+      <item>data lt_zmm002i TYPE TABLE OF zmm002i WITH HEADER LINE.</item>
+      <item>DATA t_tdname TYPE THEAD-TDNAME.</item>
+      <item>CLEAR CS_POSTAB-VETYP .</item>
+      <item>SELECT VBELN posnr QTYYDB  FROM zmm002i</item>
+      <item>INTO CORRESPONDING FIELDS OF TABLE lt_zmm002i</item>
+      <item>WHERE VBELN = IS_VBAP-VBELN</item>
+      <item>AND   POSNR = IS_VBAP-POSNR</item>
+      <item>.</item>
+      <item>IF sy-subrc = 0.</item>
+      <item>LOOP AT lt_zmm002i.</item>
+      <item>CS_POSTAB-VETYP = CS_POSTAB-VETYP + lt_zmm002i-QTYYDB.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item>CONDENSE CS_POSTAB-VETYP NO-GAPS.</item>
+      <item>CONCATENATE IS_VBAP-VBELN &apos;   #&apos;  INTO t_tdname.</item>
+      <item>REPLACE ALL OCCURRENCES OF &apos;#&apos;  IN t_tdname WITH IS_VBAP-POSNR.</item>
+      <item/>
+      <item>DATA l_stxl TYPE stxl.</item>
+      <item>l_stxl-tdid     = &apos;0006&apos;     .</item>
+      <item>l_stxl-tdspras  = sy-langu  .</item>
+      <item>l_stxl-tdname   =   t_tdname        .</item>
+      <item>l_stxl-tdobject = &apos;VBBP&apos; .</item>
+      <item>CLEAR CS_POSTAB-PACKVOR_TEXT.</item>
+      <item/>
+      <item>*  SELECT SINGLE * FROM STXL INTO STXL</item>
+      <item>*    WHERE TDNAME = T_TDNAME AND TDID = T_TDID AND TDSPRAS = T_TDSPRAS AND TDOBJECT = T_TDOBJECT.</item>
+      <item>CALL FUNCTION &apos;READ_TEXT&apos;</item>
+      <item>EXPORTING</item>
+      <item>client                  = sy-mandt</item>
+      <item>id                      = l_stxl-tdid    &quot;读取文本的id</item>
+      <item>language                = l_stxl-tdspras &quot;读取文本的语言</item>
+      <item>name                    = l_stxl-tdname    &quot;读取文本的名字</item>
+      <item>object                  = l_stxl-tdobject</item>
+      <item>TABLES</item>
+      <item>lines                   = lt_tline</item>
+      <item>EXCEPTIONS</item>
+      <item>id                      = 1</item>
+      <item>language                = 2</item>
+      <item>name                    = 3</item>
+      <item>not_found               = 4</item>
+      <item>object                  = 5</item>
+      <item>reference_check         = 6</item>
+      <item>wrong_access_to_archive = 7</item>
+      <item>OTHERS                  = 8.</item>
+      <item/>
+      <item>*  DATA: itemp LIKE thead-tdname.&quot;itemp为变量无值</item>
+      <item/>
+      <item>LOOP AT lt_tline .</item>
+      <item>CONCATENATE CS_POSTAB-PACKVOR_TEXT lt_tline-tdline INTO CS_POSTAB-PACKVOR_TEXT SEPARATED BY space.  &quot;解决回车事件</item>
+      <item>ENDLOOP.</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPLV50R_VIEW\FO:POS_ITEM_FILL_USER_MM\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>4</item>
+      <item>4</item>
+      <item>0</item>
+      <item>1</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>6</item>
+      <item>6</item>
+      <item>5</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:SAPLV50R_VIEW\FO:POS_ITEM_FILL_USER\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>4</item>
+      <item>6</item>
+      <item>4</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

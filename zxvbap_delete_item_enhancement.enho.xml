@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>CHECK销售订单行项目删除判断是否已生成交货单</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>SAPFV45P</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>SAPFV45P</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPFV45P</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPFV45P</PROGRAMNAME>
+     <EXTID>3</EXTID>
+     <ID>3</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:SAPFV45P\FO:XVBAP_LOESCHEN_LOOP\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*&amp; Crete by it02</item>
+      <item>*&amp; Create date 20160128</item>
+      <item>*&amp; Request Descriptions: VA02 行项目删除时检查销售订单号及行号是否已存在事务码ZMM0081对应的调拨单号:若存在不允许在VA02 删除行号</item>
+      <item>IF SY-TCODE = &apos;VA02&apos;.</item>
+      <item>DATA:DT_ZMM002I TYPE TABLE OF ZMM002I , &quot;调拨单信息表</item>
+      <item>DS_ZMM002I TYPE ZMM002I.</item>
+      <item/>
+      <item>DATA:DT_IVBAP LIKE  TABLE OF IVBAP ,</item>
+      <item>DS_IVBAP LIKE IVBAP .</item>
+      <item/>
+      <item>DATA:DT_XVBAP LIKE TABLE OF XVBAP ,</item>
+      <item>DS_XVBAP LIKE XVBAP.</item>
+      <item/>
+      <item>DATA:DE_MSG TYPE STRING.</item>
+      <item>CLEAR:DT_ZMM002I[] ,DT_ZMM002I,DS_ZMM002I,DT_IVBAP[],DS_IVBAP,DT_XVBAP[],</item>
+      <item>DT_XVBAP ,DS_XVBAP,DE_MSG .</item>
+      <item>LOOP AT IVBAP WHERE SELKZ = &apos;X&apos;.</item>
+      <item>READ TABLE XVBAP WITH KEY POSNR = IVBAP-POSNR  .</item>
+      <item>IF SY-SUBRC = 0.</item>
+      <item>MOVE-CORRESPONDING XVBAP TO DS_XVBAP .</item>
+      <item>APPEND DS_XVBAP  TO DT_XVBAP.</item>
+      <item>ENDIF .</item>
+      <item>ENDLOOP.</item>
+      <item>*</item>
+      <item>IF DT_XVBAP IS NOT INITIAL.</item>
+      <item>SELECT * INTO CORRESPONDING FIELDS  OF TABLE DT_ZMM002I</item>
+      <item>FROM ZMM002I</item>
+      <item>FOR ALL ENTRIES IN DT_XVBAP</item>
+      <item>WHERE VBELN = DT_XVBAP-VBELN</item>
+      <item>AND POSNR = DT_XVBAP-POSNR</item>
+      <item>AND ZDELFLAG = &apos;&apos;</item>
+      <item>AND EBELN = &apos;&apos;.</item>
+      <item>SORT DT_ZMM002I BY VBELN POSNR .</item>
+      <item>IF DT_ZMM002I IS NOT INITIAL.</item>
+      <item>LOOP AT DT_XVBAP INTO DS_XVBAP .</item>
+      <item>READ TABLE DT_ZMM002I INTO DS_ZMM002I WITH KEY VBELN = DS_XVBAP-VBELN POSNR = DS_XVBAP-POSNR BINARY SEARCH .</item>
+      <item>IF SY-SUBRC = 0.</item>
+      <item>CONCATENATE &apos;销售订单&apos; DS_XVBAP-VBELN &apos;行号&apos; DS_XVBAP-POSNR &apos;已存在调拨单号&apos; DS_ZMM002I-DBDH INTO DE_MSG .</item>
+      <item>MESSAGE DE_MSG TYPE &apos;I&apos;.</item>
+      <item>LEAVE TO SCREEN SY-DYNNR.</item>
+      <item>&quot;LEAVE TO TRANSACTION &apos;VA02&apos; AND SKIP FIRST SCREEN.</item>
+      <item>ENDIF.</item>
+      <item>ENDLOOP.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item>ENDIF.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:SAPFV45P\FO:XVBAP_LOESCHEN_LOOP\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>5</item>
+      <item>10</item>
+      <item>0</item>
+      <item>5</item>
+      <item>10</item>
+      <item>0</item>
+      <item>5</item>
+      <item>10</item>
+      <item>0</item>
+      <item>5</item>
+      <item>5</item>
+      <item>11</item>
+      <item>5</item>
+      <item>8</item>
+      <item>9</item>
+      <item>12</item>
+      <item>12</item>
+      <item>9</item>
+      <item>4</item>
+      <item>0</item>
+      <item>3</item>
+      <item>6</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>8</item>
+      <item>6</item>
+      <item>6</item>
+      <item>9</item>
+      <item>11</item>
+      <item>11</item>
+      <item>14</item>
+      <item>14</item>
+      <item>14</item>
+      <item>13</item>
+      <item>10</item>
+      <item>8</item>
+      <item>5</item>
+      <item>3</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

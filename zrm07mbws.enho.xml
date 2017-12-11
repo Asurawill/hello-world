@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>MBBS增加物料描述</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>PROG</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>RM07MBWS</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>PROG</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>RM07MBWS</ORG_MAIN_NAME>
+    <PROGRAMNAME>RM07MBWS</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07MBWS</PROGRAMNAME>
+     <EXTID>1</EXTID>
+     <ID>1</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:RM07MBWS\FO:LISTAUSGABE\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>*ADD BY HANDWY 2015-9-22</item>
+      <item>*ALV显示  gv_ui_optimization_active = ‘X’.</item>
+      <item>gv_ui_optimization_active = &apos;X&apos;.</item>
+      <item/>
+      <item>*物料描述&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</item>
+      <item/>
+      <item>data:begin of it_maktx occurs 0,</item>
+      <item>matnr type mara-matnr,</item>
+      <item>maktx type makt-maktx,</item>
+      <item>SPRAS TYPE MAKT-SPRAS,</item>
+      <item>end of it_maktx.</item>
+      <item/>
+      <item>DATA: LS_IBEW LIKE LINE OF gt_ibew[].</item>
+      <item/>
+      <item>select matnr maktx SPRAS from makt into table it_maktx</item>
+      <item>for all entries in gt_ibew[]</item>
+      <item>where matnr = gt_ibew-matnr.&quot;for all entries in ibew</item>
+      <item>loop at gt_ibew[] INTO LS_IBEW.</item>
+      <item>read table it_maktx</item>
+      <item>with  key matnr = LS_IBEW-matnr</item>
+      <item>SPRAS = SY-LANGU.</item>
+      <item>LS_IBEW-maktx = it_maktx-maktx.</item>
+      <item>modify gt_ibew[] FROM LS_IBEW transporting maktx.</item>
+      <item>endloop.</item>
+      <item>*物料描述&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</item>
+      <item>**ENDADD</item>
+      <item/>
+      <item/>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>RM07MBWS</PROGRAMNAME>
+     <EXTID>2</EXTID>
+     <ID>2</ID>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\PR:RM07MBWS\FO:FELDKATALOG_AUFBAUEN\SE:END\EI</FULL_NAME>
+     <SOURCE>
+      <item>&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</item>
+      <item>CLEAR FIELDCAT.</item>
+      <item>FIELDCAT-FIELDNAME     = &apos;MAKTX&apos;.</item>
+      <item>FIELDCAT-TABNAME       = &apos;GT_IBEW&apos;.</item>
+      <item>FIELDCAT-REF_TABNAME   = &apos;MAKT&apos;.</item>
+      <item>FIELDCAT-KEY           = &apos;X&apos;.</item>
+      <item>*  FIELDCAT-outputlen = &apos;30&apos;.</item>
+      <item>APPEND FIELDCAT TO P_FIELDCAT.</item>
+      <item>&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</item>
+      <item>* complete the fieldcat with the seq. numbers               &quot;n622979</item>
+      <item>LOOP AT p_fieldcat         INTO  fieldcat.                &quot;n622979</item>
+      <item>ADD  1                   TO  l_col_pos.                 &quot;n622979</item>
+      <item>MOVE  l_col_pos          TO  fieldcat-col_pos.          &quot;n622979</item>
+      <item>MODIFY  p_fieldcat       FROM  fieldcat                 &quot;n622979</item>
+      <item>TRANSPORTING col_pos.          &quot;n622979</item>
+      <item>ENDLOOP.                                                  &quot;n622979</item>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SPACES>
+    <item>
+     <FULL_NAME>\PR:RM07MBWS\FO:LISTAUSGABE\SE:BEGIN\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>6</item>
+      <item>6</item>
+      <item>6</item>
+      <item>5</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>1</item>
+      <item>1</item>
+      <item>1</item>
+      <item>3</item>
+      <item>3</item>
+      <item>13</item>
+      <item>3</item>
+      <item>3</item>
+      <item>3</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+      <item>0</item>
+     </SPACES>
+    </item>
+    <item>
+     <FULL_NAME>\PR:RM07MBWS\FO:FELDKATALOG_AUFBAUEN\SE:END\EI</FULL_NAME>
+     <SPACES>
+      <item>0</item>
+      <item>2</item>
+      <item>3</item>
+      <item>3</item>
+      <item>3</item>
+      <item>3</item>
+      <item>0</item>
+      <item>3</item>
+      <item>0</item>
+      <item>0</item>
+      <item>2</item>
+      <item>4</item>
+      <item>4</item>
+      <item>4</item>
+      <item>29</item>
+      <item>2</item>
+     </SPACES>
+    </item>
+   </SPACES>
+  </asx:values>
+ </asx:abap>
+</abapGit>
